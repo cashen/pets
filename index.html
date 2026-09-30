@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r04.1-cross-browser-menu-navigation">
+<meta name="ui-version" content="2026.09.30-r05.1-visual-system">
 <style>
 :root{
   color-scheme:light;
@@ -249,6 +249,120 @@ body.menu-open{overflow-x:hidden;}
 @media (max-width:760px){
   .nav{backdrop-filter:none;-webkit-backdrop-filter:none;}
 }
+
+/* 2026.09.30 v2 visual system: restrained brand, stronger hierarchy, less card noise */
+:root{
+  --paper:#fcfaf7;
+  --paper-warm:#f6f1eb;
+  --ink:#171310;
+  --muted:#6d625a;
+  --line:#e5ddd5;
+  --orange:#e85b16;
+  --orange2:#f4772a;
+  --orange-soft:#fff0e5;
+  --max:1200px;
+}
+body{background:var(--paper)}
+.nav{background:rgba(252,250,247,.94);backdrop-filter:blur(12px)}
+.logo-mark i{background:var(--orange)}
+.nav-links a:hover,.nav-links a.is-active:not(.nav-btn){color:var(--orange)}
+.nav-btn{border-color:var(--orange);color:var(--orange)}
+.hero:before{display:none}
+.hero-grid{min-height:min(760px,82vh);padding:82px 0 64px;grid-template-columns:.92fr 1.08fr;gap:64px}
+.hero-grid>div:first-child{max-width:590px}
+.kicker{letter-spacing:.16em}
+h1{font-weight:900;letter-spacing:-.065em}
+h1 span{color:var(--ink);position:relative}
+h1 span:after{content:"";display:block;width:64px;height:5px;margin-top:16px;background:var(--orange)}
+.hero-tag{font-size:20px;max-width:520px}
+.hero-image{min-height:520px;border-radius:18px;box-shadow:0 20px 48px rgba(44,30,18,.12);background:#ead9ca}
+.hero-image:after{height:68px;background:linear-gradient(180deg,transparent,rgba(24,15,10,.62));opacity:1}
+.hero-caption{left:26px;bottom:20px}
+.band{background:var(--ink)}
+.band-in{padding-top:14px;padding-bottom:14px}
+.section{padding:112px 0}
+.section.warm{background:var(--paper-warm)}
+.section-head{gap:70px;margin-bottom:52px}
+.label{color:var(--orange)}
+.label:after{background:var(--orange)}
+.accent{color:var(--orange)}
+.about{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.about-card,.about-card.full{padding:30px 28px;background:transparent;border:0;border-right:1px solid var(--line);border-top:0}
+.about-card:nth-child(2){border-right:0}
+.about-card.full{grid-column:1/-1;border-right:0;border-top:1px solid var(--line);padding-top:28px}
+.base-grid{border:0;border-top:1px solid var(--line)}
+.base{padding:28px 26px 30px;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent}
+.base:nth-child(even){border-right:0;background:transparent}
+.base-num{font-size:11px}
+.base h3{font-size:20px;margin-top:13px}
+.ability{padding:42px;background:var(--paper);border:1px solid var(--line);border-radius:0}
+.ability-top{margin-bottom:38px}
+.ability-grid{gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.ability-card{background:transparent;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:28px;min-height:220px}
+.ability-card h3{font-size:20px}
+.ability-foot{color:var(--orange);border-top:1px solid var(--orange);padding-top:18px}
+.chain{gap:42px;grid-template-columns:1.35fr .65fr}
+.chain-board{min-height:500px;border:0;border-top:1px solid var(--orange);background:var(--paper-warm);padding:28px}
+.chain-board:after{border-color:rgba(232,91,22,.16)}
+.hub{background:var(--ink);box-shadow:0 0 0 18px rgba(23,19,16,.06),0 0 0 38px rgba(23,19,16,.03)}
+.node{background:rgba(252,250,247,.94);border-color:var(--line)}
+.node b{color:var(--ink)}
+.node.f{color:var(--orange);background:transparent;border:0}
+.chain-list{border:0;border-top:1px solid var(--line);padding:24px 0}
+.list-item{background:transparent;border-left:0;border-bottom:1px solid var(--line);padding:15px 0}
+.list-item+.list-item{margin-top:0}
+.eco{border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent;padding:38px 0}
+.eco-lead{color:var(--ink)}
+.eco-hub{background:var(--ink);box-shadow:0 0 0 20px rgba(23,19,16,.06),0 0 0 42px rgba(23,19,16,.03)}
+.eco-node{background:var(--paper);border-color:var(--line)}
+.coop-grid{border:0;border-top:1px solid var(--line)}
+.coop{padding:20px 18px;border:0;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.coop:nth-child(even){border-right:0}
+.value-grid{gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.value{border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:28px;background:transparent}
+.value:nth-child(even){background:transparent}
+.value.big{background:var(--orange-soft)}
+.value .tag{color:var(--orange)}
+.scenes{gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.scene{border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:25px;background:transparent}
+.scene:nth-child(2n){background:transparent}
+.contact{background:var(--ink);padding:72px 0}
+.contact .kicker{color:var(--orange)!important}
+.footer-in{padding-top:28px}
+.nav-menu{background:var(--paper);border-left-color:var(--line)}
+.nav-menu-list a.is-active b{color:var(--orange)}
+
+@media (min-width:761px) and (max-width:1100px){
+  .hero-grid{gap:34px;padding-top:62px}
+  .hero-image{min-height:430px}
+  .section{padding:90px 0}
+  .section-head{gap:38px}
+  .ability{padding:30px}
+}
+@media (max-width:760px){
+  .hero-grid{padding:48px 0 32px}
+  h1 span:after{width:42px;height:4px;margin-top:12px}
+  .hero-image{min-height:300px;border-radius:10px;box-shadow:0 12px 28px rgba(44,30,18,.10)}
+  .hero-caption{left:18px}
+  .band{background:var(--ink)}
+  .section{padding:76px 0}
+  .section-head{gap:10px;margin-bottom:30px}
+  .about-card,.about-card.full{padding:20px 0;border-right:0}
+  .base,.base:nth-child(even){padding:21px 0;background:transparent}
+  .ability{padding:0;border:0}
+  .ability-card{padding:20px 0}
+  .chain-board{padding:22px 0;background:transparent;border-top:1px solid var(--orange)}
+  .hub{background:var(--ink)}
+  .chain-list{padding:20px 0}
+  .eco{padding:24px 0}
+  .eco-hub{background:var(--ink)}
+  .value-grid,.scenes{border-left:0}
+  .value{padding:22px 0;border-right:0}
+  .value.big{background:var(--orange-soft);padding:22px 18px;margin:0 -18px}
+  .scene{padding:21px 0}
+  .contact{padding:54px 0}
+}
+
 </style>
 </head>
 <body>
