@@ -82,6 +82,17 @@ if (!/href="#eco">生态合作<\/a>/.test(html)) failures.push("hero ecosystem C
 
 const navigation = read("js/navigation.js");
 const main = read("js/main.js");
+
+if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
+if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
+if (wrangler.assets?.directory !== ".") failures.push("workers assets directory mismatch");
+if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
+for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*"]) {
+  const normalized = pattern.trim();
+  if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
+}
+if (!/2026\.10\.01-r06\.7-clean-404-workers-build/.test(html)) failures.push("ui-version not advanced to r06.7");
+
 try { new Function(navigation); } catch (error) { failures.push("navigation.js syntax: " + error.message); }
 try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
 
@@ -96,12 +107,3 @@ if (failures.length) {
 console.log("VALIDATION OK");
 console.log("sections:", (html.match(/<section\b/g) || []).length);
 console.log("local architecture files:", files.length);
-if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
-if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
-if (wrangler.assets?.directory !== ".") failures.push("workers assets directory mismatch");
-if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
-for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*"]) {
-  const normalized = pattern.trim();
-  if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
-}
-if (!/2026\.10\.01-r06\.7-clean-404-workers-build/.test(html)) failures.push("ui-version not advanced to r06.7");
