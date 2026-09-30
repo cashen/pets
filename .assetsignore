@@ -1,0 +1,10 @@
+.github/
+.codex/
+scripts/
+README.md
+wrangler.jsonc
+.assetsignore
+_headers
+.git/
+.gitignore
+.gitattributes
