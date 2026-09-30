@@ -1,5 +1,6 @@
 (() => {
   "use strict";
+
   const model = window.PetsNavigation?.items || [];
   const toggle = document.querySelector(".nav-menu-toggle");
   const menu = document.querySelector(".nav-menu");
@@ -13,15 +14,78 @@
   const targets = new Map(model.map(item => [item.id, document.getElementById(item.id)]));
   let menuHistoryEntry = false;
   let historyCleanup = false;
+  let menuState = "CLOSED";
   let lastFocused = toggle;
 
-  const isOpen = () => toggle.getAttribute("aria-expanded") === "true";
+  const isOpen = () => menuState === "OPEN" || menuState === "NAVIGATING";
   const setOpen = open => {
+    menuState = open ? "OPEN" : "CLOSED";
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "关闭导航菜单" : "打开导航菜单");
     menu.setAttribute("aria-hidden", String(!open));
     menu.classList.toggle("is-open", open);
     scrim.classList.toggle("is-open", open);
+  };
+
+  const restoreFocus = () => {
+    const target = toggle.isConnected ? toggle : lastFocused;
+    target?.focus?.({preventScroll:true});
+  };
+
+  const syncHistoryAfterClose = () => {
+    if (menuHistoryEntry && !historyCleanup && "back" in history) {
+      historyCleanup = true;
+      history.back();
+    }
+    menuHistoryEntry = false;
+  };
+
+  const openMenu = () => {
+    if (isOpen()) return;
+    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : toggle;
+    setOpen(true);
+    if (!menuHistoryEntry && !historyCleanup && "pushState" in history) {
+      menuHistoryEntry = true;
+      history.pushState({petsMenu:true}, "", location.href);
+    }
+    closeButton?.focus({preventScroll:true});
+  };
+
+  const closeMenu = ({fromHistory=false} = {}) => {
+    if (!isOpen()) return;
+    setOpen(false);
+    if (!fromHistory) syncHistoryAfterClose();
+    restoreFocus();
+  };
+
+  const sectionTop = target => {
+    const headerHeight = nav?.getBoundingClientRect().height || 64;
+    return Math.max(0, Math.round(
+      window.pageYOffset + target.getBoundingClientRect().top - headerHeight - 10
+    ));
+  };
+
+  const syncActive = id => {
+    [...navLinks, ...menuLinks].forEach(link => {
+      const active = link.dataset.navId === id;
+      link.classList.toggle("is-active", active);
+      if (active) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+  };
+
+  const navigate = id => {
+    const target = targets.get(id);
+    if (!target) return;
+    menuState = "NAVIGATING";
+    const hash = "#" + id;
+    if ("replaceState" in history) history.replaceState(null, "", hash);
+    else location.hash = hash;
+    menuHistoryEntry = false;
+    setOpen(false);
+    window.scrollTo({top:sectionTop(target),left:0,behavior:"auto"});
+    syncActive(id);
+    restoreFocus();
   };
 
   const applyModel = () => {
@@ -43,67 +107,16 @@
     });
   };
 
-  const openMenu = () => {
-    if (isOpen()) return;
-    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : toggle;
-    setOpen(true);
-    if (!menuHistoryEntry && !historyCleanup && "pushState" in history) {
-      menuHistoryEntry = true;
-      history.pushState({petsMenu:true}, "", location.href);
-    }
-    closeButton?.focus();
-  };
-
-  const closeMenu = ({fromHistory=false} = {}) => {
-    if (!isOpen()) return;
-    const shouldRestore = !fromHistory && menuHistoryEntry && !historyCleanup && "back" in history;
-    menuHistoryEntry = false;
-    setOpen(false);
-    if (shouldRestore) {
-      historyCleanup = true;
-      history.back();
-    }
-    (lastFocused || toggle).focus?.();
-  };
-
-  const sectionTop = target => {
-    const headerHeight = nav?.getBoundingClientRect().height || 64;
-    return Math.max(0, Math.round(
-      window.pageYOffset + target.getBoundingClientRect().top - headerHeight - 10
-    ));
-  };
-
-  const navigate = id => {
-    const target = targets.get(id);
-    if (!target) return;
-    const hash = "#" + id;
-    if ("replaceState" in history) history.replaceState(null, "", hash);
-    else location.hash = hash;
-    menuHistoryEntry = false;
-    setOpen(false);
-    window.scrollTo(0, sectionTop(target));
-    syncActive(id);
-    lastFocused = toggle;
-  };
-
-  const syncActive = id => {
-    [...navLinks, ...menuLinks].forEach(link => {
-      const active = link.dataset.navId === id;
-      link.classList.toggle("is-active", active);
-      if (active) link.setAttribute("aria-current", "location");
-      else link.removeAttribute("aria-current");
-    });
-  };
-
   applyModel();
-
   toggle.addEventListener("click", openMenu);
   closeButton?.addEventListener("click", () => closeMenu());
   scrim.addEventListener("click", () => closeMenu());
+
   menuLinks.forEach(link => link.addEventListener("click", event => {
     event.preventDefault();
     navigate(link.dataset.navId);
   }));
+
   navLinks.forEach(link => link.addEventListener("click", event => {
     const id = link.dataset.navId;
     if (!targets.has(id)) return;
@@ -119,34 +132,36 @@
     if (event.state?.petsMenu) {
       menuHistoryEntry = true;
       setOpen(true);
-      closeButton?.focus();
-    } else {
-      menuHistoryEntry = false;
-      setOpen(false);
+      closeButton?.focus({preventScroll:true});
+      return;
     }
+    menuHistoryEntry = false;
+    closeMenu({fromHistory:true});
   });
 
   window.addEventListener("hashchange", () => {
     const id = location.hash.slice(1);
-    if (targets.has(id)) {
-      window.scrollTo(0, sectionTop(targets.get(id)));
-      syncActive(id);
-    }
+    if (!targets.has(id)) return;
+    window.scrollTo({top:sectionTop(targets.get(id)),left:0,behavior:"auto"});
+    syncActive(id);
   });
 
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && isOpen()) closeMenu();
-    if (event.key === "Tab" && isOpen()) {
-      const focusable = [closeButton, ...menuLinks].filter(Boolean);
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+    if (event.key === "Escape" && isOpen()) {
+      event.preventDefault();
+      closeMenu();
+      return;
+    }
+    if (event.key !== "Tab" || !isOpen()) return;
+    const focusable = [closeButton, ...menuLinks].filter(Boolean);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   });
 
@@ -178,14 +193,11 @@
 
   const initialId = location.hash.slice(1);
   if (targets.has(initialId)) {
-    requestAnimationFrame(() => window.scrollTo(0, sectionTop(targets.get(initialId))));
-    syncActive(initialId);
+    requestAnimationFrame(() => {
+      window.scrollTo({top:sectionTop(targets.get(initialId)),left:0,behavior:"auto"});
+      syncActive(initialId);
+    });
   } else {
     syncActive("about");
   }
-
-  window.addEventListener("pageshow", () => {
-    const target = targets.get(location.hash.slice(1));
-    if (target) requestAnimationFrame(() => window.scrollTo(0, sectionTop(target)));
-  });
 })();
