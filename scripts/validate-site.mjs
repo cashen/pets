@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import path from "node:path";
 
 const root = new URL("../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
@@ -32,24 +31,23 @@ for (const m of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
   if (/^[a-z]+:/i.test(ref) || ref.startsWith("#")) continue;
   if (!fs.existsSync(new URL(ref, root))) failures.push("missing local resource: " + ref);
 }
+
 if (/<style\b/i.test(html)) failures.push("inline <style> remains");
-if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("global smooth scrolling remains");
-if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
-if (/style="[^"]+"/i.test(html)) failures.push("inline style attribute remains");
-if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
-if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("global smooth scrolling remains");
-if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
-if (/style="[^"]+"/i.test(html)) failures.push("inline style attribute remains");
-if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
-if (/<script>([\s\S]*?)<\/script>/i.test(html)) failures.push("inline script remains");
 if (/\sstyle="/i.test(html)) failures.push("inline style attribute remains");
+if (/<script>([\s\S]*?)<\/script>/i.test(html)) failures.push("inline script remains");
+if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("global smooth scrolling remains");
+if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
+if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
 if (!/aria-controls="site-menu"/.test(html)) failures.push("menu button missing aria-controls");
 if (!/data-nav-id="scenes"/.test(html)) failures.push("scenes missing from navigation model");
+if (!/<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html)) failures.push("mobile navigation dialog contract missing");
+if (!/id="site-menu-title"/.test(html)) failures.push("mobile navigation title missing");
+if (!/tabindex="-1"/.test(html)) failures.push("main focus recovery contract missing");
 
 const navigation = read("js/navigation.js");
 const main = read("js/main.js");
-try { new Function(navigation) } catch (error) { failures.push("navigation.js syntax: " + error.message); }
-try { new Function(main) } catch (error) { failures.push("main.js syntax: " + error.message); }
+try { new Function(navigation); } catch (error) { failures.push("navigation.js syntax: " + error.message); }
+try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
 
 if (failures.length) {
   console.error("VALIDATION FAILED");
@@ -59,6 +57,3 @@ if (failures.length) {
 console.log("VALIDATION OK");
 console.log("sections:", (html.match(/<section\b/g) || []).length);
 console.log("local architecture files:", files.length);
-const menu = /<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html);
-if (!menu) failures.push("mobile navigation dialog contract missing");
-if (!/id="site-menu-title"/.test(html)) failures.push("mobile navigation title missing");
