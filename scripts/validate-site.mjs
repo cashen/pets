@@ -3,15 +3,24 @@ import fs from "node:fs";
 const root = new URL("../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
 const html = read("index.html");
+const notFound = read("404.html");
+const wrangler = JSON.parse(read("wrangler.jsonc"));
+const assetsIgnore = read(".assetsignore");
 const files = [
-  "css/tokens.css","css/base.css","css/layout.css","css/components.css",
+  "css/tokens.css","css/base.css","css/layout.css","css/components.css","css/error.css",
   "css/sections.css","css/responsive.css","js/navigation.js","js/main.js"
 ];
 const failures = [];
-const headers = read("_headers");
+
 
 
 if (!/^<!doctype html>/i.test(html.trim())) failures.push("missing doctype");
+if (!/^<!doctype html>/i.test(notFound.trim())) failures.push("404 missing doctype");
+if (!/<main\b[^>]*id="top"/i.test(notFound)) failures.push("404 missing main#top");
+if (!/noindex, nofollow/i.test(notFound)) failures.push("404 missing noindex");
+if (/<script\b/i.test(notFound)) failures.push("404 should not load javascript");
+if (/<style\b|\sstyle="/i.test(notFound)) failures.push("404 should not use inline styles");
+if (!notFound.includes('href="/">返回首页</a>')) failures.push("404 home recovery link missing");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
 if (!/<header\b[^>]*class="nav"/i.test(html)) failures.push("missing header.nav");
 if ((html.match(/<section\b/g) || []).length < 9) failures.push("expected at least 9 sections");
@@ -25,6 +34,7 @@ for (const m of html.matchAll(/href="#([^"]+)"/g)) {
   const id = m[1];
   if (id !== "top" && !ids.includes(id)) failures.push("missing anchor target: #" + id);
 }
+if (fs.existsSync(new URL("_headers", root))) failures.push("legacy _headers should not be used with Workers Static Assets");
 for (const file of files) {
   if (!fs.existsSync(new URL(file, root))) failures.push("missing file: " + file);
 }
@@ -76,16 +86,7 @@ try { new Function(navigation); } catch (error) { failures.push("navigation.js s
 try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
 
 
-const assetVersion = "20260930-r066";
-const localStaticRefs = [...html.matchAll(/(?:href|src)="(\.\/(?:css|js|assets)\/[^"]+)"/g)].map(m => m[1]);
-for (const ref of localStaticRefs) {
-  if (!ref.includes("?v="+assetVersion)) failures.push("static asset missing release version: " + ref);
-}
-if (!headers.includes("/\n  Cache-Control: public, max-age=0, must-revalidate")) failures.push("HTML cache policy missing");
-if (!headers.includes("/css/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("CSS immutable cache policy missing");
-if (!headers.includes("/js/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("JS immutable cache policy missing");
-if (!headers.includes("/assets/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("asset immutable cache policy missing");
-if (!/2026\.09\.30-r06\.6-cloudflare-static-cache/.test(html)) failures.push("ui-version not advanced to r06.6");
+
 
 if (failures.length) {
   console.error("VALIDATION FAILED");
@@ -95,3 +96,12 @@ if (failures.length) {
 console.log("VALIDATION OK");
 console.log("sections:", (html.match(/<section\b/g) || []).length);
 console.log("local architecture files:", files.length);
+if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
+if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
+if (wrangler.assets?.directory !== ".") failures.push("workers assets directory mismatch");
+if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
+for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*"]) {
+  const normalized = pattern.trim();
+  if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
+}
+if (!/2026\.10\.01-r06\.7-clean-404-workers-build/.test(html)) failures.push("ui-version not advanced to r06.7");
