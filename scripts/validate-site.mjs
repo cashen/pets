@@ -4,15 +4,22 @@ const root = new URL("../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
 const html = read("index.html");
 const files = [
-  "css/tokens.css","css/base.css","css/layout.css","css/components.css",
+  "css/tokens.css","css/base.css","css/layout.css","css/components.css","css/error.css",
   "css/sections.css","css/responsive.css","js/navigation.js","js/main.js"
 ];
 const failures = [];
-const headers = read("_headers");
+
 
 
 if (!/^<!doctype html>/i.test(html.trim())) failures.push("missing doctype");
+if (!/^<!doctype html>/i.test(notFound.trim())) failures.push("404 missing doctype");
+if (!/<main\b[^>]*id="top"/i.test(notFound)) failures.push("404 missing main#top");
+if (!/noindex, nofollow/i.test(notFound)) failures.push("404 missing noindex");
+if (/<script\b/i.test(notFound)) failures.push("404 should not load javascript");
+if (/<style\b|\sstyle="/i.test(notFound)) failures.push("404 should not use inline styles");
+if (!notFound.includes('href="/">返回首页</a>')) failures.push("404 home recovery link missing");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
+if (fs.existsSync(new URL("_headers", root))) failures.push("legacy _headers should be removed");
 if (!/<header\b[^>]*class="nav"/i.test(html)) failures.push("missing header.nav");
 if ((html.match(/<section\b/g) || []).length < 9) failures.push("expected at least 9 sections");
 if (!/<section\b[^>]*id="scenes"/.test(html)) failures.push("missing #scenes section");
@@ -76,17 +83,7 @@ try { new Function(navigation); } catch (error) { failures.push("navigation.js s
 try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
 
 
-const assetVersion = "20260930-r066";
-const localStaticRefs = [...html.matchAll(/(?:href|src)="(\.\/(?:css|js|assets)\/[^"]+)"/g)].map(m => m[1]);
-for (const ref of localStaticRefs) {
-  if (!ref.includes("?v="+assetVersion)) failures.push("static asset missing release version: " + ref);
-}
-if (!headers.includes("/\n  Cache-Control: public, max-age=0, must-revalidate")) failures.push("HTML cache policy missing");
-if (!headers.includes("/css/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("CSS immutable cache policy missing");
-if (!headers.includes("/js/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("JS immutable cache policy missing");
-if (!headers.includes("/assets/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("asset immutable cache policy missing");
-if (!/2026\.09\.30-r06\.6-cloudflare-static-cache/.test(html)) failures.push("ui-version not advanced to r06.6");
-
+if (!/2026\.10\.01-r06\.7-minimal-404/.test(html)) failures.push("ui-version not advanced to r06.7");
 if (failures.length) {
   console.error("VALIDATION FAILED");
   for (const item of failures) console.error(" - " + item);
