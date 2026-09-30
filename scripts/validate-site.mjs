@@ -60,6 +60,13 @@ if (!/grid-template-areas:"hub hub"/.test(responsiveCss)) failures.push("tablet 
 if (!/grid-template-areas:none/.test(responsiveCss)) failures.push("tablet/phone ecosystem flow contract missing");
 if (!/@media \(min-width:761px\) and \(max-width:1100px\) and \(pointer:coarse\)/.test(responsiveCss)) failures.push("coarse tablet media wrapper missing");
 if (!/@media \(min-width:761px\) and \(max-width:1100px\) and \(pointer:coarse\)\{[\s\S]*\.chain-layout\{/.test(responsiveCss)) failures.push("coarse tablet chain renderer missing");
+if (!/\.hero-grid\{min-height:min\(640px,74vh\)/.test(sectionsCss)) failures.push("desktop hero height contract missing");
+if (!/\.hero-image\{[^}]*aspect-ratio:4\/3/.test(sectionsCss)) failures.push("desktop hero media ratio contract missing");
+if (!/\.value-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/.test(sectionsCss)) failures.push("desktop value grid contract missing");
+if (!/\.value\.big\{grid-column:1\/-1/.test(sectionsCss)) failures.push("desktop value feature span missing");
+if (!/grid-template-areas:"brand \. food" "insurance hub hospital"/.test(sectionsCss)) failures.push("desktop ecosystem hub center contract missing");
+if (!/\.contact\{background:var\(--dark\)/.test(sectionsCss)) failures.push("desktop contact treatment missing");
+if (!/href="#eco">生态合作<\/a>/.test(html)) failures.push("hero ecosystem CTA target mismatch");
 
 const navigation = read("js/navigation.js");
 const main = read("js/main.js");

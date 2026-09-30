@@ -3,7 +3,7 @@
   .nav-links{gap:14px}.nav-links a:not(.nav-btn){display:none}.nav-links .nav-btn{display:none}.nav-menu-toggle{display:flex}.nav-menu{display:block}
   .hero-grid{grid-template-columns:1fr;padding:56px 0 40px;gap:34px}.hero-grid>div:first-child{padding-left:0;max-width:700px}.hero-image{min-height:430px}
   .section{padding:88px 0}.section-head{gap:38px;margin-bottom:36px}.position{gap:34px}.base{padding:24px 20px}
-  .ability{padding:30px}.ability-top{gap:26px}.chain{grid-template-columns:1fr;gap:24px}.chain-board{min-height:0;padding:27px}.chain-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"hub hub" "breeding sales" "food insurance" "medical medical";gap:12px}.chain-hub{width:128px;height:128px;font-size:18px}.chain-node{padding:16px 15px}
+  .value-grid{grid-template-columns:1fr 1fr}.value.big{grid-column:1/-1}.value:nth-child(even){border-right:0}.value:nth-child(3n){border-right:1px solid var(--line)}.value:nth-last-child(-n+3){border-bottom:1px solid var(--line)}.value:nth-last-child(-n+2){border-bottom:0}  .ability{padding:30px}.ability-top{gap:26px}.chain{grid-template-columns:1fr;gap:24px}.chain-board{min-height:0;padding:27px}.chain-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"hub hub" "breeding sales" "food insurance" "medical medical";gap:12px}.chain-hub{width:128px;height:128px;font-size:18px}.chain-node{padding:16px 15px}
   .eco{padding:28px 0}.eco-map{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:none;gap:12px}.eco-map > *{grid-area:auto}.eco-hub{width:128px;height:128px;font-size:18px}.eco-node{min-height:78px}.scenes{grid-template-columns:1fr 1fr}.scene:nth-child(3n){border-right:1px solid var(--line)}.scene:nth-child(2n){border-right:0}
 }
 
