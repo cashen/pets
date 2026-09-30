@@ -1,6 +1,4 @@
 import fs from "node:fs";
-import path from "node:path";
-
 const root = new URL("../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
 const html = read("index.html");
@@ -37,10 +35,6 @@ if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("g
 if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
 if (/style="[^"]+"/i.test(html)) failures.push("inline style attribute remains");
 if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
-if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("global smooth scrolling remains");
-if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
-if (/style="[^"]+"/i.test(html)) failures.push("inline style attribute remains");
-if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
 if (/<script>([\s\S]*?)<\/script>/i.test(html)) failures.push("inline script remains");
 if (/\sstyle="/i.test(html)) failures.push("inline style attribute remains");
 if (!/aria-controls="site-menu"/.test(html)) failures.push("menu button missing aria-controls");
@@ -58,7 +52,13 @@ if (failures.length) {
 }
 console.log("VALIDATION OK");
 console.log("sections:", (html.match(/<section\b/g) || []).length);
-console.log("local architecture files:", files.length);
-const menu = /<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html);
-if (!menu) failures.push("mobile navigation dialog contract missing");
+if (!/<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html)) failures.push("mobile navigation dialog contract missing");
 if (!/id="site-menu-title"/.test(html)) failures.push("mobile navigation title missing");
+if (failures.length) {
+  console.error("VALIDATION FAILED");
+  for (const item of failures) console.error(" - " + item);
+  process.exit(1);
+}
+console.log("VALIDATION OK");
+console.log("sections:", (html.match(/<section\\b/g) || []).length);
+console.log("local architecture files:", files.length);
