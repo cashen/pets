@@ -59,3 +59,6 @@ if (failures.length) {
 console.log("VALIDATION OK");
 console.log("sections:", (html.match(/<section\b/g) || []).length);
 console.log("local architecture files:", files.length);
+const menu = /<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html);
+if (!menu) failures.push("mobile navigation dialog contract missing");
+if (!/id="site-menu-title"/.test(html)) failures.push("mobile navigation title missing");

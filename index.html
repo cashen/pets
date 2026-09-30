@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r06.1-android-runtime">
+<meta name="ui-version" content="2026.09.30-r06.2-android-header">
 <link rel="stylesheet" href="./css/tokens.css">
 <link rel="stylesheet" href="./css/base.css">
 <link rel="stylesheet" href="./css/layout.css">
@@ -32,8 +32,8 @@
 
 </header>
 <div class="nav-menu-scrim"></div>
-<aside class="nav-menu" id="site-menu" aria-hidden="true">
-<div class="nav-menu-head"><span>页面导航</span><button class="nav-menu-close" type="button" aria-label="关闭导航菜单">×</button></div>
+<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-title" aria-hidden="true">
+<div class="nav-menu-head"><span id="site-menu-title">页面导航</span><button class="nav-menu-close" type="button" aria-label="关闭导航菜单">×</button></div>
 <nav class="nav-menu-list" aria-label="页面章节">
 <a data-nav-id="about" href="#about"><span>01</span><b>公司简介</b><em>→</em></a>
 <a data-nav-id="position" href="#position"><span>02</span><b>平台定位</b><em>→</em></a>
@@ -43,7 +43,7 @@
 <a data-nav-id="value" href="#value"><span>06</span><b>客户价值</b><em>→</em></a>
 <a data-nav-id="scenes" href="#scenes"><span>07</span><b>核心业务场景</b><em>→</em></a>
 <a class="menu-contact" data-nav-id="contact" href="#contact"><span>08</span><b>合作</b><em>→</em></a>
-</nav></aside>
+</nav></div>
 <main id="top">
 <section class="hero"><div class="wrap"><div class="hero-grid">
 <div>
