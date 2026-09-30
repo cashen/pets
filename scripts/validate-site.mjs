@@ -16,7 +16,7 @@ if (!/<header\b[^>]*class="nav"/i.test(html)) failures.push("missing header.nav"
 if ((html.match(/<section\b/g) || []).length < 9) failures.push("expected at least 9 sections");
 if (!/<section\b[^>]*id="scenes"/.test(html)) failures.push("missing #scenes section");
 
-const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+const ids = [...html.matchAll(/(?:^|[\s<])id="([^"]+)"/g)].map(m => m[1]);
 const duplicateIds = ids.filter((id,i) => ids.indexOf(id) !== i);
 duplicateIds.forEach(id => failures.push("duplicate id: " + id));
 
@@ -40,7 +40,7 @@ if (!/data-nav-id="scenes"/.test(html)) failures.push("scenes missing from navig
 
 const navigation = read("js/navigation.js");
 const main = read("js/main.js");
-try { new Function(navigation.replace(/^\s*\(\(\) => \{[\s\S]*?\}\)\(\);\s*$/,"")) } catch {}
+try { new Function(navigation) } catch (error) { failures.push("navigation.js syntax: " + error.message); }
 try { new Function(main) } catch (error) { failures.push("main.js syntax: " + error.message); }
 
 if (failures.length) {
