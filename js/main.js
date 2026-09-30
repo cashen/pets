@@ -82,6 +82,7 @@
     menuHistoryEntry = false;
     setOpen(false);
     window.scrollTo(0, sectionTop(target));
+    syncActive(id);
     lastFocused = toggle;
   };
 
