@@ -18,7 +18,7 @@ if (!/<main\b[^>]*id="top"/i.test(notFound)) failures.push("404 missing main#top
 if (!/noindex, nofollow/i.test(notFound)) failures.push("404 missing noindex");
 if (/<script\b/i.test(notFound)) failures.push("404 should not load javascript");
 if (/<style\b|\sstyle="/i.test(notFound)) failures.push("404 should not use inline styles");
-if (!/<a[^>]+href="/"[^>]*>返回首页<\/a>/.test(notFound)) failures.push("404 home recovery link missing");
+if (!notFound.includes('href="/">返回首页</a>')) failures.push("404 home recovery link missing");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
 if (!/<header\b[^>]*class="nav"/i.test(html)) failures.push("missing header.nav");
 if ((html.match(/<section\b/g) || []).length < 9) failures.push("expected at least 9 sections");
