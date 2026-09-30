@@ -8,6 +8,8 @@ const files = [
   "css/sections.css","css/responsive.css","js/navigation.js","js/main.js"
 ];
 const failures = [];
+const headers = read("_headers");
+
 
 if (!/^<!doctype html>/i.test(html.trim())) failures.push("missing doctype");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
@@ -72,6 +74,18 @@ const navigation = read("js/navigation.js");
 const main = read("js/main.js");
 try { new Function(navigation); } catch (error) { failures.push("navigation.js syntax: " + error.message); }
 try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
+
+
+const assetVersion = "20260930-r066";
+const localStaticRefs = [...html.matchAll(/(?:href|src)="(\.\/(?:css|js|assets)\/[^"]+)"/g)].map(m => m[1]);
+for (const ref of localStaticRefs) {
+  if (!ref.includes("?v="+assetVersion)) failures.push("static asset missing release version: " + ref);
+}
+if (!headers.includes("/\n  Cache-Control: public, max-age=0, must-revalidate")) failures.push("HTML cache policy missing");
+if (!headers.includes("/css/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("CSS immutable cache policy missing");
+if (!headers.includes("/js/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("JS immutable cache policy missing");
+if (!headers.includes("/assets/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("asset immutable cache policy missing");
+if (!/2026\.09\.30-r06\.6-cloudflare-static-cache/.test(html)) failures.push("ui-version not advanced to r06.6");
 
 if (failures.length) {
   console.error("VALIDATION FAILED");
