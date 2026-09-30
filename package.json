@@ -1,0 +1,10 @@
+{
+  "name": "pets-site",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "wrangler": "4.143.0"
+  }
+}

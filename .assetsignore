@@ -8,3 +8,10 @@ _headers
 .git/
 .gitignore
 .gitattributes
+node_modules/
+.wrangler/
+package.json
+package-lock.json
+npm-shrinkwrap.json
+.env
+.env.*

@@ -6,6 +6,7 @@ const html = read("index.html");
 const notFound = read("404.html");
 const wrangler = JSON.parse(read("wrangler.jsonc"));
 const assetsIgnore = read(".assetsignore");
+const packageJson = JSON.parse(read("package.json"));
 const files = [
   "css/tokens.css","css/base.css","css/layout.css","css/components.css","css/error.css",
   "css/sections.css","css/responsive.css","js/navigation.js","js/main.js"
@@ -98,7 +99,9 @@ if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
 if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
 if (wrangler.assets?.directory !== ".") failures.push("workers assets directory must be repository root");
 if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
-for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/"]) {
+if (packageJson.private !== true) failures.push("package must remain private");
+if (packageJson.devDependencies?.wrangler !== "4.143.0") failures.push("Wrangler version is not pinned to 4.143.0");
+for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*"]) {
   const normalized = pattern.trim();
   if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
 }
