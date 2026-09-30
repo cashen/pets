@@ -4,6 +4,8 @@ const root = new URL("../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
 const html = read("index.html");
 const notFound = read("404.html");
+const wrangler = JSON.parse(read("wrangler.jsonc"));
+const assetsIgnore = read(".assetsignore");
 const files = [
   "css/tokens.css","css/base.css","css/layout.css","css/components.css","css/error.css",
   "css/sections.css","css/responsive.css","js/navigation.js","js/main.js"
@@ -21,6 +23,14 @@ if (/<style\b|\sstyle="/i.test(notFound)) failures.push("404 should not use inli
 if (!notFound.includes('href="/">返回首页</a>')) failures.push("404 home recovery link missing");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
 if (fs.existsSync(new URL("_headers", root))) failures.push("legacy _headers should be removed");
+if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
+if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
+if (wrangler.assets?.directory !== ".") failures.push("workers assets directory mismatch");
+if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
+for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*"]) {
+  const normalized = pattern.trim();
+  if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
+}
 if (!/<header\b[^>]*class="nav"/i.test(html)) failures.push("missing header.nav");
 if ((html.match(/<section\b/g) || []).length < 9) failures.push("expected at least 9 sections");
 if (!/<section\b[^>]*id="scenes"/.test(html)) failures.push("missing #scenes section");
