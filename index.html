@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r03.3-android-menu-layer-safe">
+<meta name="ui-version" content="2026.09.30-r04-cross-browser-menu-navigation">
 <style>
 :root{
   color-scheme:light;
@@ -359,11 +359,11 @@ body.menu-open{overflow-x:hidden;}
   const closeBtn = document.querySelector('.nav-menu-close');
   const menuLinks = [...document.querySelectorAll('.nav-menu-list a')];
   const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+  const nav = document.querySelector('.nav');
   if (!toggle || !menu || !scrim) return;
 
   let menuHistoryEntry = false;
   let restoringHistory = false;
-  let pendingHash = null;
 
   const setOpen = (open) => {
     toggle.setAttribute('aria-expanded', String(open));
@@ -377,7 +377,7 @@ body.menu-open{overflow-x:hidden;}
   const openMenu = () => {
     if (toggle.getAttribute('aria-expanded') === 'true') return;
     setOpen(true);
-    if (!menuHistoryEntry && !restoringHistory) {
+    if (!menuHistoryEntry && !restoringHistory && 'pushState' in history) {
       menuHistoryEntry = true;
       history.pushState({petsMenu:true}, '', location.href);
     }
@@ -385,33 +385,73 @@ body.menu-open{overflow-x:hidden;}
 
   const closeMenu = ({fromHistory = false} = {}) => {
     if (toggle.getAttribute('aria-expanded') !== 'true') return;
-    if (!fromHistory && menuHistoryEntry && !restoringHistory) {
+
+    // History is only an enhancement for the Android back button.
+    // It must never be part of section navigation.
+    if (!fromHistory && menuHistoryEntry && !restoringHistory && 'back' in history) {
       restoringHistory = true;
       history.back();
       return;
     }
+
     menuHistoryEntry = false;
     setOpen(false);
+  };
+
+  const scrollToSection = (target) => {
+    if (!target) return;
+    const headerHeight = nav ? nav.getBoundingClientRect().height : 64;
+    const gap = 10;
+    const top = Math.max(
+      0,
+      Math.round(window.pageYOffset + target.getBoundingClientRect().top - headerHeight - gap)
+    );
+
+    const run = () => {
+      // Numeric scrollTo is intentionally used here instead of scrollIntoView:
+      // it is more predictable across Android Chromium-based browsers.
+      window.scrollTo(0, top);
+    };
+
+    if ('requestAnimationFrame' in window) {
+      requestAnimationFrame(run);
+    } else {
+      setTimeout(run, 0);
+    }
+  };
+
+  const navigateToSection = (link) => {
+    const targetHash = link.getAttribute('href');
+    if (!targetHash || targetHash.charAt(0) !== '#') return;
+
+    const target = document.getElementById(targetHash.slice(1));
+    if (!target) return;
+
+    // Turn the temporary menu history entry into the real anchor entry,
+    // so browser Back never re-opens the menu after a section click.
+    if (menuHistoryEntry && 'replaceState' in history) {
+      history.replaceState(null, '', targetHash);
+      menuHistoryEntry = false;
+    } else if ('replaceState' in history) {
+      history.replaceState(null, '', targetHash);
+    } else {
+      location.hash = targetHash;
+    }
+
+    setOpen(false);
+    scrollToSection(target);
   };
 
   toggle.addEventListener('click', openMenu);
   closeBtn?.addEventListener('click', () => closeMenu());
   scrim.addEventListener('click', () => closeMenu());
+
+  // Menu links use explicit target scrolling. We do not call history.back()
+  // here, because third-party Android browsers can differ in popstate timing.
   menuLinks.forEach((link) => {
     link.addEventListener('click', (event) => {
-      const targetHash = link.getAttribute('href');
-      if (!targetHash || !targetHash.startsWith('#')) return;
       event.preventDefault();
-      pendingHash = targetHash;
-      if (menuHistoryEntry) {
-        restoringHistory = true;
-        history.back();
-      } else {
-        setOpen(false);
-        const target = document.querySelector(targetHash);
-        target?.scrollIntoView({behavior:'smooth', block:'start'});
-        pendingHash = null;
-      }
+      navigateToSection(link);
     });
   });
 
@@ -423,11 +463,6 @@ body.menu-open{overflow-x:hidden;}
     } else {
       menuHistoryEntry = false;
       setOpen(false);
-      if (pendingHash) {
-        const target = document.querySelector(pendingHash);
-        target?.scrollIntoView({behavior:'smooth', block:'start'});
-        pendingHash = null;
-      }
     }
   });
 
