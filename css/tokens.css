@@ -1,0 +1,11 @@
+:root{
+  color-scheme:light;
+  --bg:#fcfbf9;--bg-warm:#f6f1eb;--surface:#fff;
+  --ink:#171411;--muted:#756b63;--line:#e4ddd6;
+  --brand:#ef5a0b;--brand-soft:#fff0e4;--dark:#171411;
+  --max:1200px;--pad:26px;--header:72px;--touch:44px;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;
+  --s7:48px;--s8:64px;--s9:80px;--s10:96px;--s11:128px;
+  --r1:7px;--r2:10px;--r3:14px;
+  --display:clamp(52px,6.4vw,82px);--h2:clamp(39px,4.2vw,56px);
+}
