@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r03-alook-safe-menu">
+<meta name="ui-version" content="2026.09.30-r03.1-alook-safe-menu">
 <style>
 :root{
   color-scheme:light;
@@ -70,7 +70,7 @@ body{min-width:0}
 .nav-menu-list a b{font-size:17px;line-height:1.35}
 .nav-menu-list a em{font-style:normal;color:var(--orange);font-size:18px}
 .nav-menu-list a.is-active b{color:var(--orange)}
-body.menu-open{overflow:hidden}
+body.menu-open{overflow-x:hidden}
 .nav-links a.is-active:not(.nav-btn){color:var(--orange)}
 .hero-grid{min-height:clamp(610px,78vh,720px)}
 .hero-image img{object-position:58% center}
@@ -350,6 +350,7 @@ body.menu-open{overflow-x:hidden;}
 
   let menuHistoryEntry = false;
   let restoringHistory = false;
+  let pendingHash = null;
 
   const setOpen = (open) => {
     toggle.setAttribute('aria-expanded', String(open));
@@ -384,13 +385,19 @@ body.menu-open{overflow-x:hidden;}
   closeBtn?.addEventListener('click', () => closeMenu());
   scrim.addEventListener('click', () => closeMenu());
   menuLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      // Close the drawer before the browser performs anchor navigation.
+    link.addEventListener('click', (event) => {
+      const targetHash = link.getAttribute('href');
+      if (!targetHash || !targetHash.startsWith('#')) return;
+      event.preventDefault();
+      pendingHash = targetHash;
       if (menuHistoryEntry) {
         restoringHistory = true;
         history.back();
       } else {
-        closeMenu({fromHistory:true});
+        setOpen(false);
+        const target = document.querySelector(targetHash);
+        target?.scrollIntoView({behavior:'smooth', block:'start'});
+        pendingHash = null;
       }
     });
   });
@@ -403,6 +410,11 @@ body.menu-open{overflow-x:hidden;}
     } else {
       menuHistoryEntry = false;
       setOpen(false);
+      if (pendingHash) {
+        const target = document.querySelector(pendingHash);
+        target?.scrollIntoView({behavior:'smooth', block:'start'});
+        pendingHash = null;
+      }
     }
   });
 
