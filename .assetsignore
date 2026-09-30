@@ -16,3 +16,4 @@ npm-shrinkwrap.json
 .env
 .env.*
 src/
+.nvmrc

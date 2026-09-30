@@ -95,6 +95,7 @@ for (const ref of localStaticRefs) {
   if (!/\?v=\d{8}-r\d+/.test(ref)) failures.push("static asset missing release version: " + ref);
 }
 if (!/href="\/css\/error\.css\?v=20261001-r067"/.test(notFound)) failures.push("404 stylesheet release version missing");
+if (fs.readFileSync(new URL(".nvmrc", root), "utf8").trim() !== "22") failures.push("Node runtime marker must be 22");
 if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
 if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
 if (wrangler.assets?.directory !== ".") failures.push("workers assets directory must be repository root");
@@ -103,8 +104,9 @@ if (wrangler.main !== "./src/worker.js") failures.push("workers main entrypoint 
 if (wrangler.assets?.binding !== "ASSETS") failures.push("workers assets binding missing");
 if (wrangler.assets?.run_worker_first !== false) failures.push("workers assets-first routing contract missing");
 if (packageJson.private !== true) failures.push("package must remain private");
+if (packageJson.engines?.node !== ">=22") failures.push("Node engine must be pinned to >=22");
 if (packageJson.devDependencies?.wrangler !== "4.143.0") failures.push("Wrangler version is not pinned to 4.143.0");
-for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","src/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*"]) {
+for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/","node_modules/",".wrangler/","src/","package.json","package-lock.json","npm-shrinkwrap.json",".env",".env.*",".nvmrc"]) {
   const normalized = pattern.trim();
   if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
 }
