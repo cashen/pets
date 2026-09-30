@@ -77,18 +77,15 @@ try { new Function(main); } catch (error) { failures.push("main.js syntax: " + e
 
 
 const assetVersion = "20260930-r066";
-const staticRefs = [
-  ...html.matchAll(/(?:href|src)="([^"]+\\?v=([^"]+))"/g)
-];
-const localStaticRefs = [...html.matchAll(/(?:href|src)="(\\.\\/(?:css|js|assets)\\/[^"]+)"/g)].map(m => m[1]);
+const localStaticRefs = [...html.matchAll(/(?:href|src)="(\.\/(?:css|js|assets)\/[^"]+)"/g)].map(m => m[1]);
 for (const ref of localStaticRefs) {
   if (!ref.includes("?v="+assetVersion)) failures.push("static asset missing release version: " + ref);
 }
-if (!/\/\\n  Cache-Control: public, max-age=0, must-revalidate/.test(headers)) failures.push("HTML cache policy missing");
-if (!/\/css\/\\*\\n  Cache-Control: public, max-age=31536000, immutable/.test(headers)) failures.push("CSS immutable cache policy missing");
-if (!/\/js\/\\*\\n  Cache-Control: public, max-age=31536000, immutable/.test(headers)) failures.push("JS immutable cache policy missing");
-if (!/\/assets\/\\*\\n  Cache-Control: public, max-age=31536000, immutable/.test(headers)) failures.push("asset immutable cache policy missing");
-if (!/2026\\.09\\.30-r06\\.6-cloudflare-static-cache/.test(html)) failures.push("ui-version not advanced to r06.6");
+if (!headers.includes("/\n  Cache-Control: public, max-age=0, must-revalidate")) failures.push("HTML cache policy missing");
+if (!headers.includes("/css/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("CSS immutable cache policy missing");
+if (!headers.includes("/js/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("JS immutable cache policy missing");
+if (!headers.includes("/assets/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("asset immutable cache policy missing");
+if (!/2026\.09\.30-r06\.6-cloudflare-static-cache/.test(html)) failures.push("ui-version not advanced to r06.6");
 
 if (failures.length) {
   console.error("VALIDATION FAILED");
