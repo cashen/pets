@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r02-responsive-navigation">
+<meta name="ui-version" content="2026.09.30-r03.1-alook-safe-menu">
 <style>
 :root{
   color-scheme:light;
@@ -70,7 +70,7 @@ body{min-width:0}
 .nav-menu-list a b{font-size:17px;line-height:1.35}
 .nav-menu-list a em{font-style:normal;color:var(--orange);font-size:18px}
 .nav-menu-list a.is-active b{color:var(--orange)}
-body.menu-open{overflow:hidden}
+body.menu-open{overflow-x:hidden}
 .nav-links a.is-active:not(.nav-btn){color:var(--orange)}
 .hero-grid{min-height:clamp(610px,78vh,720px)}
 .hero-image img{object-position:58% center}
@@ -197,6 +197,46 @@ body.menu-open{overflow:hidden}
   .nav-links a[href="#about"].is-active,.nav-links a[href="#position"].is-active,.nav-links a[href="#ability"].is-active,.nav-links a[href="#eco"].is-active,.nav-links a[href="#value"].is-active{font-weight:900}
 }
 
+
+/* 2026.09.30 r03: conservative mobile menu for Android third-party browsers */
+.nav-menu-scrim{
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .16s ease;
+}
+.nav-menu{
+  top:0;
+  right:0;
+  bottom:0;
+  height:auto;
+  transform:none;
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .16s ease,visibility .16s ease;
+  overscroll-behavior:contain;
+}
+.nav-menu.is-open{
+  transform:none;
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+body.menu-open{overflow-x:hidden;}
+.nav-menu-scrim.is-open{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+@media (max-width:760px){
+  .nav-menu{max-height:none;}
+  .nav-menu-scrim{transition:none;}
+  .nav-menu{transition:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .nav-menu,.nav-menu-scrim{transition:none;}
+}
 </style>
 </head>
 <body>
@@ -208,7 +248,7 @@ body.menu-open{overflow:hidden}
 </nav>
 <button class="nav-menu-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-menu"><span></span><span></span><span></span></button>
 </div>
-<div class="nav-menu-scrim" hidden></div>
+<div class="nav-menu-scrim"></div>
 <aside class="nav-menu" id="site-menu" aria-hidden="true">
 <div class="nav-menu-head"><span>页面导航</span><button class="nav-menu-close" type="button" aria-label="关闭导航菜单">×</button></div>
 <div class="nav-menu-list">
@@ -308,24 +348,79 @@ body.menu-open{overflow:hidden}
   const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
   if (!toggle || !menu || !scrim) return;
 
+  let menuHistoryEntry = false;
+  let restoringHistory = false;
+  let pendingHash = null;
+
   const setOpen = (open) => {
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? '关闭导航菜单' : '打开导航菜单');
     menu.setAttribute('aria-hidden', String(!open));
     menu.classList.toggle('is-open', open);
-    scrim.hidden = !open;
+    scrim.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
-    if (open) closeBtn?.focus({preventScroll:true});
   };
 
-  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
-  closeBtn?.addEventListener('click', () => setOpen(false));
-  scrim.addEventListener('click', () => setOpen(false));
-  menuLinks.forEach((link) => link.addEventListener('click', () => setOpen(false)));
+  const openMenu = () => {
+    if (toggle.getAttribute('aria-expanded') === 'true') return;
+    setOpen(true);
+    if (!menuHistoryEntry && !restoringHistory) {
+      menuHistoryEntry = true;
+      history.pushState({petsMenu:true}, '', location.href);
+    }
+  };
+
+  const closeMenu = ({fromHistory = false} = {}) => {
+    if (toggle.getAttribute('aria-expanded') !== 'true') return;
+    if (!fromHistory && menuHistoryEntry && !restoringHistory) {
+      restoringHistory = true;
+      history.back();
+      return;
+    }
+    menuHistoryEntry = false;
+    setOpen(false);
+  };
+
+  toggle.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', () => closeMenu());
+  scrim.addEventListener('click', () => closeMenu());
+  menuLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const targetHash = link.getAttribute('href');
+      if (!targetHash || !targetHash.startsWith('#')) return;
+      event.preventDefault();
+      pendingHash = targetHash;
+      if (menuHistoryEntry) {
+        restoringHistory = true;
+        history.back();
+      } else {
+        setOpen(false);
+        const target = document.querySelector(targetHash);
+        target?.scrollIntoView({behavior:'smooth', block:'start'});
+        pendingHash = null;
+      }
+    });
+  });
+
+  window.addEventListener('popstate', (event) => {
+    restoringHistory = false;
+    if (event.state && event.state.petsMenu) {
+      menuHistoryEntry = true;
+      setOpen(true);
+    } else {
+      menuHistoryEntry = false;
+      setOpen(false);
+      if (pendingHash) {
+        const target = document.querySelector(pendingHash);
+        target?.scrollIntoView({behavior:'smooth', block:'start'});
+        pendingHash = null;
+      }
+    }
+  });
+
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-      setOpen(false);
-      toggle.focus({preventScroll:true});
+      closeMenu();
     }
   });
 
@@ -338,12 +433,15 @@ body.menu-open{overflow:hidden}
     });
   };
 
-  const observer = new IntersectionObserver((entries) => {
-    const visible = entries.filter((entry) => entry.isIntersecting)
-      .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (visible) syncActive(visible.target.id);
-  }, {rootMargin:'-18% 0px -62% 0px', threshold:[0.05,0.2,0.5]});
-  sections.forEach((section) => observer.observe(section));
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting)
+        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) syncActive(visible.target.id);
+    }, {rootMargin:'-18% 0px -62% 0px', threshold:[0.05,0.2,0.5]});
+    sections.forEach((section) => observer.observe(section));
+  }
+
   syncActive('about');
 })();
 </script>
