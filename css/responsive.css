@@ -45,3 +45,15 @@
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @media (hover:none){.nav-links a:hover,.nav-btn:hover,.btn:hover{color:inherit;background:inherit;transform:none}}
+@media (min-width:761px) and (max-width:1100px) and (pointer:coarse){
+  :root{--pad:24px;--header:68px}
+  .nav-in{min-height:var(--header)}
+  .hero-grid{padding-top:48px;padding-bottom:48px;gap:28px}
+  .hero-image{min-height:0;aspect-ratio:16/10}
+  .section{padding:72px 0}
+  .section-head{grid-template-columns:1fr;gap:18px;margin-bottom:32px}
+  .about,.base-grid,.scenes{grid-template-columns:1fr 1fr}
+  .chain{grid-template-columns:1fr;gap:24px}
+  .chain-board{min-height:0}
+  .eco-map{min-height:460px}
+}
