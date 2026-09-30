@@ -13,6 +13,17 @@ const files = [
 const failures = [];
 
 
+const customDomains = (wrangler.routes || [])
+  .filter(route => route?.custom_domain === true)
+  .map(route => route.pattern)
+  .filter(Boolean);
+
+if (customDomains.length !== 2) failures.push("expected exactly 2 production custom domains");
+for (const hostname of ["montpets.com", "www.montpets.com"]) {
+  if (!customDomains.includes(hostname)) failures.push("missing custom domain: " + hostname);
+}
+if (customDomains.some(pattern => /[/*]/.test(pattern))) failures.push("custom domain must be an exact hostname");
+
 
 if (!/^<!doctype html>/i.test(html.trim())) failures.push("missing doctype");
 if (!/^<!doctype html>/i.test(notFound.trim())) failures.push("404 missing doctype");
@@ -95,7 +106,7 @@ try { new Function(navigation); } catch (error) { failures.push("navigation.js s
 try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
 
 
-if (!/2026\.10\.01-r06\.7-minimal-404/.test(html)) failures.push("ui-version not advanced to r06.7");
+if (!/2026\.10\.01-r06\.8-custom-domain/.test(html)) failures.push("ui-version not advanced to r06.8");
 if (failures.length) {
   console.error("VALIDATION FAILED");
   for (const item of failures) console.error(" - " + item);
@@ -104,3 +115,4 @@ if (failures.length) {
 console.log("VALIDATION OK");
 console.log("sections:", (html.match(/<section\b/g) || []).length);
 console.log("local architecture files:", files.length);
+console.log("custom domains:", customDomains.join(", "));
