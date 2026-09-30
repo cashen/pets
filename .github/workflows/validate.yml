@@ -20,3 +20,5 @@ jobs:
         with:
           node-version: 20
       - run: node scripts/validate-site.mjs
+      - name: Validate Wrangler deployment
+        run: npx --yes wrangler@4.143.0 deploy --dry-run
