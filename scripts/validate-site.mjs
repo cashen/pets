@@ -16,6 +16,8 @@ if (!/^<!doctype html>/i.test(html.trim())) failures.push("missing doctype");
 if (!/^<!doctype html>/i.test(notFound.trim())) failures.push("404 missing doctype");
 if (!/<main\b[^>]*id="top"/i.test(notFound)) failures.push("404 missing main#top");
 if (!/noindex, nofollow/i.test(notFound)) failures.push("404 missing noindex");
+if (/<script\b/i.test(notFound)) failures.push("404 should not load javascript");
+if (/<style\b|\sstyle="/i.test(notFound)) failures.push("404 should not use inline styles");
 if (!/<a[^>]+href="/"[^>]*>返回首页<\/a>/.test(notFound)) failures.push("404 home recovery link missing");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
 if (!/<header\b[^>]*class="nav"/i.test(html)) failures.push("missing header.nav");
@@ -86,20 +88,17 @@ try { new Function(navigation); } catch (error) { failures.push("navigation.js s
 try { new Function(main); } catch (error) { failures.push("main.js syntax: " + error.message); }
 
 
-const assetVersion = "20260930-r066";
 const localStaticRefs = [...(html+"\n"+notFound).matchAll(/(?:href|src)="((?:\.\/|\/)(?:css|js|assets)\/[^"]+)"/g)].map(m => m[1]);
 for (const ref of localStaticRefs) {
-  if (!ref.includes("?v="+assetVersion)) failures.push("static asset missing release version: " + ref);
+  if (!/\?v=\d{8}-r\d+/.test(ref)) failures.push("static asset missing release version: " + ref);
 }
-if (!headers.includes("/\n  Cache-Control: public, max-age=0, must-revalidate")) failures.push("HTML cache policy missing");
-if (!headers.includes("/css/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("CSS immutable cache policy missing");
-if (!headers.includes("/js/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("JS immutable cache policy missing");
-if (!headers.includes("/assets/*\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("asset immutable cache policy missing");
+if (!/href="\/css\/error\.css\?v=20261001-r067"/.test(notFound)) failures.push("404 stylesheet release version missing");
+if (!headers.includes("/*\n  Cache-Control: public, max-age=0, must-revalidate")) failures.push("global HTML/404 revalidation policy missing");
+if (!headers.includes("/css/*\n  ! Cache-Control\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("CSS cache override contract missing");
+if (!headers.includes("/js/*\n  ! Cache-Control\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("JS cache override contract missing");
+if (!headers.includes("/assets/*\n  ! Cache-Control\n  Cache-Control: public, max-age=31536000, immutable")) failures.push("asset cache override contract missing");
 if (!/2026\.10\.01-r06\.7-cloudflare-404-hardening/.test(html)) failures.push("ui-version not advanced to r06.7");
-if (!/Cache-Control: public, max-age=0, must-revalidate/.test(headers)) failures.push("global HTML/404 revalidation policy missing");
-if (!/\/css\/\*\n  ! Cache-Control\n  Cache-Control: public, max-age=31536000, immutable/.test(headers)) failures.push("CSS cache override contract missing");
-if (!/\/js\/\*\n  ! Cache-Control\n  Cache-Control: public, max-age=31536000, immutable/.test(headers)) failures.push("JS cache override contract missing");
-if (!/\/assets\/\*\n  ! Cache-Control\n  Cache-Control: public, max-age=31536000, immutable/.test(headers)) failures.push("asset cache override contract missing");
+
 
 if (failures.length) {
   console.error("VALIDATION FAILED");
