@@ -23,6 +23,7 @@ if (/<style\b|\sstyle="/i.test(notFound)) failures.push("404 should not use inli
 if (!notFound.includes('href="/">返回首页</a>')) failures.push("404 home recovery link missing");
 if (!/<main\b[^>]*id="top"/i.test(html)) failures.push("missing main#top");
 if (fs.existsSync(new URL("_headers", root))) failures.push("legacy _headers should be removed");
+if (fs.existsSync(new URL("package.json", root))) failures.push("unexpected package.json in minimal static build");
 if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
 if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
 if (wrangler.assets?.directory !== ".") failures.push("workers assets directory mismatch");
