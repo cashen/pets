@@ -59,7 +59,7 @@ if (!/grid-template-areas:"breeding \. sales"/.test(sectionsCss)) failures.push(
 if (!/grid-template-areas:"hub hub"/.test(responsiveCss)) failures.push("tablet chain renderer contract missing");
 if (!/grid-template-areas:none/.test(responsiveCss)) failures.push("tablet/phone ecosystem flow contract missing");
 if (!/@media \(min-width:761px\) and \(max-width:1100px\) and \(pointer:coarse\)/.test(responsiveCss)) failures.push("coarse tablet media wrapper missing");
-if (/^\s*\.chain-board\{min-height:0\}/m.test(responsiveCss) && !/@media \(min-width:761px\) and \(max-width:1100px\) and \(\(pointer:coarse\)/.test(responsiveCss)) failures.push("tablet renderer leaked outside media query");
+if (!/@media \(min-width:761px\) and \(max-width:1100px\) and \(pointer:coarse\)\{[\s\S]*\.chain-layout\{/.test(responsiveCss)) failures.push("coarse tablet chain renderer missing");
 
 const navigation = read("js/navigation.js");
 const main = read("js/main.js");
