@@ -44,6 +44,21 @@ if (!/<div class="nav-menu" id="site-menu" role="dialog" aria-modal="true" aria-
 if (!/id="site-menu-title"/.test(html)) failures.push("mobile navigation title missing");
 if (!/tabindex="-1"/.test(html)) failures.push("main focus recovery contract missing");
 
+const sectionsCss = read("css/sections.css");
+const responsiveCss = read("css/responsive.css");
+const chainNodes = [...html.matchAll(/class="chain-node\b/g)].length;
+const ecoNodes = [...html.matchAll(/class="eco-node\b/g)].length;
+if (!/<div class="chain-layout"/.test(html)) failures.push("chain layout renderer missing");
+if (chainNodes !== 5) failures.push("expected exactly 5 chain service nodes");
+if (/class="node\b/.test(html)) failures.push("legacy absolute chain nodes remain");
+if (/class="eco-line/.test(html)) failures.push("legacy ecosystem connector lines remain");
+if (ecoNodes !== 6) failures.push("expected exactly 6 ecosystem nodes");
+if (/\.chain-node\{[^}]*position\s*:\s*absolute/i.test(sectionsCss)) failures.push("chain nodes must remain in normal flow");
+if (/\.eco-node\{[^}]*position\s*:\s*absolute/i.test(sectionsCss)) failures.push("ecosystem nodes must remain in normal flow");
+if (!/grid-template-areas:"breeding \. sales"/.test(sectionsCss)) failures.push("desktop chain renderer areas missing");
+if (!/grid-template-areas:"hub hub"/.test(responsiveCss)) failures.push("tablet chain renderer contract missing");
+if (!/grid-template-areas:none/.test(responsiveCss)) failures.push("tablet/phone ecosystem flow contract missing");
+
 const navigation = read("js/navigation.js");
 const main = read("js/main.js");
 try { new Function(navigation); } catch (error) { failures.push("navigation.js syntax: " + error.message); }
