@@ -95,7 +95,7 @@ for (const ref of localStaticRefs) {
 }
 if (!/href="\/css\/error\.css\?v=20261001-r067"/.test(notFound)) failures.push("404 stylesheet release version missing");
 if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
-if (wrangler.compatibility_date !== "2026-10-01") failures.push("wrangler compatibility date mismatch");
+if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
 if (wrangler.assets?.directory !== ".") failures.push("workers assets directory must be repository root");
 if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
 for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/"]) {
