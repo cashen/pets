@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r03.2-android-hero-safe">
+<meta name="ui-version" content="2026.09.30-r03.3-android-menu-layer-safe">
 <style>
 :root{
   color-scheme:light;
@@ -242,6 +242,13 @@ body.menu-open{overflow-x:hidden;}
 @media (max-width:760px){
   .hero:before{display:none;}
 }
+
+/* 2026.09.30 r03.3: menu must escape the sticky-header stacking context */
+.nav-menu-scrim{z-index:990;}
+.nav-menu{z-index:1000;}
+@media (max-width:760px){
+  .nav{backdrop-filter:none;-webkit-backdrop-filter:none;}
+}
 </style>
 </head>
 <body>
@@ -253,6 +260,8 @@ body.menu-open{overflow-x:hidden;}
 </nav>
 <button class="nav-menu-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-menu"><span></span><span></span><span></span></button>
 </div>
+
+</header>
 <div class="nav-menu-scrim"></div>
 <aside class="nav-menu" id="site-menu" aria-hidden="true">
 <div class="nav-menu-head"><span>页面导航</span><button class="nav-menu-close" type="button" aria-label="关闭导航菜单">×</button></div>
@@ -266,7 +275,6 @@ body.menu-open{overflow-x:hidden;}
 <a class="menu-contact" href="#contact"><span>07</span><b>合作</b><em>→</em></a>
 </div>
 </aside>
-</header>
 <main id="top">
 <section class="hero"><div class="wrap"><div class="hero-grid">
 <div>
