@@ -95,12 +95,12 @@ for (const ref of localStaticRefs) {
 }
 if (!/href="\/css\/error\.css\?v=20261001-r067"/.test(notFound)) failures.push("404 stylesheet release version missing");
 if (wrangler.name !== "pets") failures.push("wrangler name mismatch");
-if (wrangler.compatibility_date !== "2026-09-30") failures.push("wrangler compatibility date mismatch");
+if (wrangler.compatibility_date !== "2026-10-01") failures.push("wrangler compatibility date mismatch");
 if (wrangler.assets?.directory !== ".") failures.push("workers assets directory must be repository root");
 if (wrangler.assets?.not_found_handling !== "404-page") failures.push("workers 404-page handling missing");
 for (const pattern of [".github/"," .codex/","scripts/","README.md","wrangler.jsonc",".assetsignore","_headers",".git/"]) {
   const normalized = pattern.trim();
-  if (!assetsIgnore.split(/\\r?\\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
+  if (!assetsIgnore.split(/\r?\n/).some(line => line.trim() === normalized)) failures.push("assetsignore missing: " + normalized);
 }
 if (!/2026\.10\.01-r06\.7-workers-static-assets-404/.test(html)) failures.push("ui-version not advanced to r06.7");
 
