@@ -23,6 +23,7 @@
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "关闭导航菜单" : "打开导航菜单");
     menu.setAttribute("aria-hidden", String(!open));
+    document.documentElement.classList.toggle("menu-open", open);
     menu.classList.toggle("is-open", open);
     scrim.classList.toggle("is-open", open);
   };
