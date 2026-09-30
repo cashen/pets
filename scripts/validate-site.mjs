@@ -3,6 +3,7 @@ import fs from "node:fs";
 const root = new URL("../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
 const html = read("index.html");
+const notFound = read("404.html");
 const files = [
   "css/tokens.css","css/base.css","css/layout.css","css/components.css","css/error.css",
   "css/sections.css","css/responsive.css","js/navigation.js","js/main.js"
