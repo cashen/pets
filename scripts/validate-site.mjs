@@ -37,6 +37,10 @@ if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("g
 if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
 if (/style="[^"]+"/i.test(html)) failures.push("inline style attribute remains");
 if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
+if (/scroll-behavior\s*:\s*smooth/i.test(read("css/base.css"))) failures.push("global smooth scrolling remains");
+if (/pageshow/.test(read("js/main.js"))) failures.push("pageshow scroll override remains");
+if (/style="[^"]+"/i.test(html)) failures.push("inline style attribute remains");
+if (!/fetchpriority="high"/.test(html)) failures.push("hero image missing fetchpriority");
 if (/<script>([\s\S]*?)<\/script>/i.test(html)) failures.push("inline script remains");
 if (/\sstyle="/i.test(html)) failures.push("inline style attribute remains");
 if (!/aria-controls="site-menu"/.test(html)) failures.push("menu button missing aria-controls");
