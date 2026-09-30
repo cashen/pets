@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>梦宠数智｜宠物全生命周期大数据管理平台</title>
 <meta name="description" content="辽宁梦宠数智科技有限公司——宠物全生命周期大数据管理平台">
-<meta name="ui-version" content="2026.09.30-r04-cross-browser-menu-navigation">
+<meta name="ui-version" content="2026.09.30-r04.1-cross-browser-menu-navigation">
 <style>
 :root{
   color-scheme:light;
@@ -386,16 +386,18 @@ body.menu-open{overflow-x:hidden;}
   const closeMenu = ({fromHistory = false} = {}) => {
     if (toggle.getAttribute('aria-expanded') !== 'true') return;
 
-    // History is only an enhancement for the Android back button.
-    // It must never be part of section navigation.
-    if (!fromHistory && menuHistoryEntry && !restoringHistory && 'back' in history) {
-      restoringHistory = true;
-      history.back();
-      return;
-    }
+    const shouldRestoreHistory =
+      !fromHistory && menuHistoryEntry && !restoringHistory && 'back' in history;
 
+    // Close the visual menu immediately. History cleanup is secondary so a
+    // delayed popstate implementation can never leave the menu visibly stuck.
     menuHistoryEntry = false;
     setOpen(false);
+
+    if (shouldRestoreHistory) {
+      restoringHistory = true;
+      history.back();
+    }
   };
 
   const scrollToSection = (target) => {
