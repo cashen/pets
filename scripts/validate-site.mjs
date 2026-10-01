@@ -23,7 +23,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.02-r07\.2-english-terminology-alignment"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.02-r08\.1-integrated-landing"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -35,6 +35,10 @@ ok(!/id="chain"|id="scenes"/.test(html),"legacy standalone chain/scenes sections
 ok(!/scroll-behavior\s*:\s*smooth/.test(css),"global smooth scrolling forbidden");
 ok(!/pageshow/i.test(js),"pageshow scroll override forbidden");
 ok(!/pointer\s*:\s*coarse/i.test(responsive),"navigation must not depend on pointer type");
+ok(/document\.body\?\.classList\.toggle\("menu-open", open\)/.test(js),"body menu lock missing");
+ok(/overscroll-behavior:contain/.test(css),"menu overscroll containment missing");
+ok(/\.root\{min-height:100vh;overflow:visible\}/.test(css),"root overflow must not clip fixed menu");
+ok(!/backdrop-filter/i.test(css),"critical layout must not depend on backdrop-filter");
 
 for(const selector of [".nav-menu-toggle",".nav-menu-close",".nav-menu-scrim"]) ok(js.includes('document.querySelector("'+selector+'")'),"navigation selector mismatch: "+selector);
 for(const selector of [".menu-toggle",".menu-close",".menu-scrim"]) ok(!js.includes('document.querySelector("'+selector+'")'),"legacy navigation selector remains: "+selector);
@@ -97,6 +101,11 @@ ok((html.match(/class="eco-node\b/g)||[]).length===6,"expected 6 ecosystem nodes
 ok((html.match(/class="coop-grid"/g)||[]).length===1,"cooperation modes missing");
 for(const label of ["繁育企业","销售服务企业","食品用品企业","保险、运输企业","医疗、美容、养护、服装等企业"]) ok(html.includes(label),"missing five-service copy: "+label);
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
+ok((html.match(/class="identity-visual"/g)||[]).length===1,"hero identity visual missing");
+ok((html.match(/class="lifecycle-graph"/g)||[]).length===1,"lifecycle graph missing");
+ok((html.match(/class="value-matrix"/g)||[]).length===1,"value matrix missing");
+ok((html.match(/class="data-foundation"/g)||[]).length===1,"data foundation missing");
+ok((html.match(/class="company-ledger"/g)||[]).length===1,"company ledger missing");
 
 const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
@@ -107,7 +116,7 @@ for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
 try{new Function(js);new Function(nav)}catch(e){failures.push("JavaScript syntax error: "+e.message)}
 
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R07.2");
+console.log("VALIDATION PASSED: R08.1");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
