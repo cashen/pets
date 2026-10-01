@@ -1,17 +1,8 @@
 :root{
-  color-scheme:light;
-  --bg:#fcfbf9;--bg-warm:#f6f1eb;--surface:#fff;
-  --ink:#171411;--muted:#756b63;--line:#e4ddd6;
-  --brand:#ef5a0b;--brand-soft:#fff0e4;--dark:#171411;
-  --max:1200px;--pad:26px;--header:72px;--touch:44px;
-  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;
-  --s7:48px;--s8:64px;--s9:80px;--s10:96px;--s11:128px;
-  --r1:7px;--r2:10px;--r3:14px;
-  --display:clamp(52px,6.4vw,82px);--h2:clamp(39px,4.2vw,56px);
-  --mobile-page-pad:17px;--mobile-section-space:56px;--mobile-section-dense:44px;
-  --mobile-content-gap:18px;--mobile-card-pad:16px;--mobile-heading:clamp(36px,10vw,46px);
-  --mobile-body:14px;--mobile-line:1.82;--mobile-media-radius:8px;
-}
-@media (max-width:390px){
-  :root{--mobile-page-pad:16px;--mobile-section-space:60px;--mobile-content-gap:20px;--mobile-card-pad:18px}
+--brand:#F36B12;--brand-strong:#E85E0A;--brand-soft:#FFF0DF;--brand-pale:#FFF8F0;
+--ink:#171513;--ink-2:#332D28;--muted:#6B625A;--line:#E9DED2;--surface:#FFFFFF;
+--warm:#FFF8F0;--dark:#201A16;--header-h:74px;--wrap:1180px;--pad:30px;--mobile-pad:18px;
+--touch:44px;--radius:22px;--shadow:0 18px 48px rgba(72,42,18,.08);
+--font-sans:Inter,"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+--font-display:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 }

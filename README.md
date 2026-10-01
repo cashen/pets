@@ -1,20 +1,25 @@
-# Pets 官网 R06
+# 梦宠数智官网 R07
 
-当前版本：2026.09.30-r06.0-architecture-foundation
+当前版本：2026.10.01-r07.0-brochure-rebuild
 
-本阶段把页面从单体 HTML/CSS/JS 结构迁移到职责分离的前端基础架构，目标是让 Android Chrome、Alook、Tablet、Desktop 共用内容模型，同时允许不同终端采用不同的信息呈现策略。
+本阶段以最新企业宣传长图为内容基准，重构官网的信息架构与视觉系统。
 
-## 目录
+## 页面结构
 
-- `index.html`：页面语义与内容
-- `css/tokens.css`：设计变量
-- `css/base.css`：基础元素与可访问性基线
-- `css/layout.css`：通用布局
-- `css/components.css`：Header、Navigation、Button、Kicker 等基础组件
-- `css/sections.css`：各业务区域的结构样式
-- `css/responsive.css`：Desktop / Tablet / Android 响应式策略
-- `js/navigation.js`：唯一导航模型
-- `js/main.js`：导航运行时、锚点滚动、历史状态、章节高亮
-- `scripts/validate-site.mjs`：静态结构校验
+- Hero：宠物全生命周期大数据认证平台
+- 01 企业简介
+- 02 平台定位
+- 03 客户价值
+- 04 平台能力
+- 05 生态合作
+- 合作 CTA / Footer
 
-后续 UI 改造应优先修改对应职责文件，不再把新的响应式补丁堆回 `index.html`。
+历史版本中独立的“一个平台 · 打通全链”“核心业务场景”不再作为独立长章节；相关内容已归入平台能力中的“五大服务”和治理/用户服务区，避免页面重复与导航过载。
+
+## 终端策略
+
+页面保持桌面、Tablet、Android Chrome、Alook、iPad 共用语义内容模型；移动端导航使用根层 fixed dialog，不依赖 transform drawer、body overflow 锁定或 UA sniffing。横屏手机保持双栏 Hero，其余正文按单列阅读节奏展开。
+
+## Cloudflare
+
+继续使用 Workers Static Assets + 404-page。生产域名绑定由 wrangler.jsonc 的 root/www custom domains 管理。本次只改变前端内容与视觉架构，不引入 Worker runtime 或额外构建链。

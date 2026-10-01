@@ -1,204 +1,80 @@
 (() => {
   "use strict";
+  const nav = window.PetsNavigation?.items || [];
+  const menu = document.getElementById("site-menu");
+  const toggle = document.querySelector(".menu-toggle");
+  const close = document.querySelector(".menu-close");
+  const scrim = document.querySelector(".menu-scrim");
+  const main = document.querySelector("main");
+  let previousFocus = null;
+  let menuState = "closed";
 
-  const model = window.PetsNavigation?.items || [];
-  const toggle = document.querySelector(".nav-menu-toggle");
-  const menu = document.querySelector(".nav-menu");
-  const scrim = document.querySelector(".nav-menu-scrim");
-  const closeButton = document.querySelector(".nav-menu-close");
-  const nav = document.querySelector(".nav");
-  const menuLinks = [...document.querySelectorAll(".nav-menu-list a[data-nav-id]")];
-  const navLinks = [...document.querySelectorAll(".nav-links a[data-nav-id]")];
-  if (!toggle || !menu || !scrim) return;
-
-  const targets = new Map(model.map(item => [item.id, document.getElementById(item.id)]));
-  let menuHistoryEntry = false;
-  let historyCleanup = false;
-  let menuState = "CLOSED";
-  let lastFocused = toggle;
-
-  const isOpen = () => menuState === "OPEN" || menuState === "NAVIGATING";
-  const setOpen = open => {
-    menuState = open ? "OPEN" : "CLOSED";
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "关闭导航菜单" : "打开导航菜单");
+  const setMenu = (open, restore = true) => {
+    menuState = open ? "open" : "closed";
     menu.setAttribute("aria-hidden", String(!open));
+    toggle.setAttribute("aria-expanded", String(open));
+    scrim.style.display = open ? "block" : "none";
+    menu.style.display = open ? "block" : "none";
     document.documentElement.classList.toggle("menu-open", open);
-    menu.classList.toggle("is-open", open);
-    scrim.classList.toggle("is-open", open);
-  };
-
-  const restoreFocus = () => {
-    const target = toggle.isConnected ? toggle : lastFocused;
-    target?.focus?.({preventScroll:true});
-  };
-
-  const syncHistoryAfterClose = () => {
-    if (menuHistoryEntry && !historyCleanup && "back" in history) {
-      historyCleanup = true;
-      history.back();
+    if (open) {
+      previousFocus = document.activeElement;
+      close.focus({preventScroll:true});
+      history.pushState({petsMenu:true},"",location.href);
+    } else if (restore && previousFocus && typeof previousFocus.focus === "function") {
+      previousFocus.focus({preventScroll:true});
     }
-    menuHistoryEntry = false;
   };
 
-  const openMenu = () => {
-    if (isOpen()) return;
-    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : toggle;
-    setOpen(true);
-    if (!menuHistoryEntry && !historyCleanup && "pushState" in history) {
-      menuHistoryEntry = true;
-      history.pushState({petsMenu:true}, "", location.href);
-    }
-    closeButton?.focus({preventScroll:true});
-  };
-
-  const closeMenu = ({fromHistory=false} = {}) => {
-    if (!isOpen()) return;
-    setOpen(false);
-    if (!fromHistory) syncHistoryAfterClose();
-    restoreFocus();
-  };
-
-  const sectionTop = target => {
-    const headerHeight = nav?.getBoundingClientRect().height || 64;
-    return Math.max(0, Math.round(
-      window.pageYOffset + target.getBoundingClientRect().top - headerHeight - 10
-    ));
-  };
-
-  const syncActive = id => {
-    [...navLinks, ...menuLinks].forEach(link => {
-      const active = link.dataset.navId === id;
-      link.classList.toggle("is-active", active);
-      if (active) link.setAttribute("aria-current", "location");
-      else link.removeAttribute("aria-current");
-    });
-  };
-
-  const navigate = id => {
-    const target = targets.get(id);
+  const navigate = (href) => {
+    const id = href.startsWith("#") ? href.slice(1) : "";
+    const target = document.getElementById(id);
     if (!target) return;
-    menuState = "NAVIGATING";
-    const hash = "#" + id;
-    if ("replaceState" in history) history.replaceState(null, "", hash);
-    else location.hash = hash;
-    menuHistoryEntry = false;
-    setOpen(false);
-    window.scrollTo({top:sectionTop(target),left:0,behavior:"auto"});
-    syncActive(id);
-    restoreFocus();
+    if (menuState === "open") {
+      history.replaceState({}, "", href);
+      setMenu(false, false);
+    } else {
+      history.pushState({}, "", href);
+    }
+    const top = target.getBoundingClientRect().top + window.scrollY - (parseInt(getComputedStyle(document.documentElement).getPropertyValue("--header")) || 72) - 10;
+    window.scrollTo({top:Math.max(0,top),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+    target.focus?.({preventScroll:true});
   };
 
-  const applyModel = () => {
-    model.forEach((item, index) => {
-      const desktop = navLinks.find(link => link.dataset.navId === item.id);
-      if (desktop) {
-        desktop.href = "#" + item.id;
-        desktop.textContent = item.label;
-      }
-      const mobile = menuLinks.find(link => link.dataset.navId === item.id);
-      if (mobile) {
-        const num = mobile.querySelector("span");
-        const label = mobile.querySelector("b");
-        if (num) num.textContent = String(index + 1).padStart(2, "0");
-        if (label) label.textContent = item.menuLabel;
-        mobile.href = "#" + item.id;
-        mobile.setAttribute("aria-label", item.menuLabel);
-      }
-    });
-  };
-
-  applyModel();
-  toggle.addEventListener("click", openMenu);
-  closeButton?.addEventListener("click", () => closeMenu());
-  scrim.addEventListener("click", () => closeMenu());
-
-  menuLinks.forEach(link => link.addEventListener("click", event => {
-    event.preventDefault();
-    navigate(link.dataset.navId);
+  toggle.addEventListener("click", () => setMenu(menuState !== "open"));
+  close.addEventListener("click", () => { history.back(); });
+  scrim.addEventListener("click", () => history.back());
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
+    const href=a.getAttribute("href");
+    if (href === "#top") return;
+    e.preventDefault();
+    navigate(href);
   }));
-
-  navLinks.forEach(link => link.addEventListener("click", event => {
-    const id = link.dataset.navId;
-    if (!targets.has(id)) return;
-    event.preventDefault();
-    navigate(id);
-  }));
-
-  window.addEventListener("popstate", event => {
-    if (historyCleanup) {
-      historyCleanup = false;
-      return;
-    }
-    if (event.state?.petsMenu) {
-      menuHistoryEntry = true;
-      setOpen(true);
-      closeButton?.focus({preventScroll:true});
-      return;
-    }
-    menuHistoryEntry = false;
-    closeMenu({fromHistory:true});
-  });
-
-  window.addEventListener("hashchange", () => {
-    const id = location.hash.slice(1);
-    if (!targets.has(id)) return;
-    window.scrollTo({top:sectionTop(targets.get(id)),left:0,behavior:"auto"});
-    syncActive(id);
-  });
-
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && isOpen()) {
-      event.preventDefault();
-      closeMenu();
-      return;
-    }
-    if (event.key !== "Tab" || !isOpen()) return;
-    const focusable = [closeButton, ...menuLinks].filter(Boolean);
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
+  window.addEventListener("popstate", () => {
+    if (menuState === "open") setMenu(false);
+    const id=location.hash.slice(1);
+    const target=id && document.getElementById(id);
+    if(target) {
+      requestAnimationFrame(() => {
+        const top=target.getBoundingClientRect().top+window.scrollY-(parseInt(getComputedStyle(document.documentElement).getPropertyValue("--header"))||72)-10;
+        window.scrollTo({top:Math.max(0,top),behavior:"auto"});
+      });
     }
   });
-
-  const sections = model.map(item => targets.get(item.id)).filter(Boolean);
-  if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(entries => {
-      const visible = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) syncActive(visible.target.id);
-    }, {rootMargin:"-16% 0px -64% 0px",threshold:[0.05,0.2,0.5]});
-    sections.forEach(section => observer.observe(section));
-  } else {
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const marker = window.scrollY + window.innerHeight * .28;
-      let current = sections[0]?.id || "about";
-      sections.forEach(section => { if (section.offsetTop <= marker) current = section.id; });
-      syncActive(current);
-    };
-    window.addEventListener("scroll", () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    }, {passive:true});
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && menuState === "open") { e.preventDefault(); history.back(); }
+    if (e.key !== "Tab" || menuState !== "open") return;
+    const focusable=[...menu.querySelectorAll('a[href],button:not([disabled])')];
+    if (!focusable.length) return;
+    const first=focusable[0], last=focusable[focusable.length-1];
+    if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus()}
+  });
+  const sections=nav.map(x=>document.getElementById(x.id)).filter(Boolean);
+  const links=[...document.querySelectorAll("[data-nav-id]")];
+  const setActive=id=>links.forEach(a=>a.classList.toggle("is-active",a.dataset.navId===id));
+  if("IntersectionObserver" in window){
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)setActive(entry.target.id)}),{rootMargin:"-35% 0px -55% 0px",threshold:0});
+    sections.forEach(s=>io.observe(s));
   }
-
-  const initialId = location.hash.slice(1);
-  if (targets.has(initialId)) {
-    requestAnimationFrame(() => {
-      window.scrollTo({top:sectionTop(targets.get(initialId)),left:0,behavior:"auto"});
-      syncActive(initialId);
-    });
-  } else {
-    syncActive("about");
-  }
+  if(location.hash) requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,document.getElementById(location.hash.slice(1))?.offsetTop-(parseInt(getComputedStyle(document.documentElement).getPropertyValue("--header"))||72)-10||0)));
 })();
