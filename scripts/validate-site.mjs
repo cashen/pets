@@ -6,13 +6,13 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const notFound=read("404.html");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
-const assetsIgnore=read(".assetsignore");
 const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
 const brand=read("assets/brand/brand.svg");
 const mark=read("assets/brand/logo-mark.svg");
+const responsive=read("css/responsive.css");
 const failures=[];
 const ok=(condition,message)=>{if(!condition)failures.push(message)};
 
@@ -25,36 +25,39 @@ ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
 ok(/meta name="ui-version" content="2026\.10\.01-r07\.1-navigation-rebuild"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
-for(const id of requiredIds) ok(html.includes('id="'+id+'"'),"missing #"+id);
-for(const id of requiredIds) ok(html.includes('id="'+id+'-anchor"'),"missing precise anchor #"+id+"-anchor");
+for(const id of requiredIds) {
+  ok(html.includes('id="'+id+'"'),"missing #"+id);
+  ok(html.includes('id="'+id+'-anchor"'),"missing precise anchor #"+id+"-anchor");
+  ok(html.includes('href="#'+id+'"'),"missing navigation link #"+id);
+}
 ok(!/id="chain"|id="scenes"/.test(html),"legacy standalone chain/scenes sections remain");
-for(const id of requiredIds) ok(html.includes('href="#'+id+'"'),"missing navigation link #"+id);
 
 ok(!/scroll-behavior\s*:\s*smooth/.test(css),"global smooth scrolling forbidden");
 ok(!/pageshow/i.test(js),"pageshow scroll override forbidden");
-ok(/document\.querySelector\("\.nav-menu-toggle"\)/.test(js),"mobile menu toggle selector mismatch");
-ok(/document\.querySelector\("\.nav-menu-close"\)/.test(js),"mobile menu close selector mismatch");
-ok(/document\.querySelector\("\.nav-menu-scrim"\)/.test(js),"mobile menu scrim selector mismatch");
-ok(!/document\.querySelector\("\.menu-toggle"\)/.test(js),"legacy menu toggle selector remains");
-ok(!/document\.querySelector\("\.menu-close"\)/.test(js),"legacy menu close selector remains");
-ok(!/document\.querySelector\("\.menu-scrim"\)/.test(js),"legacy menu scrim selector remains");
+ok(!/pointer\s*:\s*coarse/i.test(responsive),"navigation must not depend on pointer type");
+
+for(const selector of [".nav-menu-toggle",".nav-menu-close",".nav-menu-scrim"]) ok(js.includes('document.querySelector("'+selector+'")'),"navigation selector mismatch: "+selector);
+for(const selector of [".menu-toggle",".menu-close",".menu-scrim"]) ok(!js.includes('document.querySelector("'+selector+'")'),"legacy navigation selector remains: "+selector);
+
 ok(/role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html),"mobile menu dialog semantics missing");
 ok(/aria-controls="site-menu"/.test(html),"mobile menu aria-controls missing");
 ok(/IntersectionObserver/.test(js),"active navigation observer missing");
 ok(/history\.pushState\(\{petsMenu:true/.test(js),"menu history sentinel missing");
 ok(/history\.replaceState\(\{petsSection:id\}/.test(js),"menu target history replacement missing");
-ok(/fromMenu\?/.test(js),"menu-vs-page navigation mode missing");
-ok(/header\.getBoundingClientRect\(\)\.height/.test(js),"dynamic header offset missing");
-ok(/scrollToTarget\(id/.test(js),"single scroll controller missing");
+ok(/const fromMenu = link\.closest\("\.nav-menu"\)/.test(js),"menu/page navigation split missing");
+ok(/header\?\.getBoundingClientRect\(\)\.height/.test(js),"dynamic header offset missing");
+ok(/const scrollToTarget =/.test(js),"single scroll controller missing");
+ok(/sectionTargets = new Map/.test(js),"target/section navigation map missing");
+ok(/targetId:"about-anchor"/.test(nav)&&/sectionId:"about"/.test(nav),"navigation model target contract missing");
 ok(/tabindex="-1"/.test(html),"main focus recovery contract missing");
 
 const navItems=[...nav.matchAll(/\{id:"([^"]+)"[^}]*targetId:"([^"]+)"[^}]*sectionId:"([^"]+)"/g)].map(m=>({id:m[1],targetId:m[2],sectionId:m[3]}));
 ok(navItems.map(x=>x.id).join(",")===navExpected.join(","),"navigation model order mismatch");
+ok(navItems.length===6,"navigation model cardinality mismatch");
 for(const item of navItems) {
   ok(html.includes('id="'+item.targetId+'"'),"navigation target missing: "+item.targetId);
   ok(html.includes('id="'+item.sectionId+'"'),"navigation section missing: "+item.sectionId);
 }
-ok(navItems.length===6,"navigation model cardinality mismatch");
 
 ok(domains.length===2 && domains.includes("montpets.com") && domains.includes("www.montpets.com"),"custom domains contract missing");
 ok(wrangler.name==="pets","wrangler name mismatch");
@@ -68,12 +71,13 @@ ok(fs.existsSync(path.join(root,"assets/brand/brand.svg")),"full traced brand lo
 ok(fs.existsSync(path.join(root,"assets/brand/logo-mark.svg")),"traced logo mark missing");
 ok(/viewBox="0 0 883 202"/.test(brand),"full logo viewBox mismatch");
 ok(/viewBox="0 0 210 202"/.test(mark),"mark viewBox mismatch");
-ok(!/<text\b/.test(brand)&&!/<text\b/.test(mark),"logo should be path-based, not font-dependent");
+ok(!/<text\b/.test(brand)&&!/<text\b/.test(mark),"logo must be path-based");
 ok((brand.match(/<path\b/g)||[]).length>=6,"full wordmark path trace incomplete");
 ok((mark.match(/<path\b/g)||[]).length>=2,"mark path trace incomplete");
 ok(/assets\/brand\/brand\.svg/.test(html),"index must use canonical full wordmark");
-ok(!/MONT PETS DIGITAL<\/small>/.test(html),"header must not reconstruct old logo with separate text");
+ok(!/<span class="brand-copy">/.test(html),"header must not reconstruct brand with separate text");
 ok(/fetchpriority="high"/.test(html)&&/rel="preload"[^>]*as="image"/.test(html),"hero priority/preload contract missing");
+
 ok(!/<style\b|\sstyle="/i.test(html),"inline style remains");
 ok(!/<script>([\s\S]*?)<\/script>/i.test(html),"inline script remains");
 ok(!/<script\b/i.test(notFound),"404 should not load javascript");
@@ -100,7 +104,6 @@ for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
   ok(fs.existsSync(path.join(root,ref.split("?")[0])),"missing local resource: "+ref);
 }
-
 try{new Function(js);new Function(nav)}catch(e){failures.push("JavaScript syntax error: "+e.message)}
 
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
