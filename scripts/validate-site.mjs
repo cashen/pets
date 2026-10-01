@@ -5,7 +5,8 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css"];
-const css=cssFiles.map(read).join("\n");
+const css=cssFiles.map(read).join("
+");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
 const fail=[];
@@ -22,7 +23,8 @@ ok(/role="dialog"/.test(html)&&/aria-modal="true"/.test(html),"mobile menu dialo
 ok(/IntersectionObserver/.test(js),"active navigation observer missing");
 ok(/not_found_handling/.test(read("wrangler.jsonc"))&&/404-page/.test(read("wrangler.jsonc")),"Cloudflare 404-page contract missing");
 ok(/montpets\.com/.test(read("wrangler.jsonc"))&&/www\.montpets\.com/.test(read("wrangler.jsonc")),"custom domains missing");
-ok(!fs.existsSync(path.join(root,"_headers")),"_headers must remain absent for this Cloudflare Pages asset setup");\nok(fs.existsSync(path.join(root,"assets/brand/logo-mark.svg")),"brand logo missing");
+ok(!fs.existsSync(path.join(root,"_headers")),"_headers must remain absent for this Cloudflare Pages asset setup");
+ok(fs.existsSync(path.join(root,"assets/brand/logo-mark.svg")),"brand logo missing");
 try{new Function(js);new Function(nav)}catch(e){fail.push("JavaScript syntax error: "+e.message)}
 try{execFileSync(process.execPath,["--version"],{stdio:"ignore"})}catch{}
 if(fail.length){console.error("VALIDATION FAILED");fail.forEach(x=>console.error(" - "+x));process.exit(1)}
