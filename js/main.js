@@ -35,7 +35,7 @@
     menu.setAttribute("aria-hidden", String(!open));
     menu.classList.toggle("is-open", open);
     scrim.classList.toggle("is-open", open);
-    document.documentElement.classList.toggle("menu-open", open);
+    document.documentElement.classList.toggle("menu-open", open); document.body?.classList.toggle("menu-open", open);
     if (open) closeButton.focus({preventScroll:true});
   };
 

@@ -1,41 +1,12 @@
-# 梦宠数智官网 R07.1
+# 梦宠数智官网 R08
 
-当前版本：2026.10.02-r07.2-english-terminology-alignment
+当前版本：2026.10.02-r08.1-integrated-landing
 
-本版本以最新企业宣传长图作为内容基准，完成导航系统与品牌 Logo 收口，并统一官网英文术语。
+R08.1 在 R07.2 已收口的信息架构基础上，完成整合版 Landing Page：企业年鉴式信息排版、数字底座视觉、生命周期数据关系、价值矩阵、平台能力分层，并把 Menu 多终端兼容纳入一级验收。
 
-## 页面结构
+## Navigation
 
-- Hero：宠物全生命周期大数据认证平台
-- 01 企业简介
-- 02 平台定位
-- 03 客户价值
-- 04 平台能力
-- 05 生态合作
-- 合作 CTA / Footer
-
-历史版本中独立的“一个平台 · 打通全链”“核心业务场景”不再作为独立长章节；相关内容归入平台能力，减少导航和内容重复。
-
-## 品牌资产
-
-assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均由用户提供的原始 Logo 截图进行路径化描摹，不依赖字体实时渲染，也不再使用此前推测性的旧 Logo。
-
-## English Terminology\n\n统一官网英文栏目与平台名称表达：`PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM`、`COMPANY PROFILE`、`PLATFORM POSITIONING`、`CUSTOMER VALUE`、`PLATFORM CAPABILITIES`、`ECOSYSTEM PARTNERSHIPS`、`PARTNERSHIPS`。\n\n## Navigation Architecture
-
-导航按 viewport 宽度切换，不按 UA 或 pointer 类型猜设备：
-
-- >1100px：Desktop 横向导航
-- <=1100px：统一 Menu
-- Android Chrome / Alook / iPad / Tablet / Mobile：统一 root-level fixed dialog
-- 横屏手机仍保持 Menu
-
-导航模型分别定义：
-
-- id：URL/业务入口
-- targetId：精准滚动锚点
-- sectionId：当前章节观察目标
-
-点击、Hash、Back/Forward、Android 系统 Back、Esc、遮罩关闭均由同一个 Navigation Controller 协调，避免多个入口各自维护 offset。
+导航运行架构继续由 js/main.js + js/navigation.js 管理。R08.1 不改变 section ID、Hash、精准滚动与 Navigation Controller 状态模型。Menu 保持 root-level fixed dialog，并强化 body scroll lock、内部滚动、overscroll containment、safe-area 与低高度横屏表现；Desktop / Tablet / iPad / Android Chrome / Alook 使用同一导航逻辑。
 
 ## Cloudflare
 
