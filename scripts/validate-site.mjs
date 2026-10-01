@@ -12,7 +12,7 @@ const fail=[];
 const ok=(condition,message)=>{if(!condition)fail.push(message)};
 ok(/^<!doctype html>/i.test(html),"missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.01-r07-brochure"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.01-r07\.0-brochure-rebuild"/.test(html),"wrong ui version");
 ok(/id="(about|position|value|ability|eco)"/g.test(html),"missing brochure sections");
 for(const id of ["about","position","value","ability","eco","contact"]) ok(new RegExp('id="'+id+'"').test(html),"missing #"+id);
 for(const id of ["about","position","value","ability","eco","contact"]) ok(new RegExp('href="#'+id+'"').test(html),"missing nav link #"+id);
