@@ -1,17 +1,7 @@
 :root{
-  color-scheme:light;
-  --bg:#fcfbf9;--bg-warm:#f6f1eb;--surface:#fff;
-  --ink:#171411;--muted:#756b63;--line:#e4ddd6;
-  --brand:#ef5a0b;--brand-soft:#fff0e4;--dark:#171411;
-  --max:1200px;--pad:26px;--header:72px;--touch:44px;
-  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;
-  --s7:48px;--s8:64px;--s9:80px;--s10:96px;--s11:128px;
-  --r1:7px;--r2:10px;--r3:14px;
-  --display:clamp(52px,6.4vw,82px);--h2:clamp(39px,4.2vw,56px);
-  --mobile-page-pad:17px;--mobile-section-space:56px;--mobile-section-dense:44px;
-  --mobile-content-gap:18px;--mobile-card-pad:16px;--mobile-heading:clamp(36px,10vw,46px);
-  --mobile-body:14px;--mobile-line:1.82;--mobile-media-radius:8px;
-}
-@media (max-width:390px){
-  :root{--mobile-page-pad:16px;--mobile-section-space:60px;--mobile-content-gap:20px;--mobile-card-pad:18px}
+--orange:#ff7900;--orange-2:#ff9a2e;--orange-soft:#fff2e4;--ink:#171717;--muted:#6e6a65;
+--paper:#fffdf9;--soft:#fff7ef;--line:#eadfd2;--white:#fff;--dark:#171411;
+--radius:24px;--shadow:0 16px 48px rgba(78,48,21,.08);
+--max:1180px;--gutter:clamp(20px,4vw,56px);
+--header:72px;
 }
