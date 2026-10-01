@@ -1,3 +1,4 @@
+.section-anchor{display:block;width:0;height:0;margin:0;padding:0;pointer-events:none;visibility:hidden}
 .hero{position:relative;isolation:isolate;min-height:calc(100svh + 46px);padding-top:var(--header-h);background:linear-gradient(180deg,#fff 0%,#FFF8F0 69%,#FFEBD7 100%);overflow:hidden}
 .hero-wave{position:absolute;z-index:-1;left:-4%;right:-4%;bottom:22px;height:170px;background:var(--brand);border-radius:50% 50% 0 0/30% 30% 0 0;transform:rotate(-1.2deg)}
 .hero-grid{min-height:calc(100svh - var(--header-h) + 8px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(380px,.95fr);gap:54px;align-items:center;padding:68px 0 104px}
