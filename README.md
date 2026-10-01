@@ -1,8 +1,8 @@
 # 梦宠数智官网 R07.1
 
-当前版本：2026.10.01-r07.1-navigation-rebuild
+当前版本：2026.10.02-r07.2-english-terminology-alignment
 
-本版本以最新企业宣传长图作为内容基准，并完成导航系统与品牌 Logo 的二次架构收口。
+本版本以最新企业宣传长图作为内容基准，完成导航系统与品牌 Logo 收口，并统一官网英文术语。
 
 ## 页面结构
 
@@ -20,7 +20,7 @@
 
 assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均由用户提供的原始 Logo 截图进行路径化描摹，不依赖字体实时渲染，也不再使用此前推测性的旧 Logo。
 
-## Navigation Architecture
+## English Terminology\n\n统一官网英文栏目与平台名称表达：`PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM`、`COMPANY PROFILE`、`PLATFORM POSITIONING`、`CUSTOMER VALUE`、`PLATFORM CAPABILITIES`、`ECOSYSTEM PARTNERSHIPS`、`PARTNERSHIPS`。\n\n## Navigation Architecture
 
 导航按 viewport 宽度切换，不按 UA 或 pointer 类型猜设备：
 
