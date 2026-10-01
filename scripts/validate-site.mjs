@@ -5,8 +5,7 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css"];
-const css=cssFiles.map(read).join("
-");
+const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
 const fail=[];
