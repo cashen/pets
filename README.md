@@ -1,6 +1,5 @@
-# 梦宠数智官网 R07.1
-
-当前版本：2026.10.02-r07.2-english-terminology-alignment
+# 梦宠数智官网 R08.4
+当前版本：2026.10.02-r08.4-css-integrity-responsive-contract
 
 本版本以最新企业宣传长图作为内容基准，完成导航系统与品牌 Logo 收口，并统一官网英文术语。
 
@@ -40,3 +39,7 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均由用户提供的原�
 ## Cloudflare
 
 继续使用 Workers Static Assets + 404-page；root/www custom domains 保持不变。
+
+## CSS Integrity
+
+CSS 文件在 CI 中执行结构完整性检查，校验注释、字符串以及 {} / () / [] 平衡，并对核心章节和响应式断点执行 selector contract。响应式规则按基础、Tablet、Mobile、<=420px、Mobile Landscape 顺序维护，避免后置补丁覆盖主规则。
