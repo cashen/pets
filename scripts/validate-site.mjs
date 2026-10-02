@@ -37,9 +37,9 @@ for(const file of cssFiles){const result=scanCssStructure(read(file));ok(result.
 const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"]};
 for(const [file,selectors] of Object.entries(cssContracts)){const source=read(file);for(const selector of selectors)ok(source.includes(selector),"CSS selector contract missing in "+file+": "+selector);}
 const ecoResponsiveContract=[
-  {name:"tablet",pattern:/@media\\(max-width:1100px\\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
-  {name:"mobile",pattern:/@media\\(max-width:760px\\)/,areas:'grid-template-areas:"center" "brand" "food" "insurance" "hospital" "park" "salon"',center:"width:180px;aspect-ratio:1;min-height:0;border-radius:50%"},
-  {name:"mobile landscape",pattern:/@media\\(orientation:landscape\\) and \\(max-width:760px\\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:160px"}
+  {name:"tablet",pattern:/@media\(max-width:1100px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
+  {name:"mobile",pattern:/@media\(max-width:760px\)/,areas:'grid-template-areas:"center" "brand" "food" "insurance" "hospital" "park" "salon"',center:"width:180px;aspect-ratio:1;min-height:0;border-radius:50%"},
+  {name:"mobile landscape",pattern:/@media\(orientation:landscape\) and \(max-width:760px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:160px"}
 ];
 for(const contract of ecoResponsiveContract){
   ok(contract.pattern.test(responsive),"eco responsive breakpoint missing: "+contract.name);
