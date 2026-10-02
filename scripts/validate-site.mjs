@@ -106,14 +106,6 @@ for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
 }
 try{new Function(js);new Function(nav)}catch(e){failures.push("JavaScript syntax error: "+e.message)}
 
-if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R08.2");
-console.log("sections:",(html.match(/<section\b/g)||[]).length);
-console.log("navigation:",navExpected.join(" → "));
-console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
-console.log("traced wordmark paths:",(brand.match(/<path\b/g)||[]).length);
-console.log("custom domains:",domains.join(", "));
-
 ok((html.match(/class="life-flow"/g)||[]).length===1,"PR27 lifecycle flow missing");
 ok((html.match(/class="life-dot"/g)||[]).length===4,"PR27 lifecycle must remain four stages");
 ok((html.match(/class="feature-grid"/g)||[]).length===1,"PR27 platform grid missing");
@@ -124,3 +116,10 @@ ok(/.eco-center{[^}]*aspect-ratio:1/.test(css),"ecosystem center must preserve 1
 ok(/.eco-center{[^}]*min-height:0/.test(css),"ecosystem center must not force unequal height");
 ok(/.nav-menu,.nav-menu-list{min-height:0}/.test(responsive),"menu flex children must allow internal scroll");
 ok(/orientation:landscape/.test(responsive),"landscape-specific responsive rule missing");
+if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
+console.log("VALIDATION PASSED: R08.2");
+console.log("sections:",(html.match(/<section\b/g)||[]).length);
+console.log("navigation:",navExpected.join(" → "));
+console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
+console.log("traced wordmark paths:",(brand.match(/<path\b/g)||[]).length);
+console.log("custom domains:",domains.join(", "));
