@@ -13,6 +13,9 @@ const nav=read("js/navigation.js");
 const brand=read("assets/brand/brand.svg");
 const mark=read("assets/brand/logo-mark.svg");
 const responsive=read("css/responsive.css");
+const failures=[];
+const ok=(condition,message)=>{if(!condition)failures.push(message)};
+
 const scanCssStructure=(source)=>{
   let brace=0,paren=0,bracket=0,string=null,escaped=false,comment=false,error="";
   for(let i=0;i<source.length;i++){
@@ -36,8 +39,7 @@ for(const [file,selectors] of Object.entries(cssContracts)){const source=read(fi
 const responsiveContracts=[{name:"desktop/tablet",pattern:/@media\(max-width:1100px\)/,selectors:[".hero-grid{",".feature-grid{",".eco-board{",".eco-center{",".nav-menu{"]},{name:"tablet",pattern:/@media\(min-width:761px\) and \(max-width:1100px\)/,selectors:[".hero-grid{",".section-head{",".eco-center{",".nav-menu{"]},{name:"mobile",pattern:/@media\(max-width:760px\)/,selectors:[".hero-grid{",".eco-board{",".eco-center{",".nav-menu{"]},{name:"mobile landscape",pattern:/@media\(orientation:landscape\) and \(max-width:760px\)/,selectors:[".hero-grid{",".hero-lead{",".hero-image-frame img{"]}];
 for(const contract of responsiveContracts){ok(contract.pattern.test(responsive),"responsive breakpoint contract missing: "+contract.name);for(const selector of contract.selectors)ok(responsive.includes(selector),"responsive selector contract missing ("+contract.name+"): "+selector);}
 
-const failures=[];
-const ok=(condition,message)=>{if(!condition)failures.push(message)};
+
 
 const requiredIds=["about","position","value","ability","eco","contact"];
 const navExpected=["about","position","value","ability","eco","contact"];
