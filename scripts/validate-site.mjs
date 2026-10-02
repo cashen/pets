@@ -8,6 +8,15 @@ const notFound=read("404.html");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
 const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
+const js=read("js/main.js");
+const nav=read("js/navigation.js");
+const brand=read("assets/brand/brand.svg");
+const mark=read("assets/brand/logo-mark.svg");
+const responsive=read("css/responsive.css");
+const failures=[];
+const ok=(condition,message)=>{if(!condition)failures.push(message)};
+const contrastRatio=(a,b)=>{const c=h=>{const v=parseInt(h,16)/255;return v<=0.03928?v/12.92:((v+0.055)/1.055)**2.4};const rgb=h=>h.replace("#","").match(/../g).map(c);const x=rgb(a),y=rgb(b);const l1=.2126*x[0]+.7152*x[1]+.0722*x[2],l2=.2126*y[0]+.7152*y[1]+.0722*y[2];return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05)};
+
 const tokens=read("css/tokens.css");
 ok(tokens.includes("--brand-text:#A84300"),"readable brand text token missing");
 ok(tokens.includes("--brand-deep:#9E3B00"),"deep brand token missing");
@@ -21,14 +30,6 @@ ok(read("css/layout.css").includes(".wrap{width:min(var(--wrap),calc(100% - (var
 ok(read("css/sections.css").includes("padding-top:calc(var(--header-h) + var(--safe-top))"),"hero safe-top contract missing");
 ok(read("css/base.css").includes("top:max(10px,calc(var(--safe-top) + 10px));left:max(10px,calc(var(--safe-left) + 10px));"),"skip-link safe-area contract missing");
 ok(read("css/responsive.css").includes("@media(orientation:landscape) and (max-width:1100px) and (max-height:480px){.eco-board{"),"short-landscape Eco contract missing");
-const js=read("js/main.js");
-const nav=read("js/navigation.js");
-const brand=read("assets/brand/brand.svg");
-const mark=read("assets/brand/logo-mark.svg");
-const responsive=read("css/responsive.css");
-const failures=[];
-const ok=(condition,message)=>{if(!condition)failures.push(message)};
-const contrastRatio=(a,b)=>{const c=h=>{const v=parseInt(h,16)/255;return v<=0.03928?v/12.92:((v+0.055)/1.055)**2.4};const rgb=h=>h.replace("#","").match(/../g).map(c);const x=rgb(a),y=rgb(b);const l1=.2126*x[0]+.7152*x[1]+.0722*x[2],l2=.2126*y[0]+.7152*y[1]+.0722*y[2];return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05)};
 
 const scanCssStructure=(source)=>{
   let brace=0,paren=0,bracket=0,string=null,escaped=false,comment=false,error="";
