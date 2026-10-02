@@ -2,13 +2,15 @@
 *{box-sizing:border-box}
 html{min-width:320px;background:var(--surface);color:var(--ink);font-family:var(--font-sans);text-rendering:optimizeLegibility}
 body{margin:0;min-width:320px;background:var(--surface);color:var(--ink);font-size:16px;line-height:1.7}
-body,.root{overflow-x:hidden}
+body,.root{overflow-x:hidden}html.menu-open,body.menu-open{overflow:hidden;overscroll-behavior:none}
 img{display:block;max-width:100%;height:auto}
 a{color:inherit;text-decoration:none}
 button,input,textarea,select{font:inherit}button{color:inherit}
 h1,h2,h3,p{margin:0}h1,h2,h3{font-family:var(--font-display)}
-main:focus{outline:none}
-section{scroll-margin-top:calc(var(--header-h) + 18px)}
+main:focus-visible{outline:2px solid var(--brand);outline-offset:-4px}
+section{scroll-margin-top:calc(var(--header-h) + var(--safe-top) + 18px)}
+.skip-link{position:fixed;z-index:2000;top:10px;left:10px;transform:translateY(-160%);padding:10px 14px;border-radius:10px;background:var(--dark);color:#fff;font-size:14px;font-weight:var(--weight-ui);transition:transform .15s ease}
+.skip-link:focus{transform:translateY(0)}
 ::selection{background:var(--brand-soft);color:var(--ink)}
 :focus-visible{outline:2px solid var(--brand);outline-offset:4px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
