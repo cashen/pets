@@ -36,6 +36,18 @@ for(const file of cssFiles){const result=scanCssStructure(read(file));ok(result.
 
 const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"]};
 for(const [file,selectors] of Object.entries(cssContracts)){const source=read(file);for(const selector of selectors)ok(source.includes(selector),"CSS selector contract missing in "+file+": "+selector);}
+const ecoResponsiveContract=[
+  {name:"tablet",pattern:/@media\(max-width:1100px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
+  {name:"mobile",pattern:/@media\(max-width:760px\)/,areas:'grid-template-areas:"center" "brand" "food" "insurance" "hospital" "park" "salon"',center:"width:180px;aspect-ratio:1;min-height:0;border-radius:50%"},
+  {name:"mobile landscape",pattern:/@media\(orientation:landscape\) and \(max-width:760px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:160px"}
+];
+for(const contract of ecoResponsiveContract){
+  ok(contract.pattern.test(responsive),"eco responsive breakpoint missing: "+contract.name);
+  ok(responsive.includes(contract.areas),"eco named-area contract missing: "+contract.name);
+  ok(responsive.includes(contract.center),"eco center geometry contract missing: "+contract.name);
+}
+ok(!responsive.includes("grid-template-areas:none"),"responsive grid must not cancel Eco named areas without redefining them");
+
 const responsiveContracts=[{name:"desktop/tablet",pattern:/@media\(max-width:1100px\)/,selectors:[".hero-grid{",".feature-grid{",".eco-board{",".eco-center{",".nav-menu{"]},{name:"tablet",pattern:/@media\(min-width:761px\) and \(max-width:1100px\)/,selectors:[".hero-grid{",".section-head{",".eco-center{",".nav-menu{"]},{name:"mobile",pattern:/@media\(max-width:760px\)/,selectors:[".hero-grid{",".eco-board{",".eco-center{",".nav-menu{"]},{name:"mobile landscape",pattern:/@media\(orientation:landscape\) and \(max-width:760px\)/,selectors:[".hero-grid{",".hero-lead{",".hero-image-frame img{"]}];
 for(const contract of responsiveContracts){ok(contract.pattern.test(responsive),"responsive breakpoint contract missing: "+contract.name);for(const selector of contract.selectors)ok(responsive.includes(selector),"responsive selector contract missing ("+contract.name+"): "+selector);}
 
@@ -48,7 +60,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.02-r08\.4-css-integrity-responsive-contract"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.02-r08\.5-responsive-layout-contract"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -139,6 +151,7 @@ ok(!/class="identity-visual"|class="company-ledger"|class="lifecycle-graph"|clas
 ok(!/class="eco-lines"/.test(html),"ecosystem connector-line overlay must remain absent");
 ok(/.eco-center{[^}]*aspect-ratio:1/.test(css),"ecosystem center must preserve 1:1 geometry");
 ok(/.eco-center{[^}]*min-height:0/.test(css),"ecosystem center must not force unequal height");
+ok((css.match(/\.eco-node\.e[1-6]\{grid-area:/g)||[]).length===6,"ecosystem node area mapping must define all six partners");
 ok(/.nav-menu,.nav-menu-list{min-height:0}/.test(responsive),"menu flex children must allow internal scroll");
 ok(/orientation:landscape/.test(responsive),"landscape-specific responsive rule missing");
 for(const token of ["--type-hero","--type-section","--type-lead","--type-body","--type-card","--type-ui","--type-meta","--type-micro","--weight-display","--weight-heading","--weight-ui","--weight-body","--lh-display","--lh-heading","--lh-lead","--lh-body","--lh-card","--lh-meta","--lh-micro","--ls-display","--ls-heading"]) ok(css.includes(token),"typography token missing: "+token);
@@ -148,7 +161,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R08.4 CSS integrity + responsive contract");
+console.log("VALIDATION PASSED: R08.5 responsive layout contract");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
