@@ -1,5 +1,5 @@
-# 梦宠数智官网 R08.4
-当前版本：2026.10.02-r08.4-css-integrity-responsive-contract
+# 梦宠数智官网 R08.5
+当前版本：2026.10.02-r08.5-responsive-layout-contract
 
 本版本以最新企业宣传长图作为内容基准，完成导航系统与品牌 Logo 收口，并统一官网英文术语。
 
@@ -43,3 +43,7 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均由用户提供的原�
 ## CSS Integrity
 
 CSS 文件在 CI 中执行结构完整性检查，校验注释、字符串以及 {} / () / [] 平衡，并对核心章节和响应式断点执行 selector contract。响应式规则按基础、Tablet、Mobile、<=420px、Mobile Landscape 顺序维护，避免后置补丁覆盖主规则。
+
+## Responsive Layout Contract
+
+Eco 使用完整的命名网格区域契约：Tablet 为“中心平台 + 两列伙伴”，Mobile 为“中心平台 + 单列伙伴”，Mobile Landscape 为“中心平台 + 两列伙伴”。禁止通过 `grid-template-areas:none` 取消核心布局后依赖子项 `grid-area` 侥幸自动布局。
