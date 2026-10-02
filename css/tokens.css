@@ -2,7 +2,7 @@
 --brand:#F36B12;--brand-strong:#E85E0A;--brand-soft:#FFF0DF;--brand-pale:#FFF8F0;
 --ink:#171513;--ink-2:#332D28;--muted:#6B625A;--line:#E9DED2;--surface:#FFFFFF;
 --warm:#FFF8F0;--dark:#201A16;--header-h:74px;--wrap:1180px;--pad:30px;--mobile-pad:18px;
---touch:44px;--radius:22px;--shadow:0 18px 48px rgba(72,42,18,.08);--radius-sm:10px;--radius-md:16px;--radius-lg:22px;--shadow-soft:0 12px 30px rgba(72,42,18,.07);
+--touch:44px;--radius:22px;--shadow:0 18px 48px rgba(72,42,18,.08);
 --font-sans:Inter,"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 --font-display:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 }
