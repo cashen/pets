@@ -70,10 +70,19 @@ ok((read("css/tokens.css").match(/--safe-right:env\(safe-area-inset-right,0px\)/
 ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\)/g)||[]).length===1,"safe-area bottom token duplicated");
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
-ok(html.includes('company-facade.webp?v=20261002-r092" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
+ok(html.includes('company-facade.webp?v=20261002-r093" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
 ok(read("css/base.css").includes(uiSystemContract.menuLock),"menu scroll-lock contract missing");
 ok(uiSystemContract.shortLandscape.test(responsive),"short landscape contract missing");
+ok(html.includes("<div class=\"hero-proof\"><span>一宠一芯</span><i></i><span>一档一码</span><i></i><span>全生命周期</span></div>"),"hero proof structure contract missing");
+ok(read("css/sections.css").includes(".hero-proof{display:flex;flex-wrap:wrap;"),"hero proof wrap contract missing");
+ok(read("css/sections.css").includes("white-space:nowrap}.hero-proof i"),"hero proof no-split contract missing");
+ok(html.includes("一个平台贯穿宠物全生命周期</span><b>一宠一芯 · 一档一码</b>"),"lifecycle mechanism wording contract missing");
+ok(responsive.includes("@media(min-width:761px) and (max-height:680px){.hero{min-height:auto}"),"short-height desktop/tablet Hero contract missing");
+ok(read("css/error.css").includes("min-height:calc(var(--header-h) + var(--safe-top))"),"404 header safe-area contract missing");
+ok(read("css/error.css").includes("--safe-left) - var(--safe-right)"),"404 horizontal safe-area contract missing");
+ok(/meta name="ui-version" content="2026\.10\.02-r09\.3-human-multiterminal-composition-audit"/.test(notFound),"404 version contract missing");
+ok(notFound.includes("20261002-r093"),"404 cache-buster contract missing");
 for(const token of ["--safe-top:env(safe-area-inset-top,0px)","--safe-right:env(safe-area-inset-right,0px)","--safe-bottom:env(safe-area-inset-bottom,0px)","--safe-left:env(safe-area-inset-left,0px)"]) ok(read("css/tokens.css").includes(token),"safe-area token missing: "+token);
 ok(read("css/components.css").includes("padding-top:var(--safe-top)"),"header safe-area contract missing");
 const responsiveContracts=[{name:"desktop/tablet",pattern:/@media\(max-width:1100px\)/,selectors:[".hero-grid{",".feature-grid{",".eco-board{",".eco-center{",".nav-menu{"]},{name:"tablet",pattern:/@media\(min-width:761px\) and \(max-width:1100px\)/,selectors:[".hero-grid{",".section-head{",".eco-center{",".nav-menu{"]},{name:"mobile",pattern:/@media\(max-width:760px\)/,selectors:[".hero-grid{",".eco-board{",".eco-center{",".nav-menu{"]},{name:"mobile landscape",pattern:/@media\(orientation:landscape\) and \(max-width:760px\)/,selectors:[".hero-grid{",".hero-lead{",".hero-image-frame img{"]}];
@@ -88,7 +97,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.02-r09\.2-readability-shell-hardening"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.02-r09\.3-human-multiterminal-composition-audit"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -189,7 +198,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R09.2 readability shell hardening");
+console.log("VALIDATION PASSED: R09.3 human multi-terminal composition audit");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
