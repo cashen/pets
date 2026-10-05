@@ -73,7 +73,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.06-r10\.1-footer-wechat"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.06-r10.2-wechat-logo-center"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -150,9 +150,11 @@ for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET F
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
 ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat link missing");
 ok(html.includes('src="./assets/images/social/wechat-official.svg" alt="梦宠数智微信公众号二维码"'),"official WeChat QR asset missing");
+ok(html.includes('assets/images/social/wechat-official.svg'),"official WeChat QR path missing");
+ok(read("assets/images/social/wechat-official.svg").includes('href="./wechat-logo.jpg"'),"provided WeChat logo missing from QR center");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 
-const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg"];
+const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
