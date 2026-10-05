@@ -1,5 +1,5 @@
 # 梦宠数智官网 R10.0
-当前版本：2026.10.06-r10.0-human-landing-redesign
+当前版本：2026.10.06-r10.1-footer-wechat
 
 本版本以当前 main 的既有品牌资产与完整官网文案为唯一内容基准，在 R09.1 Human Responsive UI System 上完成 Landing Page 构图重构；不改 Logo、不改品牌色、不改既有营销文案。
 
@@ -56,3 +56,10 @@ Eco 使用完整的命名网格区域契约：Tablet 为“中心平台 + 两列
 - 使用新的组合样式层 `css/r10-landing.css`，不引入框架、依赖或新的运行时。
 - 所有显示文案直接沿用 `index.html` 现有内容；Logo 继续使用 `assets/brand/brand.svg`。
 - 保留导航 Controller、精确锚点、safe-area、Android/Alook Menu、Cloudflare Workers Static Assets 与 404 路由。
+
+## R10.1 Footer WeChat
+
+- Footer 新增微信公众号入口，使用本地 `assets/images/social/wechat-official.svg`，不依赖第三方二维码服务。
+- 桌面端二维码独立位于 Footer 右侧；移动端按可读、可点击、可扫描原则重新组合。
+- 二维码目标为用户提供的官方入口：`http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub`。
+- QR 中心复用现有 canonical `assets/brand/logo-mark.svg`，不新增品牌图形。
