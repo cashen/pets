@@ -150,7 +150,7 @@ for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET F
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
 ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat link missing");
 ok(html.includes('src="./assets/images/social/wechat-official.svg" alt="梦宠数智微信公众号二维码"'),"official WeChat QR asset missing");
-ok(html.includes('class="footer-wechat"’),"footer WeChat block missing");
+ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 
 const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
