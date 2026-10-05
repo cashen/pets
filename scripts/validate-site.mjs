@@ -34,7 +34,7 @@ const scanCssStructure=(source)=>{
 };
 for(const file of cssFiles){const result=scanCssStructure(read(file));ok(result.ok,"CSS structure error in "+file+": "+(result.error||"unknown"));}
 
-const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"],"css/r10-landing.css":[".hero{",".hero-media{",".hero-orbit{"," #about>.wrap{","#ability .ability-stack{"]};
+const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"],"css/r10-landing.css":[".hero{",".hero-media{",".hero-orbit{","#about>.wrap{","#ability .ability-stack{"]};
 for(const [file,selectors] of Object.entries(cssContracts)){const source=read(file);for(const selector of selectors)ok(source.includes(selector),"CSS selector contract missing in "+file+": "+selector);}
 const ecoResponsiveContract=[
   {name:"tablet",pattern:/@media\(max-width:1100px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
@@ -55,7 +55,7 @@ ok((read("css/tokens.css").match(/--safe-right:env\(safe-area-inset-right,0px\)/
 ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\)/g)||[]).length===1,"safe-area bottom token duplicated");
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
-ok(html.includes('company-facade.webp?v=20261002-r091" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
+ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
 ok(read("css/base.css").includes(uiSystemContract.menuLock),"menu scroll-lock contract missing");
 ok(uiSystemContract.shortLandscape.test(responsive),"short landscape contract missing");
