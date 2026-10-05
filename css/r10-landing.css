@@ -47,7 +47,7 @@
 .hero-copy{max-width:700px;padding-top:0}
 .hero-brandline{font-size:var(--type-ui);color:var(--ink-2)}
 .hero-mini-mark{width:9px;height:9px;background:var(--brand)}
-.hero-kicker{margin-top:18px;color:#8F7B6A;font-size:var(--type-micro);letter-spacing:.20em}
+.hero-kicker{margin-top:18px;color:#9A8778;font-size:var(--type-micro);letter-spacing:.20em}
 .hero h1{
   margin-top:11px;
   font-size:clamp(56px,5.4vw,78px);
