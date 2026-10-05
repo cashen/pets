@@ -6,7 +6,7 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const notFound=read("404.html");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
-const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/error.css"];
+const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/r10-landing.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
@@ -34,7 +34,7 @@ const scanCssStructure=(source)=>{
 };
 for(const file of cssFiles){const result=scanCssStructure(read(file));ok(result.ok,"CSS structure error in "+file+": "+(result.error||"unknown"));}
 
-const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"]};
+const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"],"css/r10-landing.css":[".hero{",".hero-media{",".hero-orbit{","#about>.wrap{","#ability .ability-stack{"]};
 for(const [file,selectors] of Object.entries(cssContracts)){const source=read(file);for(const selector of selectors)ok(source.includes(selector),"CSS selector contract missing in "+file+": "+selector);}
 const ecoResponsiveContract=[
   {name:"tablet",pattern:/@media\(max-width:1100px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
@@ -55,7 +55,7 @@ ok((read("css/tokens.css").match(/--safe-right:env\(safe-area-inset-right,0px\)/
 ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\)/g)||[]).length===1,"safe-area bottom token duplicated");
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
-ok(html.includes('company-facade.webp?v=20261002-r091" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
+ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
 ok(read("css/base.css").includes(uiSystemContract.menuLock),"menu scroll-lock contract missing");
 ok(uiSystemContract.shortLandscape.test(responsive),"short landscape contract missing");
@@ -73,7 +73,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.02-r09\.1-human-responsive-ui-system"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.06-r10.0-human-landing-redesign"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -146,6 +146,7 @@ ok((html.match(/<div class="service-grid">/g)||[]).length===1,"five-service grid
 ok((html.match(/class="eco-node\b/g)||[]).length===6,"expected 6 ecosystem nodes");
 ok((html.match(/class="coop-grid"/g)||[]).length===1,"cooperation modes missing");
 for(const label of ["繁育企业","销售服务企业","食品用品企业","保险、运输企业","医疗、美容、养护、服装等企业"]) ok(html.includes(label),"missing five-service copy: "+label);
+for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM","宠物全生命周期","大数据认证平台","数智赋能宠物全生态，数据陪伴爱宠一辈子","一宠一芯一档一码"]) ok(html.includes(exact),"exact brand copy missing: "+exact);
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
 
 const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp"];
@@ -174,7 +175,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R09.1 human responsive UI system");
+console.log("VALIDATION PASSED: R10.0 human landing redesign");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
