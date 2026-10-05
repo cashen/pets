@@ -1,7 +1,7 @@
-# 梦宠数智官网 R08.5
-当前版本：2026.10.02-r08.5-responsive-layout-contract
+# 梦宠数智官网 R10.0
+当前版本：2026.10.06-r10.0-human-landing-redesign
 
-本版本以最新企业宣传长图作为内容基准，完成导航系统与品牌 Logo 收口，并统一官网英文术语。
+本版本以当前 main 的既有品牌资产与完整官网文案为唯一内容基准，在 R09.1 Human Responsive UI System 上完成 Landing Page 构图重构；不改 Logo、不改品牌色、不改既有营销文案。
 
 ## 页面结构
 
@@ -47,3 +47,12 @@ CSS 文件在 CI 中执行结构完整性检查，校验注释、字符串以及
 ## Responsive Layout Contract
 
 Eco 使用完整的命名网格区域契约：Tablet 为“中心平台 + 两列伙伴”，Mobile 为“中心平台 + 单列伙伴”，Mobile Landscape 为“中心平台 + 两列伙伴”。禁止通过 `grid-template-areas:none` 取消核心布局后依赖子项 `grid-area` 侥幸自动布局。
+
+## R10.0 Human Landing Redesign
+
+- Hero、企业简介、平台定位、客户价值、平台能力、生态合作与合作 CTA 重新组织视觉节奏。
+- Hero 数据标签从图片周围的浮动覆盖改为图片下方的受控元信息栅格，避免多终端遮挡。
+- 企业简介区将现有生命周期模块提升为前置证明层，同时保留现有公司建筑图片。
+- 使用新的组合样式层 `css/r10-landing.css`，不引入框架、依赖或新的运行时。
+- 所有显示文案直接沿用 `index.html` 现有内容；Logo 继续使用 `assets/brand/brand.svg`。
+- 保留导航 Controller、精确锚点、safe-area、Android/Alook Menu、Cloudflare Workers Static Assets 与 404 路由。
