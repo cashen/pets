@@ -166,7 +166,7 @@ ok(html.includes("媒体报道"),"homepage media coverage label missing");
 ok(!html.includes("有关梦宠数智的公开报道。"),"redundant media coverage intro remains");
 ok(!html.includes('class="brand-news-intro"'),"empty media coverage intro wrapper remains");
 
-ok(readme.includes("2026.10.06-r13-public-copy-contract"),"README version is out of sync");
+ok(readme.includes("2026.10.06-r14-media-heading-cleanup"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
