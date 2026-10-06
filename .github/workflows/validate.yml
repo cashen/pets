@@ -22,3 +22,9 @@ jobs:
       - run: node scripts/validate-site.mjs
       - name: Validate Wrangler deployment
         run: npx --yes wrangler@4.143.0 deploy --dry-run
+      - name: Install Chromium for browser smoke
+        run: npx --yes playwright@1.55.0 install --with-deps chromium
+      - name: Start local static server
+        run: python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/pets-http.log 2>&1 & echo $! > /tmp/pets-http.pid
+      - name: Run browser smoke matrix
+        run: npx --yes playwright@1.55.0 test scripts/browser-smoke.spec.mjs --workers=1 --reporter=line
