@@ -75,7 +75,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.06-r11-brand-news"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.06-r12-human-copy-audit"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -154,12 +154,18 @@ ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"offic
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('id="brand-news"'),"brand news homepage section missing");
 ok((html.match(/class="brand-news-card"/g)||[]).length===1,"homepage must show exactly one current brand news card");
-ok(html.includes('href="./news/2026-09-15-mengchong/"'),"homepage brand news detail link missing");
+ok(html.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"homepage media source link missing");
 ok(newsIndex.includes('class="news-list"'),"brand news index missing list");
-ok(newsIndex.includes('href="/news/2026-09-15-mengchong/"'),"brand news index detail link missing");
+ok(newsIndex.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"media index source link missing");
 ok(newsArticle.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"brand news original source link missing");
-ok(newsArticle.includes('class="news-article"'),"brand news article shell missing");
+ok(newsArticle.includes('class="news-article"'),"media article shell missing");
+const publicPages=[html,newsIndex,newsArticle,notFound].join("\n");
+for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值："]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
+ok(html.includes("媒体报道"),"homepage media coverage label missing");
+ok(newsIndex.includes("媒体报道"),"media coverage index label missing");
+ok(newsArticle.includes("媒体报道"),"media coverage detail label missing");
 ok(newsArticle.includes('meta name="viewport"'),"brand news detail viewport missing");
+ok(!newsArticle.includes("\\n<p>"),"media article must not contain literal newline escape text");
 ok(newsIndex.includes('meta name="viewport"'),"brand news index viewport missing");
 
 ok(html.includes('class="footer-wechat-qr"'),"footer WeChat QR wrapper missing");
@@ -194,7 +200,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R11 brand news + stable WeChat footer rendering");
+console.log("VALIDATION PASSED: R12 human copy audit + stable WeChat footer rendering");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
