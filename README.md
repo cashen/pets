@@ -1,6 +1,6 @@
 # 梦宠数智官网 R13
 
-当前版本：2026.10.06-r13-public-copy-contract
+当前版本：2026.10.06-r14-media-heading-cleanup
 
 本版本基于 R12 Human Copy Audit，继续收口官网的公开信息表达与项目文档一致性。保留现有 Logo、品牌色、核心业务事实、导航架构、响应式体系及 Cloudflare Workers Static Assets 架构。
 
@@ -82,3 +82,8 @@ Eco 使用明确的命名网格区域契约：
 - 五大服务
 - 医疗健康
 - 数据接口
+
+
+## R14 Media Coverage
+
+媒体报道区仅保留栏目标题与实际报道内容，不重复解释栏目含义；外部报道继续直接链接原文。
