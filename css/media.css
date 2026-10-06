@@ -1,38 +1,33 @@
-/* R11 Brand News
+/* Media coverage
    Lightweight editorial layer for low-frequency company/brand updates.
    Reuses the existing token palette and keeps news separate from primary navigation.
 */
 
-.brand-news{
+.media-coverage{
   padding:88px 0 92px;
   background:#fff;
 }
 
-.brand-news-head{
+.media-head{
   display:block;
   margin-bottom:30px;
 }
 
-.brand-news-kicker{
+.media-kicker{
   display:grid;
   gap:8px;
 }
 
-.brand-news-kicker .eyebrow{
+.media-kicker .eyebrow{
   color:var(--brand);
 }
 
-.brand-news-kicker h2{
+.media-kicker h2{
   font-size:clamp(40px,4vw,56px);
 }
 
-.brand-news-intro{
-  display:grid;
-  gap:10px;
-  max-width:700px;
-}
 
-.brand-news-card{
+.media-card{
   display:grid;
   grid-template-columns:minmax(150px,.28fr) minmax(0,1.72fr);
   gap:34px;
@@ -41,7 +36,7 @@
   border-bottom:1px solid var(--line);
 }
 
-.brand-news-meta{
+.media-meta{
   display:grid;
   align-content:start;
   gap:8px;
@@ -50,7 +45,7 @@
   line-height:var(--lh-meta);
 }
 
-.brand-news-date{
+.media-date{
   color:var(--ink);
   font-size:20px;
   line-height:1.25;
@@ -58,31 +53,31 @@
   letter-spacing:-.01em;
 }
 
-.brand-news-meta span + span{
+.media-meta span + span{
   padding-top:8px;
   border-top:1px solid var(--line);
 }
 
-.brand-news-body{
+.media-body{
   display:grid;
   gap:12px;
   min-width:0;
 }
 
-.brand-news-title{
+.media-title{
   font-size:clamp(25px,2.4vw,34px);
   line-height:1.28;
   letter-spacing:-.012em;
 }
 
-.brand-news-summary{
+.media-summary{
   max-width:72ch;
   color:var(--muted);
   font-size:var(--type-body);
   line-height:1.85;
 }
 
-.brand-news-action{
+.media-action{
   width:max-content;
   min-height:44px;
   margin-top:4px;
@@ -97,21 +92,21 @@
   font-weight:var(--weight-ui);
 }
 
-.brand-news-action:hover,
-.brand-news-action:focus-visible{
+.media-action:hover,
+.media-action:focus-visible{
   border-color:#F6BE8E;
   background:var(--brand-pale);
   color:var(--brand-strong);
 }
 
-.brand-news-action span{
+.media-action span{
   color:var(--brand);
   transform:translateX(0);
   transition:transform .15s ease;
 }
 
-.brand-news-action:hover span,
-.brand-news-action:focus-visible span{
+.media-action:hover span,
+.media-action:focus-visible span{
   transform:translateX(3px);
 }
 
@@ -313,38 +308,38 @@
 }
 
 @media(max-width:760px){
-  .brand-news{
+  .media-coverage{
     padding:66px 0 70px;
   }
 
-  .brand-news-head{
+  .media-head{
     grid-template-columns:1fr;
     gap:15px;
     margin-bottom:24px;
   }
 
-  .brand-news-card{
+  .media-card{
     grid-template-columns:1fr;
     gap:18px;
     padding:22px 0 24px;
   }
 
-  .brand-news-meta{
+  .media-meta{
     grid-template-columns:auto 1fr;
     align-items:end;
     gap:8px 14px;
   }
 
-  .brand-news-meta span + span{
+  .media-meta span + span{
     padding-top:0;
     border-top:0;
   }
 
-  .brand-news-date{
+  .media-date{
     font-size:18px;
   }
 
-  .brand-news-summary{
+  .media-summary{
     font-size:var(--type-body);
     line-height:1.9;
   }
@@ -432,7 +427,7 @@
     padding-inline:10px;
   }
 
-  .brand-news-title{
+  .media-title{
     font-size:24px;
   }
 
@@ -446,7 +441,7 @@
 }
 
 @media(prefers-reduced-motion:reduce){
-  .brand-news-action span{
+  .media-action span{
     transition:none;
   }
 }
