@@ -1,5 +1,5 @@
 # 梦宠数智官网 R10.0
-当前版本：2026.10.06-r10.2-wechat-logo-center
+当前版本：2026.10.06-r10.3-wechat-render-stable
 
 本版本以当前 main 的既有品牌资产与完整官网文案为唯一内容基准，在 R09.1 Human Responsive UI System 上完成 Landing Page 构图重构；不改 Logo、不改品牌色、不改既有营销文案。
 
@@ -68,3 +68,10 @@ Eco 使用完整的命名网格区域契约：Tablet 为“中心平台 + 两列
 
 - 微信公众号二维码中心改为使用用户提供的“梦宠数智”圆形 Logo。
 - Logo 作为独立本地资源 `assets/images/social/wechat-logo.jpg`，嵌入二维码中心，保持多终端扫描区域稳定。
+
+## R10.3 Stable WeChat Rendering
+
+- WeChat QR is rendered as a pure local SVG plus an independent local logo layer; SVG no longer references another image resource.
+- QR and logo asset URLs are versioned to prevent stale browser/edge cache on the Footer entry.
+- QR is not lazy-loaded so the Footer callout remains deterministic on Android/Alook and other embedded browsers.
+- main pushes now run a real Cloudflare deploy after validation using `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets.
