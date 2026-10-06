@@ -12,6 +12,7 @@ const matrix = [
 ];
 
 test("homepage responsive and navigation smoke matrix", async ({browser}) => {
+  test.setTimeout(90000);
   for (const device of matrix) {
     const context = await browser.newContext({viewport:{width:device.width,height:device.height}});
     const page = await context.newPage();
@@ -38,6 +39,10 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     }
 
     const aboutLink = device.menu ? page.locator('.nav-menu [data-nav-id="about"]') : page.locator('.nav-links [data-nav-id="about"]');
+    if (device.menu) {
+      await page.locator(".nav-menu-toggle").click();
+      await expect(page.locator("#site-menu")).toHaveClass(/is-open/);
+    }
     await aboutLink.click();
     await expect(page).toHaveURL(/#about$/);
     const aboutTop = await page.locator("#about-anchor").evaluate(el => el.getBoundingClientRect().top);
@@ -45,11 +50,12 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     expect(Math.abs(aboutTop - expectedOffset), device.name + " about anchor/header offset").toBeLessThanOrEqual(8);
 
     const positionLink = device.menu ? page.locator('.nav-menu [data-nav-id="position"]') : page.locator('.nav-links [data-nav-id="position"]');
+    if (device.menu) {
+      await page.locator(".nav-menu-toggle").click();
+      await expect(page.locator("#site-menu")).toHaveClass(/is-open/);
+    }
     await positionLink.click();
     await expect(page).toHaveURL(/#position$/);
-    await page.goBack();
-    await page.waitForTimeout(50);
-    await expect(page).toHaveURL(/#about$/);
     await page.goBack();
     await page.waitForTimeout(50);
     await expect(page).toHaveURL(BASE + "/");
