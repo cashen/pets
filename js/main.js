@@ -187,22 +187,32 @@
     }
   });
 
-  const sections = model
-    .map(item => sectionTargets.get(item.id)?.section)
-    .filter(Boolean);
+  const activeIdFromScroll = () => {
+    const threshold = window.scrollY + headerOffset() + 1;
+    let activeId = "";
+    for (const item of model) {
+      const entry = sectionTargets.get(item.id);
+      if (!entry) continue;
+      const top = entry.target.getBoundingClientRect().top + window.scrollY;
+      if (top <= threshold) activeId = item.id;
+      else break;
+    }
+    return activeId;
+  };
 
-  if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(entries => {
-      const visible = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) syncActive(visible.target.id);
-    }, {
-      rootMargin:"-14% 0px -66% 0px",
-      threshold:[0.05,0.2,0.5]
-    });
-    sections.forEach(section => observer.observe(section));
-  }
+  let activeSyncFrame = 0;
+  const syncActiveFromScroll = () => {
+    activeSyncFrame = 0;
+    syncActive(activeIdFromScroll());
+  };
+  const scheduleActiveSync = () => {
+    if (activeSyncFrame) return;
+    activeSyncFrame = requestAnimationFrame(syncActiveFromScroll);
+  };
+
+  window.addEventListener("scroll", scheduleActiveSync, {passive:true});
+  window.addEventListener("resize", scheduleActiveSync);
+  window.addEventListener("orientationchange", scheduleActiveSync);
 
   const initialId = currentIdFromHash();
   if (initialId) {
@@ -211,6 +221,6 @@
       syncActive(initialId);
     });
   } else {
-    syncActive("");
+    requestAnimationFrame(syncActiveFromScroll);
   }
 })();
