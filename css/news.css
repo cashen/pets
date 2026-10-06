@@ -9,10 +9,7 @@
 }
 
 .brand-news-head{
-  display:grid;
-  grid-template-columns:minmax(220px,.7fr) minmax(0,1.3fr);
-  gap:64px;
-  align-items:start;
+  display:block;
   margin-bottom:30px;
 }
 
