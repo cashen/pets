@@ -4,9 +4,11 @@ import path from "node:path";
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
+const newsIndex=read("news/index.html");
+const newsArticle=read("news/2026-09-15-mengchong/index.html");
 const notFound=read("404.html");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
-const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/r10-landing.css","css/wechat-footer.css","css/error.css"];
+const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/r10-landing.css","css/wechat-footer.css","css/news.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
@@ -73,8 +75,8 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.06-r10.4-wechat-footer-cleanup"/.test(html),"wrong ui version");
-ok((html.match(/<section\b/g)||[]).length===7,"expected 7 sections: hero + 01-05 + contact");
+ok(/meta name="ui-version" content="2026\.10\.06-r11-brand-news"/.test(html),"wrong ui version");
+ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
   ok(html.includes('id="'+id+'-anchor"'),"missing precise anchor #"+id+"-anchor");
@@ -150,13 +152,23 @@ for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET F
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
 ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
+ok(html.includes('id="brand-news"'),"brand news homepage section missing");
+ok((html.match(/class="brand-news-card"/g)||[]).length===1,"homepage must show exactly one current brand news card");
+ok(html.includes('href="./news/2026-09-15-mengchong/"'),"homepage brand news detail link missing");
+ok(newsIndex.includes('class="news-list"'),"brand news index missing list");
+ok(newsIndex.includes('href="/news/2026-09-15-mengchong/"'),"brand news index detail link missing");
+ok(newsArticle.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"brand news original source link missing");
+ok(newsArticle.includes('class="news-article"'),"brand news article shell missing");
+ok(newsArticle.includes('meta name="viewport"'),"brand news detail viewport missing");
+ok(newsIndex.includes('meta name="viewport"'),"brand news index viewport missing");
+
 ok(html.includes('class="footer-wechat-qr"'),"footer WeChat QR wrapper missing");
 ok(html.includes('class="footer-wechat-qr-image" src="./assets/images/social/wechat-official.svg?v=20261006-r104"'),"official WeChat QR asset missing or cache version mismatch");
 ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wechat-logo.jpg?v=20261006-r104"'),"provided WeChat logo layer missing");
 ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility text");
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
-const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg"];
+const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","news/2026-09-15-mengchong/index.html"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
@@ -182,7 +194,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R10.3 stable WeChat QR rendering");
+console.log("VALIDATION PASSED: R11 brand news + stable WeChat footer rendering");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
