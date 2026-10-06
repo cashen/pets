@@ -8,7 +8,8 @@ const matrix = [
   {name:"tablet landscape", width:1024, height:768, menu:true, tabletLandscape:true},
   {name:"mobile", width:390, height:844, menu:true},
   {name:"mobile landscape", width:844, height:390, menu:true, mobileLandscape:true},
-  {name:"small mobile", width:360, height:800, menu:true}
+  {name:"small mobile", width:360, height:800, menu:true},
+  {name:"large mobile", width:412, height:915, menu:true}
 ];
 
 test("homepage responsive and navigation smoke matrix", async ({browser}) => {
@@ -23,6 +24,28 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     await page.goto(BASE + "/", {waitUntil:"networkidle"});
     await expect(page.locator("main#top")).toBeVisible();
     await expect(page.locator("main#top > section")).toHaveCount(8);
+    const heroMetrics = await page.locator(".hero-media").evaluate(media => {
+      const frame = media.querySelector(".hero-image-frame");
+      const img = media.querySelector(".hero-image-frame img");
+      const mediaRect = media.getBoundingClientRect();
+      const frameRect = frame.getBoundingClientRect();
+      const imgRect = img.getBoundingClientRect();
+      return {
+        mediaWidth: mediaRect.width,
+        frameWidth: frameRect.width,
+        imgWidth: imgRect.width,
+        imgHeight: imgRect.height,
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight
+      };
+    });
+    expect(heroMetrics.naturalWidth, device.name + " Hero natural width").toBe(1200);
+    expect(heroMetrics.naturalHeight, device.name + " Hero natural height").toBe(547);
+    expect(heroMetrics.frameWidth / heroMetrics.mediaWidth, device.name + " Hero frame occupancy").toBeGreaterThanOrEqual(0.98);
+    expect(heroMetrics.imgWidth / heroMetrics.frameWidth, device.name + " Hero image occupancy").toBeGreaterThanOrEqual(0.95);
+    const naturalRatio = heroMetrics.naturalWidth / heroMetrics.naturalHeight;
+    const renderedRatio = heroMetrics.imgWidth / heroMetrics.imgHeight;
+    expect(Math.abs(renderedRatio - naturalRatio), device.name + " Hero image crop ratio").toBeLessThanOrEqual(0.03);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, device.name + " horizontal overflow").toBeLessThanOrEqual(1);
 

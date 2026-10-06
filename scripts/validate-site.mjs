@@ -58,6 +58,10 @@ ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
+ok(html.includes('hero.webp?v=20261006-r151" alt="宠物全生命周期数字化服务视觉" width="1200" height="547"'),"hero image intrinsic dimensions contract missing");
+ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}"),"hero image source-ratio contract missing");
+ok(!/\.hero-image-frame img\{[^}]*aspect-ratio:(?:4\/3|16\/10)/.test(css),"legacy hero crop ratio remains in base CSS");
+ok(!responsive.includes(".hero-image-frame img{aspect-ratio:4/3}")&&!responsive.includes(".hero-image-frame img{aspect-ratio:16/10}"),"responsive hero crop override remains");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
 ok(read("css/base.css").includes(uiSystemContract.menuLock),"menu scroll-lock contract missing");
 ok(/error-nav\{min-height:calc\(var\(--header-h\) \+ var\(--safe-top\)\)/.test(read("css/error.css")),"404 header safe-area contract missing");
@@ -78,7 +82,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.06-r15-architecture-stabilization"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.06-r15\.1-hero-image-composition"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);

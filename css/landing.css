@@ -65,7 +65,7 @@
   border-radius:30px;
   box-shadow:0 22px 54px rgba(72,42,18,.12);
 }
-.hero-image-frame img{aspect-ratio:4/3;object-position:center}
+.hero-image-frame img{object-position:center}
 .hero-orbit{
   position:static;
   min-height:54px;
