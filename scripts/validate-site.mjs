@@ -5,11 +5,10 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const newsIndex=read("news/index.html");
-const newsArticle=read("news/2026-09-15-mengchong/index.html");
 const notFound=read("404.html");
 const readme=read("README.md");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
-const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/r10-landing.css","css/wechat-footer.css","css/news.css","css/error.css"];
+const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/landing.css","css/wechat-footer.css","css/media.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
@@ -37,7 +36,7 @@ const scanCssStructure=(source)=>{
 };
 for(const file of cssFiles){const result=scanCssStructure(read(file));ok(result.ok,"CSS structure error in "+file+": "+(result.error||"unknown"));}
 
-const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"],"css/r10-landing.css":[".hero{",".hero-media{",".hero-orbit{","#about>.wrap{","#ability .ability-stack{"]};
+const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"],"css/landing.css":[".hero{",".hero-media{",".hero-orbit{","#about>.wrap{","#ability .ability-stack{"]};
 for(const [file,selectors] of Object.entries(cssContracts)){const source=read(file);for(const selector of selectors)ok(source.includes(selector),"CSS selector contract missing in "+file+": "+selector);}
 const ecoResponsiveContract=[
   {name:"tablet",pattern:/@media\(max-width:1100px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
@@ -61,6 +60,9 @@ ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
 ok(read("css/base.css").includes(uiSystemContract.menuLock),"menu scroll-lock contract missing");
+ok(/error-nav\{min-height:calc\(var\(--header-h\) \+ var\(--safe-top\)\)/.test(read("css/error.css")),"404 header safe-area contract missing");
+ok(/safe-bottom/.test(read("css/error.css")),"404 bottom safe-area contract missing");
+ok(notFound.includes("20261006-r150"),"404 asset version is stale");
 ok(uiSystemContract.shortLandscape.test(responsive),"short landscape contract missing");
 for(const token of ["--safe-top:env(safe-area-inset-top,0px)","--safe-right:env(safe-area-inset-right,0px)","--safe-bottom:env(safe-area-inset-bottom,0px)","--safe-left:env(safe-area-inset-left,0px)"]) ok(read("css/tokens.css").includes(token),"safe-area token missing: "+token);
 ok(read("css/components.css").includes("padding-top:var(--safe-top)"),"header safe-area contract missing");
@@ -76,7 +78,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.06-r14-media-heading-cleanup"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.06-r15-architecture-stabilization"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -94,7 +96,8 @@ for(const selector of [".menu-toggle",".menu-close",".menu-scrim"]) ok(!js.inclu
 
 ok(/role="dialog" aria-modal="true" aria-labelledby="site-menu-title"/.test(html),"mobile menu dialog semantics missing");
 ok(/aria-controls="site-menu"/.test(html),"mobile menu aria-controls missing");
-ok(/IntersectionObserver/.test(js),"active navigation observer missing");
+ok(/activeIdFromScroll/.test(js)&&/scheduleActiveSync/.test(js),"scroll-based active navigation controller missing");
+ok(!/IntersectionObserver/.test(js),"legacy IntersectionObserver active controller remains");
 ok(/history\.pushState\(\{petsMenu:true/.test(js),"menu history sentinel missing");
 ok(/history\.replaceState\(\{petsSection:id\}/.test(js),"menu target history replacement missing");
 ok(/const fromMenu = link\.closest\("\.nav-menu"\)/.test(js),"menu/page navigation split missing");
@@ -151,7 +154,7 @@ ok((html.match(/class="coop-grid"/g)||[]).length===1,"cooperation modes missing"
 for(const label of ["繁育企业","销售服务企业","食品用品企业","保险、运输企业","医疗、美容、养护、服装等企业"]) ok(html.includes(label),"missing five-service copy: "+label);
 for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM","宠物全生命周期","大数据认证平台","数智赋能宠物全生态，数据陪伴爱宠一辈子","一宠一芯一档一码"]) ok(html.includes(exact),"exact brand copy missing: "+exact);
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
-ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat link missing");
+ok(html.includes('href="https://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat HTTPS link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('id="brand-news"'),"brand news homepage section missing");
 ok((html.match(/class="brand-news-card"/g)||[]).length===1,"homepage must show exactly one current brand news card");
@@ -160,13 +163,15 @@ ok(newsIndex.includes('class="news-list"'),"brand news index missing list");
 ok(newsIndex.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"media index source link missing");
 ok(newsArticle.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"brand news original source link missing");
 ok(newsArticle.includes('class="news-article"'),"media article shell missing");
-const publicPages=[html,newsIndex,newsArticle,notFound].join("\n");
-for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值：","共生共荣的产业生态"]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
+const publicPages=[html,newsIndex,notFound].join("\n");
+for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值：","共生共赢的产业生态","本文作为官网媒体报道记录"]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
 ok(html.includes("媒体报道"),"homepage media coverage label missing");
 ok(!html.includes("有关梦宠数智的公开报道。"),"redundant media coverage intro remains");
-ok(!html.includes('class="brand-news-intro"'),"empty media coverage intro wrapper remains");
+ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage");
+ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
+ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.06-r14-media-heading-cleanup"),"README version is out of sync");
+ok(readme.includes("2026.10.06-r15-architecture-stabilization"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
@@ -183,7 +188,7 @@ ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wech
 ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility text");
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
-const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","news/2026-09-15-mengchong/index.html"];
+const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","news/2026-09-15-mengchong/index.html"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
@@ -202,14 +207,17 @@ ok(/.eco-center{[^}]*min-height:0/.test(css),"ecosystem center must not force un
 ok((css.match(/\.eco-node\.e[1-6]\{grid-area:/g)||[]).length===6,"ecosystem node area mapping must define all six partners");
 ok(/.nav-menu,.nav-menu-list{min-height:0}/.test(responsive),"menu flex children must allow internal scroll");
 ok(/orientation:landscape/.test(responsive),"landscape-specific responsive rule missing");
+ok(/orientation: landscape\) and \(min-width:761px\) and \(max-width:1100px\)/.test(read("css/landing.css")),"tablet landscape Hero contract missing");
+ok(/--type-lead:14px;--type-body:14px;--type-card:14px;--type-ui:14px;--type-meta:12px/.test(responsive),"landscape mobile typography contract missing");
 for(const token of ["--type-hero","--type-section","--type-lead","--type-body","--type-card","--type-ui","--type-meta","--type-micro","--weight-display","--weight-heading","--weight-ui","--weight-body","--lh-display","--lh-heading","--lh-lead","--lh-body","--lh-card","--lh-meta","--lh-micro","--ls-display","--ls-heading"]) ok(css.includes(token),"typography token missing: "+token);
 ok(!/font-weight\s*:\s*(850|900)\b/.test(css),"legacy heavy weight 850/900 remains in CSS");
 ok(!/font-size\s*:\s*(8|9|10|11)px/.test(css),"hard-coded 8-11px typography remains; use typography tokens");
 ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter-spacing remains");
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
+ok(!/--type-(lead|body|card|ui|meta):1[012]px/.test(responsive),"landscape mobile typography is undersized");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R14 media heading cleanup + stable WeChat footer rendering");
+console.log("VALIDATION PASSED: R15 architecture stabilization static contracts");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
