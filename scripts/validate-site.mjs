@@ -149,10 +149,11 @@ for(const label of ["繁育企业","销售服务企业","食品用品企业","�
 for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM","宠物全生命周期","大数据认证平台","数智赋能宠物全生态，数据陪伴爱宠一辈子","一宠一芯一档一码"]) ok(html.includes(exact),"exact brand copy missing: "+exact);
 ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
 ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat link missing");
-ok(html.includes('src="./assets/images/social/wechat-official.svg" alt="梦宠数智微信公众号二维码"'),"official WeChat QR asset missing");
-ok(html.includes('assets/images/social/wechat-official.svg'),"official WeChat QR path missing");
-ok(read("assets/images/social/wechat-official.svg").includes('href="./wechat-logo.jpg"'),"provided WeChat logo missing from QR center");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
+ok(html.includes('class="footer-wechat-qr"'),"footer WeChat QR wrapper missing");
+ok(html.includes('class="footer-wechat-qr-image" src="./assets/images/social/wechat-official.svg?v=20261006-r103"'),"official WeChat QR asset missing or cache version mismatch");
+ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wechat-logo.jpg?v=20261006-r103"'),"provided WeChat logo layer missing");
+ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
 const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
@@ -180,7 +181,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R10.1 footer WeChat entry");
+console.log("VALIDATION PASSED: R10.3 stable WeChat QR rendering");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
