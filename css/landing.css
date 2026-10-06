@@ -61,6 +61,8 @@
 .hero-proof{margin-top:23px}
 .hero-media{display:grid;min-width:0}
 .hero-image-frame{
+  width:100%;
+  grid-column:1 / -1;
   border:0;
   border-radius:30px;
   box-shadow:0 22px 54px rgba(72,42,18,.12);
@@ -88,7 +90,7 @@
   grid-template-columns:repeat(4,minmax(0,1fr));
   column-gap:8px;
 }
-.hero-media .hero-image-frame{grid-column:1/-1}
+.hero-media .hero-image-frame{grid-column:1 / -1}
 .hero-media .hero-orbit{
   justify-content:center;
 }
