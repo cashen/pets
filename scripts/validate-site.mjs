@@ -76,7 +76,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.06-r13-public-copy-contract"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.06-r14-media-heading-cleanup"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -163,7 +163,10 @@ ok(newsArticle.includes('class="news-article"'),"media article shell missing");
 const publicPages=[html,newsIndex,newsArticle,notFound].join("\n");
 for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值：","共生共荣的产业生态"]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
 ok(html.includes("媒体报道"),"homepage media coverage label missing");
-ok(readme.includes("2026.10.06-r13-public-copy-contract"),"README version is out of sync");
+ok(!html.includes("有关梦宠数智的公开报道。"),"redundant media coverage intro remains");
+ok(!html.includes('class="brand-news-intro"'),"empty media coverage intro wrapper remains");
+
+ok(readme.includes("2026.10.06-r14-media-heading-cleanup"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
@@ -206,7 +209,7 @@ ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R13 public copy contract + stable WeChat footer rendering");
+console.log("VALIDATION PASSED: R14 media heading cleanup + stable WeChat footer rendering");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
