@@ -165,6 +165,7 @@ ok(html.includes("媒体报道"),"homepage media coverage label missing");
 ok(newsIndex.includes("媒体报道"),"media coverage index label missing");
 ok(newsArticle.includes("媒体报道"),"media coverage detail label missing");
 ok(newsArticle.includes('meta name="viewport"'),"brand news detail viewport missing");
+ok(!newsArticle.includes("\\n<p>"),"media article must not contain literal newline escape text");
 ok(newsIndex.includes('meta name="viewport"'),"brand news index viewport missing");
 
 ok(html.includes('class="footer-wechat-qr"'),"footer WeChat QR wrapper missing");
