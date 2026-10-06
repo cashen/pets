@@ -1,5 +1,5 @@
 # 梦宠数智官网 R10.0
-当前版本：2026.10.06-r10.3-wechat-render-stable
+当前版本：2026.10.06-r10.4-wechat-footer-cleanup
 
 本版本以当前 main 的既有品牌资产与完整官网文案为唯一内容基准，在 R09.1 Human Responsive UI System 上完成 Landing Page 构图重构；不改 Logo、不改品牌色、不改既有营销文案。
 
@@ -75,3 +75,10 @@ Eco 使用完整的命名网格区域契约：Tablet 为“中心平台 + 两列
 - QR and logo asset URLs are versioned to prevent stale browser/edge cache on the Footer entry.
 - QR is not lazy-loaded so the Footer callout remains deterministic on Android/Alook and other embedded browsers.
 - main pushes now run a real Cloudflare deploy after validation using `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets.
+
+
+## R10.4 WeChat Footer Cleanup
+
+- 删除二维码入口中会被浏览器正常渲染的辅助文本，避免与图片叠加。
+- 修正 Footer QR link 的 box-model，消除父级 padding 与内部二维码尺寸不一致导致的溢出。
+- 二维码与 Logo 资源版本升级至 r104，降低旧缓存干扰。
