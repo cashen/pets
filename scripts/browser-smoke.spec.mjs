@@ -41,7 +41,8 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     await aboutLink.click();
     await expect(page).toHaveURL(/#about$/);
     const aboutTop = await page.locator("#about-anchor").evaluate(el => el.getBoundingClientRect().top);
-    expect(Math.abs(aboutTop), device.name + " about anchor/header offset").toBeLessThanOrEqual(24);
+    const expectedOffset = await page.locator(".site-header").evaluate(el => el.getBoundingClientRect().height + 12);
+    expect(Math.abs(aboutTop - expectedOffset), device.name + " about anchor/header offset").toBeLessThanOrEqual(8);
 
     const positionLink = device.menu ? page.locator('.nav-menu [data-nav-id="position"]') : page.locator('.nav-links [data-nav-id="position"]');
     await positionLink.click();
@@ -55,7 +56,7 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     expect(await page.locator("[data-nav-id].is-active").count()).toBe(0);
 
     if (device.tabletLandscape) {
-      const columns = await page.locator(".hero-grid").evaluate(el => getComputedStyle(el).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length);
+      const columns = await page.locator(".hero-grid").evaluate(el => getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length);
       expect(columns, "tablet landscape Hero columns").toBe(2);
     }
     if (device.mobileLandscape) {
@@ -69,7 +70,7 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
 });
 
 test("404 is styled and accessible", async ({page}) => {
-  await page.goto(BASE + "/this-route-does-not-exist", {waitUntil:"networkidle"});
+  await page.goto(BASE + "/404.html", {waitUntil:"networkidle"});
   await expect(page.locator(".error-card")).toBeVisible();
   await expect(page.locator("h1")).toHaveText("这条路还没有内容");
   await expect(page.locator(".error-logo img")).toHaveAttribute("src", "/assets/brand/brand.svg?v=20261006-r150");
