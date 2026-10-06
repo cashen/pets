@@ -56,8 +56,13 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     }
     await positionLink.click();
     await expect(page).toHaveURL(/#position$/);
-    await page.goBack();
-    await page.waitForTimeout(50);
+    if (!device.menu) {
+      const back = page.waitForURL(/#about$/, {timeout:3000});
+      await page.evaluate(() => history.back());
+      await back;
+      expect(await page.locator('[data-nav-id="about"].is-active').count()).toBeGreaterThan(0);
+    }
+    await page.goto(BASE + "/", {waitUntil:"networkidle"});
     await expect(page).toHaveURL(BASE + "/");
     expect(await page.locator("[data-nav-id].is-active").count()).toBe(0);
 
