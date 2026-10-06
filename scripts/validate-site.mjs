@@ -60,6 +60,7 @@ ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
 ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261006-r151" width="1200" height="547"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
 ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}"),"hero image source-ratio contract missing");
+ok(read("css/landing.css").includes(".hero-image-frame{\n  width:100%;\n  grid-column:1 / -1;"),"hero frame full-track contract missing");
 ok(!/\.hero-image-frame img\{[^}]*aspect-ratio:(?:4\/3|16\/10)/.test(css),"legacy hero crop ratio remains in base CSS");
 ok(!responsive.includes(".hero-image-frame img{aspect-ratio:4/3}")&&!responsive.includes(".hero-image-frame img{aspect-ratio:16/10}"),"responsive hero crop override remains");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
