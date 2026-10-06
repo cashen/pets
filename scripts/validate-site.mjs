@@ -151,8 +151,9 @@ ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
 ok(html.includes('href="http://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('class="footer-wechat-qr"'),"footer WeChat QR wrapper missing");
-ok(html.includes('class="footer-wechat-qr-image" src="./assets/images/social/wechat-official.svg?v=20261006-r103"'),"official WeChat QR asset missing or cache version mismatch");
-ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wechat-logo.jpg?v=20261006-r103"'),"provided WeChat logo layer missing");
+ok(html.includes('class="footer-wechat-qr-image" src="./assets/images/social/wechat-official.svg?v=20261006-r104"'),"official WeChat QR asset missing or cache version mismatch");
+ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wechat-logo.jpg?v=20261006-r104"'),"provided WeChat logo layer missing");
+ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility text");
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
 const localFiles=[...cssFiles,"js/navigation.js","js/main.js","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg"];
