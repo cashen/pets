@@ -1,6 +1,6 @@
 # 梦宠数智官网 R15
 
-当前版本：2026.10.06-r15.1-hero-image-composition
+当前版本：2026.10.07-r15.2-hero-source-asset
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -64,7 +64,7 @@ CI 分为静态结构/内容契约、Wrangler deployment dry-run 与真实 Chrom
 
 ## Hero Media Contract
 
-`hero.webp` 的实际资源尺寸为 1200×547。Hero 媒体容器按资源原始比例渲染，避免移动端因错误 4:3 / 16:10 契约产生横向裁切；现有 Logo、品牌色与核心文案保持不变。
+`hero.webp` 的实际资源尺寸为 1200×547。Hero 媒体容器按资源原始比例渲染，避免移动端因错误 4:3 / 16:10 契约产生横向裁切；新 Hero 素材去除原素材的黑色右边缘与右上角残缺字样，保持现有 Logo、品牌色与页面正文由 HTML 控制。
 
 ## Responsive Layout Contract
 
