@@ -30,23 +30,15 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
       const mediaRect = media.getBoundingClientRect();
       const frameRect = frame.getBoundingClientRect();
       const imgRect = img.getBoundingClientRect();
-      const mediaStyle = getComputedStyle(media);
-      const frameStyle = getComputedStyle(frame);
       return {
         mediaWidth: mediaRect.width,
         frameWidth: frameRect.width,
         imgWidth: imgRect.width,
         imgHeight: imgRect.height,
         naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight,
-        mediaDisplay: mediaStyle.display,
-        mediaGridColumns: mediaStyle.gridTemplateColumns,
-        frameGridColumn: frameStyle.gridColumn,
-        frameWidthStyle: frameStyle.width,
-        frameJustifySelf: frameStyle.justifySelf
+        naturalHeight: img.naturalHeight
       };
     });
-    console.log("HERO_METRICS", device.name, JSON.stringify(heroMetrics));
     expect(heroMetrics.naturalWidth, device.name + " Hero natural width").toBe(1200);
     expect(heroMetrics.naturalHeight, device.name + " Hero natural height").toBe(547);
     expect(heroMetrics.frameWidth / heroMetrics.mediaWidth, device.name + " Hero frame occupancy").toBeGreaterThanOrEqual(0.98);
