@@ -30,13 +30,20 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
       const mediaRect = media.getBoundingClientRect();
       const frameRect = frame.getBoundingClientRect();
       const imgRect = img.getBoundingClientRect();
+      const mediaStyle = getComputedStyle(media);
+      const frameStyle = getComputedStyle(frame);
       return {
         mediaWidth: mediaRect.width,
         frameWidth: frameRect.width,
         imgWidth: imgRect.width,
         imgHeight: imgRect.height,
         naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight
+        naturalHeight: img.naturalHeight,
+        mediaDisplay: mediaStyle.display,
+        mediaGridColumns: mediaStyle.gridTemplateColumns,
+        frameGridColumn: frameStyle.gridColumn,
+        frameWidthStyle: frameStyle.width,
+        frameJustifySelf: frameStyle.justifySelf
       };
     });
     console.log("HERO_METRICS", device.name, JSON.stringify(heroMetrics));
