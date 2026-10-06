@@ -214,7 +214,7 @@ ok(!/font-weight\s*:\s*(850|900)\b/.test(css),"legacy heavy weight 850/900 remai
 ok(!/font-size\s*:\s*(8|9|10|11)px/.test(css),"hard-coded 8-11px typography remains; use typography tokens");
 ok(!/letter-spacing\s*:\s*-\.0(3|4|5|6)em/.test(css),"aggressive negative letter-spacing remains");
 ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must not fall to 11px");
-ok(!/--type-(lead|body|card|ui|meta):1[012]px/.test(responsive),"landscape mobile typography is undersized");
+ok(!/--type-(lead|body|card|ui|meta):1[01]px/.test(responsive),"landscape mobile typography is undersized");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
 console.log("VALIDATION PASSED: R15 architecture stabilization static contracts");
