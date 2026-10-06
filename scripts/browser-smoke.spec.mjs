@@ -39,6 +39,7 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
         naturalHeight: img.naturalHeight
       };
     });
+    console.log("HERO_METRICS", device.name, JSON.stringify(heroMetrics));
     expect(heroMetrics.naturalWidth, device.name + " Hero natural width").toBe(1200);
     expect(heroMetrics.naturalHeight, device.name + " Hero natural height").toBe(547);
     expect(heroMetrics.frameWidth / heroMetrics.mediaWidth, device.name + " Hero frame occupancy").toBeGreaterThanOrEqual(0.98);
