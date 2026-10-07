@@ -66,16 +66,9 @@ jobs:
           print("REPAIRED_VP8_SIZE", vp8)
           PY
           dwebp /tmp/hero-repaired.webp -o /tmp/hero-repaired.png
-          python3 -m pip install --disable-pip-version-check --quiet pillow
-          python3 - <<'PY'
-          from PIL import Image
-          import hashlib
-          im=Image.open("/tmp/hero-repaired.png").convert("RGBA")
-          print("REPAIRED_SIZE", im.size)
-          print("REPAIRED_RGBA_SHA256", hashlib.sha256(im.tobytes()).hexdigest())
-          assert im.size == (1256,471)
-          assert hashlib.sha256(im.tobytes()).hexdigest() == "3ae5c6dd959d5175be31a4ab84c6dc78a6e8d809da9f033d0829b08b47b83305"
-          PY
+          repaired_sha=$(ffmpeg -loglevel error -i /tmp/hero-repaired.webp -f rawvideo -pix_fmt rgba - | sha256sum | cut -d' ' -f1)
+          echo "REPAIRED_RGBA_SHA256 $repaired_sha"
+          test "$repaired_sha" = "3ae5c6dd959d5175be31a4ab84c6dc78a6e8d809da9f033d0829b08b47b83305"
       - name: Inspect Hero binary alpha and decoded image
         run: |
           python3 -m pip install --disable-pip-version-check --quiet pillow
