@@ -21,6 +21,7 @@ const failures=[];
 const ok=(condition,message)=>{if(!condition)failures.push(message)};
 const heroBinary=readBytes("assets/images/hero/hero.webp");
 const heroSha256=createHash("sha256").update(heroBinary).digest("hex");
+console.log(`Hero binary SHA-256: ${heroSha256} bytes=${heroBinary.length}`);
 ok(heroSha256==="9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5","Hero binary SHA-256 mismatch");
 ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
 
@@ -186,7 +187,7 @@ ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage"
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.08-r15.4-exact-user-hero"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r15.6-exact-user-hero-clean"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
