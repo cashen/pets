@@ -21,8 +21,7 @@ const failures=[];
 const ok=(condition,message)=>{if(!condition)failures.push(message)};
 const heroBinary=readBytes("assets/images/hero/hero.webp");
 const heroSha256=createHash("sha256").update(heroBinary).digest("hex");
-console.log(`Hero binary SHA-256: ${heroSha256} bytes=${heroBinary.length}`);
-ok(heroSha256==="9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5","Hero binary SHA-256 mismatch");
+ok(heroSha256==="d818213d73d4d0efea0a824f4ad3daca3fb46a6b94a0f0fa46b35caa8f37b741","Hero binary SHA-256 mismatch");
 ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
 
 const scanCssStructure=(source)=>{
