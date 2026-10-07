@@ -1,8 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
+const readBytes=p=>fs.readFileSync(path.join(root,p));
 const html=read("index.html");
 const newsIndex=read("news/index.html");
 const notFound=read("404.html");
@@ -17,6 +19,10 @@ const mark=read("assets/brand/logo-mark.svg");
 const responsive=read("css/responsive.css");
 const failures=[];
 const ok=(condition,message)=>{if(!condition)failures.push(message)};
+const heroBinary=readBytes("assets/images/hero/hero.webp");
+const heroSha256=createHash("sha256").update(heroBinary).digest("hex");
+ok(heroSha256==="9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5","Hero binary SHA-256 mismatch");
+ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
 
 const scanCssStructure=(source)=>{
   let brace=0,paren=0,bracket=0,string=null,escaped=false,comment=false,error="";
