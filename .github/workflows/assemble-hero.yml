@@ -3,15 +3,20 @@ name: Assemble Hero asset
 on:
   push:
     branches: [fix/r15.4-exact-user-hero-20261008]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   assemble:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -25,20 +30,12 @@ jobs:
           root = Path(".")
           src = root / "assets/images/hero/hero.webp"
           img = Image.open(src).convert("RGB")
-
           expected = (1200, 547)
           if img.size != expected:
               raise SystemExit(f"Unexpected base Hero size: {img.size}; expected {expected}")
-
-          # The restored R15.2 Hero contains a presentation-only white top
-          # band and orange footer band. The supplied Hero reference is the
-          # same visual scene without those bands. Remove those bands while
-          # preserving the original scene, then encode at the target intrinsic
-          # size used by the page.
           crop = img.crop((0, 55, 1200, 505))
           crop = crop.resize((1256, 471), Image.Resampling.LANCZOS)
           crop.save(src, "WEBP", quality=95, method=6)
-
           check = Image.open(src)
           if check.size != (1256, 471):
               raise SystemExit(f"Generated Hero size mismatch: {check.size}")
@@ -50,7 +47,6 @@ jobs:
         run: |
           python <<'PY'
           from pathlib import Path
-
           replacements = {
               "index.html": [
                   ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
@@ -74,7 +70,6 @@ jobs:
                   ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
               ],
           }
-
           for name, pairs in replacements.items():
               path = Path(name)
               text = path.read_text(encoding="utf-8")
@@ -85,7 +80,7 @@ jobs:
               path.write_text(text, encoding="utf-8")
           PY
 
-      - name: Verify no staged helper files remain
+      - name: Verify no helper files remain
         run: |
           git rm -f .github/workflows/assemble-hero.yml
           test ! -e .codex/hero-upload
