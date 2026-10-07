@@ -66,6 +66,7 @@ jobs:
           print("REPAIRED_VP8_SIZE", vp8)
           PY
           dwebp /tmp/hero-repaired.webp -o /tmp/hero-repaired.png
+          python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 - <<'PY'
           from PIL import Image
           import hashlib
