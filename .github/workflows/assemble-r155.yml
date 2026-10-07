@@ -40,7 +40,7 @@ jobs:
               raise SystemExit(f"Hero chunks mismatch: found {[p.name for p in parts]}")
 
           encoded = "".join(p.read_text(encoding="utf-8").strip() for p in parts)
-          expected_b64_len = 165090
+          expected_b64_len = 165096
           if len(encoded) != expected_b64_len:
               raise SystemExit(f"Hero base64 length mismatch: {len(encoded)} != {expected_b64_len}")
 
@@ -71,8 +71,8 @@ jobs:
                   ("hero.webp?v=20261008-r154", "hero.webp?v=20261008-r156"),
               ],
               "css/sections.css": [
-                  ("border:10px solid #fff;", "")
-                  ("background:#EEE5DB;", ""),
+                  ("border:10px solid #fff;", ""),
+                  ("background:#EEE5DB;", ""),,
               ],
               "scripts/validate-site.mjs": [
                   ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.6-exact-user-hero-clean"),
