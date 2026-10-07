@@ -20,47 +20,48 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Build verified Hero source
+
+      - name: Build Hero source from restored scene
         run: |
           python -m pip install --disable-pip-version-check --no-input pillow
           python <<'PY'
           from pathlib import Path
           from PIL import Image
 
-          root = Path(".")
-          src = root / "assets/images/hero/hero.webp"
+          src = Path("assets/images/hero/hero.webp")
           img = Image.open(src).convert("RGB")
-          expected = (1200, 547)
-          if img.size != expected:
-              raise SystemExit(f"Unexpected base Hero size: {img.size}; expected {expected}")
+          if img.size != (1200, 547):
+              raise SystemExit(f"Unexpected base Hero size: {img.size}; expected (1200, 547)")
+
           crop = img.crop((0, 55, 1200, 505))
           crop = crop.resize((1256, 471), Image.Resampling.LANCZOS)
           crop.save(src, "WEBP", quality=95, method=6)
+
           check = Image.open(src)
+          check.load()
           if check.size != (1256, 471):
               raise SystemExit(f"Generated Hero size mismatch: {check.size}")
-          check.load()
           print(f"Generated Hero: {src} {check.size} {check.mode}")
           PY
 
-      - name: Align Hero contracts
+      - name: Align Hero source contracts
         run: |
           python <<'PY'
           from pathlib import Path
-          replacements = {
+
+          exact = {
               "index.html": [
-                  ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
-                  ("./assets/images/hero/hero.webp?v=20261007-r153", "./assets/images/hero/hero.webp?v=20261008-r154"),
+                  ('<meta name="ui-version" content="2026.10.07-r15.2-hero-source-repair">', '<meta name="ui-version" content="2026.10.08-r15.4-exact-user-hero">'),
+                  ('./assets/images/hero/hero.webp?v=20261007-r153', './assets/images/hero/hero.webp?v=20261008-r154'),
                   ('width="1200" height="547" fetchpriority="high" decoding="async"', 'width="1256" height="471" fetchpriority="high" decoding="async"'),
               ],
               "css/sections.css": [
                   (".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}", ".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),
               ],
               "scripts/validate-site.mjs": [
-                  ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
-                  ('hero\\.webp\\?v=20261007-r153" width="1200" height="547"', 'hero\\.webp\\?v=20261008-r154" width="1256" height="471"'),
-                  (".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}", ".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),
                   ('src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261007-r153" width="1200" height="547"', 'src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261008-r154" width="1256" height="471"'),
+                  ('read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}")', 'read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}")'),
+                  ('readme.includes("2026.10.07-r15.2-hero-source-repair")', 'readme.includes("2026.10.08-r15.4-exact-user-hero")'),
               ],
               "scripts/browser-smoke.spec.mjs": [
                   ("toBe(1200)", "toBe(1256)"),
@@ -68,22 +69,27 @@ jobs:
               ],
               "README.md": [
                   ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
+                  ("hero.webp 的实际资源尺寸为 1200×547。", "hero.webp 的实际资源尺寸为 1256×471。"),
               ],
           }
-          for name, pairs in replacements.items():
-              path = Path(name)
-              text = path.read_text(encoding="utf-8")
+
+          for name, pairs in exact.items():
+              p = Path(name)
+              text = p.read_text(encoding="utf-8")
               for old, new in pairs:
                   if old not in text:
                       raise SystemExit(f"Missing expected contract in {name}: {old}")
                   text = text.replace(old, new)
-              path.write_text(text, encoding="utf-8")
+              p.write_text(text, encoding="utf-8")
           PY
 
-      - name: Verify no helper files remain
+          grep -F "2026.10.08-r15.4-exact-user-hero" index.html scripts/validate-site.mjs README.md
+          grep -F "1256/471" css/sections.css
+          grep -F "toBe(1256)" scripts/browser-smoke.spec.mjs
+
+      - name: Remove temporary assembly workflow
         run: |
           git rm -f .github/workflows/assemble-hero.yml
-          test ! -e .codex/hero-upload
 
       - name: Commit assembled Hero
         run: |
