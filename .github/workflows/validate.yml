@@ -50,6 +50,31 @@ jobs:
               print("CHUNK",pos,tag,size)
               pos += 8 + size + (size & 1)
           PY
+      - name: Test WebP RIFF and VP8 length repair
+        run: |
+          cp assets/images/hero/hero.webp /tmp/hero-repaired.webp
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("/tmp/hero-repaired.webp")
+          b=bytearray(p.read_bytes())
+          riff=len(b)-8
+          vp8=len(b)-20
+          b[4:8]=riff.to_bytes(4,"little")
+          b[16:20]=vp8.to_bytes(4,"little")
+          p.write_bytes(b)
+          print("REPAIRED_RIFF_SIZE", riff)
+          print("REPAIRED_VP8_SIZE", vp8)
+          PY
+          dwebp /tmp/hero-repaired.webp -o /tmp/hero-repaired.png
+          python3 - <<'PY'
+          from PIL import Image
+          import hashlib
+          im=Image.open("/tmp/hero-repaired.png").convert("RGBA")
+          print("REPAIRED_SIZE", im.size)
+          print("REPAIRED_RGBA_SHA256", hashlib.sha256(im.tobytes()).hexdigest())
+          assert im.size == (1256,471)
+          assert hashlib.sha256(im.tobytes()).hexdigest() == "3ae5c6dd959d5175be31a4ab84c6dc78a6e8d809da9f033d0829b08b47b83305"
+          PY
       - name: Inspect Hero binary alpha and decoded image
         run: |
           python3 -m pip install --disable-pip-version-check --quiet pillow
