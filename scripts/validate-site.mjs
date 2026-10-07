@@ -64,7 +64,7 @@ ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
-ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r154" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
+ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r156" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
 ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),"hero image source-ratio contract missing");
 ok(!read("css/sections.css").includes("border:10px solid #fff;"),"hero image frame white border must remain absent");
 ok(!read("css/sections.css").includes("background:#EEE5DB;"),"hero image frame background must remain absent");
