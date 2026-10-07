@@ -67,18 +67,19 @@ jobs:
 
           replacements = {
               "index.html": [
-                  ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.5-exact-user-hero-source"),
-                  ("hero.webp?v=20261008-r154", "hero.webp?v=20261008-r155"),
+                  ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.6-exact-user-hero-clean"),
+                  ("hero.webp?v=20261008-r154", "hero.webp?v=20261008-r156"),
               ],
               "css/sections.css": [
-                  ("border:10px solid #fff;", ""),
+                  ("border:10px solid #fff;", "")
+                  ("background:#EEE5DB;", ""),
               ],
               "scripts/validate-site.mjs": [
-                  ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.5-exact-user-hero-source"),
-                  ("hero.webp\\?v=20261008-r154", "hero.webp\\?v=20261008-r155"),
+                  ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.6-exact-user-hero-clean"),
+                  ("hero.webp\\?v=20261008-r154", "hero.webp\\?v=20261008-r156"),
               ],
               "README.md": [
-                  ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.5-exact-user-hero-source"),
+                  ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.6-exact-user-hero-clean"),
               ],
           }
 
@@ -91,14 +92,17 @@ jobs:
                   text = text.replace(old, new)
               path.write_text(text, encoding="utf-8")
 
+          content = content.replace('("border:10px solid #fff;", "")', '("border:10px solid #fff;", "")\n                  ("background:#EEE5DB;", "")')
           validator = Path("scripts/validate-site.mjs")
           text = validator.read_text(encoding="utf-8")
           needle = 'ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),"hero image source-ratio contract missing");'
           assertion = '\nok(!read("css/sections.css").includes("border:10px solid #fff;"),"hero image frame white border must remain absent");'
           if needle not in text:
               raise SystemExit("Hero CSS validator anchor missing")
+          assertion2 = '\nok(!read("css/responsive.css").includes("border-width:7px;"),"responsive Hero border-width must remain absent");'
+          assertion3 = '\nok(!read("css/sections.css").includes("background:#EEE5DB;"),"hero image frame background must remain absent");'
           if "hero image frame white border must remain absent" not in text:
-              text = text.replace(needle, needle + assertion)
+              text = text.replace(needle, needle + assertion + assertion2 + assertion3)
           validator.write_text(text, encoding="utf-8")
 
           readme = Path("README.md")
@@ -107,7 +111,7 @@ jobs:
               text = text.replace("1256×471。", "1256×471。")
           readme.write_text(text, encoding="utf-8")
 
-          progress = Path(".codex/progress/2026.10.08-r15.5-exact-user-hero-source.md")
+          progress = Path(".codex/progress/2026.10.08-r15.6-exact-user-hero-clean.md")
           progress.write_text(
               "# R15.5 exact Hero source\n\n"
               "- Source: supplied user Hero PNG, converted only to WebP; no crop or resize.\n"
@@ -128,7 +132,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/images/hero/hero.webp index.html css/sections.css scripts/validate-site.mjs README.md .codex/progress/2026.10.08-r15.5-exact-user-hero-source.md
+          git add assets/images/hero/hero.webp index.html css/sections.css scripts/validate-site.mjs README.md .codex/progress/2026.10.08-r15.6-exact-user-hero-clean.md
           git diff --cached --check
           git diff --cached --stat
           git commit -m "fix: use exact supplied Hero source"
