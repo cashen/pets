@@ -1,6 +1,6 @@
 # 梦宠数智官网 R15
 
-当前版本：2026.10.06-r15.1-hero-image-composition
+当前版本：2026.10.07-r15.2-hero-image-replacement
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
