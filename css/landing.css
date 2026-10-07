@@ -64,10 +64,12 @@
   width:100%;
   grid-column:1 / -1;
   border:0;
+  padding:0;
   border-radius:30px;
   box-shadow:0 22px 54px rgba(72,42,18,.12);
+  background:transparent;
 }
-.hero-image-frame img{object-position:center}
+.hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial;object-position:center}
 .hero-orbit{
   position:static;
   min-height:54px;

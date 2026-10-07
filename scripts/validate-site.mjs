@@ -1,8 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
+const readBytes=p=>fs.readFileSync(path.join(root,p));
 const html=read("index.html");
 const newsIndex=read("news/index.html");
 const notFound=read("404.html");
@@ -17,6 +19,10 @@ const mark=read("assets/brand/logo-mark.svg");
 const responsive=read("css/responsive.css");
 const failures=[];
 const ok=(condition,message)=>{if(!condition)failures.push(message)};
+const heroBinary=readBytes("assets/images/hero/hero.webp");
+const heroSha256=createHash("sha256").update(heroBinary).digest("hex");
+ok(heroSha256==="d818213d73d4d0efea0a824f4ad3daca3fb46a6b94a0f0fa46b35caa8f37b741","Hero binary SHA-256 mismatch");
+ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
 
 const scanCssStructure=(source)=>{
   let brace=0,paren=0,bracket=0,string=null,escaped=false,comment=false,error="";
@@ -58,9 +64,16 @@ ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
-ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r154" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
-ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),"hero image source-ratio contract missing");
+ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r157" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
+ok(html.includes("hero.webp?v=20261008-r157"),"Hero cache version missing");
+ok(!html.includes("hero.webp?v=20261008-r154")&&!html.includes("hero.webp?v=20261008-r156"),"stale Hero cache version remains");
+ok(read("css/sections.css").includes(".hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial}"),"hero image no-crop contract missing");
+ok(!read("css/sections.css").includes("border:10px solid #fff;"),"hero image frame white border must remain absent");
+ok(!read("css/sections.css").includes("background:#EEE5DB;"),"hero image frame legacy background must remain absent");
+ok(!read("css/responsive.css").includes("border-width:7px;"),"responsive Hero border-width must remain absent");
 ok(read("css/landing.css").includes(".hero-image-frame{\n  width:100%;\n  grid-column:1 / -1;"),"hero frame full-track contract missing");
+ ok(read("css/landing.css").includes("background:transparent;"),"Hero frame background must be transparent");
+ ok(read("css/landing.css").includes(".hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial;object-position:center}"),"Hero rendered image no-crop contract missing");
 ok(read("css/landing.css").includes(".hero-media .hero-orbit-c{grid-column:1}\n  .hero-media .hero-orbit-d{grid-column:2}"),"mobile Hero orbit grid mapping missing");
 ok(!/\.hero-image-frame img\{[^}]*aspect-ratio:(?:4\/3|16\/10)/.test(css),"legacy hero crop ratio remains in base CSS");
 ok(!responsive.includes(".hero-image-frame img{aspect-ratio:4/3}")&&!responsive.includes(".hero-image-frame img{aspect-ratio:16/10}"),"responsive hero crop override remains");
@@ -84,7 +97,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.08-r15\.4-exact-user-hero"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.08-r15\.7-hero-render-clean"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -177,7 +190,7 @@ ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage"
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.08-r15.4-exact-user-hero"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r15.7-hero-render-clean"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
