@@ -28,5 +28,20 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/pets-http.log 2>&1 & echo $! > /tmp/pets-http.pid
+      - name: Inspect Hero binary alpha and decoded image
+        run: |
+          python3 -m pip install --disable-pip-version-check --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image
+          im = Image.open("assets/images/hero/hero.webp").convert("RGBA")
+          print("HERO_FORMAT", Image.open("assets/images/hero/hero.webp").format)
+          print("HERO_SIZE", im.size)
+          print("HERO_MODE", im.mode)
+          print("HERO_RGB_EXTREMA", im.getchannel("R").getextrema(), im.getchannel("G").getextrema(), im.getchannel("B").getextrema())
+          print("HERO_ALPHA_EXTREMA", im.getchannel("A").getextrema())
+          print("HERO_ALPHA_UNIQUE", len(im.getchannel("A").getcolors(maxcolors=im.width*im.height+1) or []))
+          bbox = im.getchannel("RGB").getbbox()
+          print("HERO_RGB_BBOX", bbox)
+          PY
       - name: Run browser smoke matrix
         run: npx playwright test scripts/browser-smoke.spec.mjs --workers=1 --reporter=line
