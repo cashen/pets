@@ -60,7 +60,7 @@ jobs:
           print(f"Hero verified: {target} {image.size} {image.mode} sha256={actual_sha256}")
           PY
 
-      - name: Apply R15.5 Hero-only changes
+      - name: Apply R15.6 Hero-only changes
         run: |
           python <<'PY'
           from pathlib import Path
@@ -92,7 +92,6 @@ jobs:
                   text = text.replace(old, new)
               path.write_text(text, encoding="utf-8")
 
-          content = content.replace('("border:10px solid #fff;", "")', '("border:10px solid #fff;", "")\n                  ("background:#EEE5DB;", "")')
           validator = Path("scripts/validate-site.mjs")
           text = validator.read_text(encoding="utf-8")
           needle = 'ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),"hero image source-ratio contract missing");'
@@ -113,7 +112,7 @@ jobs:
 
           progress = Path(".codex/progress/2026.10.08-r15.6-exact-user-hero-clean.md")
           progress.write_text(
-              "# R15.5 exact Hero source\n\n"
+              "# R15.6 exact Hero source\n\n"
               "- Source: supplied user Hero PNG, converted only to WebP; no crop or resize.\n"
               "- Hero binary SHA-256: 9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5\n"
               "- Intrinsic size: 1256×471 RGB\n"
