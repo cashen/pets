@@ -28,6 +28,15 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/pets-http.log 2>&1 & echo $! > /tmp/pets-http.pid
+      - name: Compare historical Hero assets to supplied source
+        run: |
+          python3 -m pip install --disable-pip-version-check --quiet pillow
+          git fetch --unshallow || true
+          for commit in c5f05f431c6b9a2e844dd7cde034c9e7679fb920 18640a5f0ecc12048a51816c9a9f564197506f2c c48d8ffe6b02582a88b46afd1b38e70da5bb9c2d 10815b20e4f6127674ce11f084b602e07f307524 2585b6677a0c59617480bcabaec1571033300a73 9a1c1d4867a4a92eaeec9d03d6ea830107cfbf32; do
+            git show "$commit:assets/images/hero/hero.webp" > /tmp/hero-$commit.webp || continue
+            echo "COMMIT $commit BYTES $(wc -c < /tmp/hero-$commit.webp)"
+            ffmpeg -loglevel error -y -i /tmp/hero-$commit.webp -f rawvideo -pix_fmt rgba - | sha256sum | awk '{print "PIXEL_SHA256", $1}' || true
+          done
       - name: Inspect Hero container structure
         run: |
           sudo apt-get update -qq
