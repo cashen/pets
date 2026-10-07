@@ -39,8 +39,8 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
         naturalHeight: img.naturalHeight
       };
     });
-    expect(heroMetrics.naturalWidth, device.name + " Hero natural width").toBe(1200);
-    expect(heroMetrics.naturalHeight, device.name + " Hero natural height").toBe(547);
+    expect(heroMetrics.naturalWidth, device.name + " Hero natural width").toBe(1256);
+    expect(heroMetrics.naturalHeight, device.name + " Hero natural height").toBe(471);
     expect(heroMetrics.frameWidth / heroMetrics.mediaWidth, device.name + " Hero frame occupancy").toBeGreaterThanOrEqual(0.98);
     expect(heroMetrics.imgWidth / heroMetrics.frameWidth, device.name + " Hero image occupancy").toBeGreaterThanOrEqual(0.95);
     const naturalRatio = heroMetrics.naturalWidth / heroMetrics.naturalHeight;
