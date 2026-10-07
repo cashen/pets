@@ -78,7 +78,7 @@ jobs:
               ],
               "css/sections.css": [
                   ("border:10px solid #fff;", ""),
-                  ("background:#EEE5DB;", ""),,
+                  ("background:#EEE5DB;", ""),
               ],
               "scripts/validate-site.mjs": [
                   ("2026.10.08-r15.4-exact-user-hero", "2026.10.08-r15.6-exact-user-hero-clean"),
