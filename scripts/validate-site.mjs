@@ -177,7 +177,7 @@ ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage"
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.06-r15.1-hero-image-composition"),"README version is out of sync");
+ok(readme.includes("2026.10.07-r15.2-hero-image-replacement"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
