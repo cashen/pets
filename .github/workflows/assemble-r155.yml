@@ -44,6 +44,11 @@ jobs:
           if len(encoded) != expected_b64_len:
               raise SystemExit(f"Hero base64 length mismatch: {len(encoded)} != {expected_b64_len}")
 
+          # The repository chunks were cut at fixed character offsets, so padding
+          # may occur in a non-final chunk. Normalize the concatenated stream
+          # before strict base64 decoding.
+          encoded = encoded.replace("=", "")
+          encoded += "=" * ((4 - len(encoded) % 4) % 4)
           payload = base64.b64decode(encoded, validate=True)
           expected_sha256 = "9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5"
           actual_sha256 = hashlib.sha256(payload).hexdigest()
