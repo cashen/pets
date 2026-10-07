@@ -59,7 +59,6 @@ jobs:
                   (".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}", ".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),
               ],
               "scripts/validate-site.mjs": [
-                  ('src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261007-r153" width="1200" height="547"', 'src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261008-r154" width="1256" height="471"'),
                   ('read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}")', 'read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}")'),
                   ('readme.includes("2026.10.07-r15.2-hero-source-repair")', 'readme.includes("2026.10.08-r15.4-exact-user-hero")'),
               ],
@@ -81,6 +80,13 @@ jobs:
                       raise SystemExit(f"Missing expected contract in {name}: {old}")
                   text = text.replace(old, new)
               p.write_text(text, encoding="utf-8")
+          p = Path("scripts/validate-site.mjs")
+          validator = p.read_text(encoding="utf-8")
+          old_line = 'ok(/<img alt="宠物全生命周期数字化服务视觉" src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261007-r153" width="1200" height="547"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");'
+          new_line = 'ok(/<img alt="宠物全生命周期数字化服务视觉" src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261008-r154" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");'
+          if old_line not in validator:
+              raise SystemExit("Missing exact Hero validator assertion")
+          p.write_text(validator.replace(old_line, new_line), encoding="utf-8")
           PY
 
           grep -F "2026.10.08-r15.4-exact-user-hero" index.html scripts/validate-site.mjs README.md
