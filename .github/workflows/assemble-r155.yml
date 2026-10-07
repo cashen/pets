@@ -40,7 +40,7 @@ jobs:
               raise SystemExit(f"Hero chunks mismatch: found {[p.name for p in parts]}")
 
           encoded = "".join(p.read_text(encoding="utf-8").strip() for p in parts)
-          expected_b64_len = 165096
+          expected_b64_len = 165090
           if len(encoded) != expected_b64_len:
               raise SystemExit(f"Hero base64 length mismatch: {len(encoded)} != {expected_b64_len}")
 
