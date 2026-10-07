@@ -39,18 +39,15 @@ jobs:
           if parts != expected_parts:
               raise SystemExit(f"Hero chunks mismatch: found {[p.name for p in parts]}")
 
-          encoded = "".join(p.read_text(encoding="utf-8").strip() for p in parts)
+          encoded_parts = [p.read_text(encoding="utf-8").strip() for p in parts]
           expected_b64_len = 165090
-          if len(encoded) != expected_b64_len:
-              raise SystemExit(f"Hero base64 length mismatch: {len(encoded)} != {expected_b64_len}")
+          if sum(len(x) for x in encoded_parts) != expected_b64_len:
+              raise SystemExit(f"Hero base64 length mismatch: {sum(len(x) for x in encoded_parts)} != {expected_b64_len}")
 
-          # The repository chunks were cut at fixed character offsets, so padding
-          # may occur in a non-final chunk. Normalize the concatenated stream
-          # before strict base64 decoding.
-          encoded = encoded.replace("=", "")
-          encoded += "=" * ((4 - len(encoded) % 4) % 4)
-          payload = base64.b64decode(encoded, validate=True)
-          expected_sha256 = "d818213d73d4d0efea0a824f4ad3daca3fb46a6b94a0f0fa46b35caa8f37b741"
+          # Each repository chunk is independently base64-encoded. Decode each
+          # chunk first, then concatenate the original binary payload.
+          payload = b"".join(base64.b64decode(x, validate=True) for x in encoded_parts)
+          expected_sha256 = "9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5"
           actual_sha256 = hashlib.sha256(payload).hexdigest()
           if actual_sha256 != expected_sha256:
               raise SystemExit(f"Hero binary SHA-256 mismatch: {actual_sha256} != {expected_sha256}")
