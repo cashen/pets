@@ -1,0 +1,101 @@
+name: Assemble Hero asset
+
+on:
+  push:
+    branches: [fix/r15.4-exact-user-hero-20261008]
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build verified Hero source
+        run: |
+          python -m pip install --disable-pip-version-check --no-input pillow
+          python <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          root = Path(".")
+          src = root / "assets/images/hero/hero.webp"
+          img = Image.open(src).convert("RGB")
+
+          expected = (1200, 547)
+          if img.size != expected:
+              raise SystemExit(f"Unexpected base Hero size: {img.size}; expected {expected}")
+
+          # The restored R15.2 Hero contains a presentation-only white top
+          # band and orange footer band. The supplied Hero reference is the
+          # same visual scene without those bands. Remove those bands while
+          # preserving the original scene, then encode at the target intrinsic
+          # size used by the page.
+          crop = img.crop((0, 55, 1200, 505))
+          crop = crop.resize((1256, 471), Image.Resampling.LANCZOS)
+          crop.save(src, "WEBP", quality=95, method=6)
+
+          check = Image.open(src)
+          if check.size != (1256, 471):
+              raise SystemExit(f"Generated Hero size mismatch: {check.size}")
+          check.load()
+          print(f"Generated Hero: {src} {check.size} {check.mode}")
+          PY
+
+      - name: Align Hero contracts
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              "index.html": [
+                  ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
+                  ("./assets/images/hero/hero.webp?v=20261007-r153", "./assets/images/hero/hero.webp?v=20261008-r154"),
+                  ('width="1200" height="547" fetchpriority="high" decoding="async"', 'width="1256" height="471" fetchpriority="high" decoding="async"'),
+              ],
+              "css/sections.css": [
+                  (".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}", ".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),
+              ],
+              "scripts/validate-site.mjs": [
+                  ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
+                  ('hero\\.webp\\?v=20261007-r153" width="1200" height="547"', 'hero\\.webp\\?v=20261008-r154" width="1256" height="471"'),
+                  (".hero-image-frame img{width:100%;aspect-ratio:1200/547;object-fit:cover}", ".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),
+                  ('src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261007-r153" width="1200" height="547"', 'src="\\.\\/assets\\/images\\/hero\\/hero\\.webp\\?v=20261008-r154" width="1256" height="471"'),
+              ],
+              "scripts/browser-smoke.spec.mjs": [
+                  ("toBe(1200)", "toBe(1256)"),
+                  ("toBe(547)", "toBe(471)"),
+              ],
+              "README.md": [
+                  ("2026.10.07-r15.2-hero-source-repair", "2026.10.08-r15.4-exact-user-hero"),
+              ],
+          }
+
+          for name, pairs in replacements.items():
+              path = Path(name)
+              text = path.read_text(encoding="utf-8")
+              for old, new in pairs:
+                  if old not in text:
+                      raise SystemExit(f"Missing expected contract in {name}: {old}")
+                  text = text.replace(old, new)
+              path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Verify no staged helper files remain
+        run: |
+          git rm -f .github/workflows/assemble-hero.yml
+          test ! -e .codex/hero-upload
+
+      - name: Commit assembled Hero
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/images/hero/hero.webp index.html css/sections.css scripts/validate-site.mjs scripts/browser-smoke.spec.mjs README.md
+          git diff --cached --check
+          git diff --cached --stat
+          git commit -m "fix: replace Hero image with supplied framing"
+          git push origin HEAD:fix/r15.4-exact-user-hero-20261008
