@@ -50,7 +50,7 @@ jobs:
           encoded = encoded.replace("=", "")
           encoded += "=" * ((4 - len(encoded) % 4) % 4)
           payload = base64.b64decode(encoded, validate=True)
-          expected_sha256 = "9a38cfdd921575b625ba1a5f687942c2e7582abb34a39724b66500babfb348e5"
+          expected_sha256 = "d818213d73d4d0efea0a824f4ad3daca3fb46a6b94a0f0fa46b35caa8f37b741"
           actual_sha256 = hashlib.sha256(payload).hexdigest()
           if actual_sha256 != expected_sha256:
               raise SystemExit(f"Hero binary SHA-256 mismatch: {actual_sha256} != {expected_sha256}")
@@ -62,7 +62,11 @@ jobs:
           image.load()
           if image.size != (1256, 471) or image.mode != "RGB":
               raise SystemExit(f"Hero image contract mismatch: {image.size} {image.mode}")
-          print(f"Hero verified: {target} {image.size} {image.mode} sha256={actual_sha256}")
+          pixel_sha256 = hashlib.sha256(image.convert("RGB").tobytes()).hexdigest()
+          expected_pixel_sha256 = "7bc46473bf492d18b06095b526c30726ef7114b2447a88cdb5682f9eb44e242c"
+          if pixel_sha256 != expected_pixel_sha256:
+              raise SystemExit(f"Hero pixel SHA-256 mismatch: {pixel_sha256} != {expected_pixel_sha256}")
+          print(f"Hero verified: {target} {image.size} {image.mode} binary_sha256={actual_sha256} pixel_sha256={pixel_sha256}")
           PY
 
       - name: Apply R15.6 Hero-only changes
