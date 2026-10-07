@@ -1,6 +1,6 @@
 # 梦宠数智官网 R15
 
-当前版本：2026.10.07-r15.2-hero-image-replacement
+当前版本：2026.10.07-r15.3-hero-source-restoration
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -25,13 +25,13 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 
 统一官网英文栏目与平台名称表达：
 
-- `PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM`
-- `COMPANY PROFILE`
-- `PLATFORM POSITIONING`
-- `CUSTOMER VALUE`
-- `PLATFORM CAPABILITIES`
-- `ECOSYSTEM PARTNERSHIPS`
-- `PARTNERSHIPS`
+- PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM
+- COMPANY PROFILE
+- PLATFORM POSITIONING
+- CUSTOMER VALUE
+- PLATFORM CAPABILITIES
+- ECOSYSTEM PARTNERSHIPS
+- PARTNERSHIPS
 
 ## Navigation Architecture
 
@@ -52,11 +52,11 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 
 ## Cloudflare
 
-继续使用 Workers Static Assets + 404-page；`montpets.com` 与 `www.montpets.com` custom domains 保持不变。
+继续使用 Workers Static Assets + 404-page；montpets.com 与 www.montpets.com custom domains 保持不变。
 
 ## CSS Architecture
 
-正式样式按 tokens / base / layout / components / sections / responsive / landing composition 分层；历史 R10 文件名已移除。媒体报道使用独立的 `css/media.css`，避免继续沿用 Brand News 语义。
+正式样式按 tokens / base / layout / components / sections / responsive / landing composition 分层；历史 R10 文件名已移除。媒体报道使用独立的 css/media.css，避免继续沿用 Brand News 语义。
 
 ## Validation
 
@@ -64,7 +64,7 @@ CI 分为静态结构/内容契约、Wrangler deployment dry-run 与真实 Chrom
 
 ## Hero Media Contract
 
-`hero.webp` 的实际资源尺寸为 512×209。Hero 媒体容器按资源原始比例渲染，避免移动端因错误 4:3 / 16:10 契约产生横向裁切；现有 Logo、品牌色与核心文案保持不变。
+hero.webp 使用当前已验证的完整源资产，实际资源尺寸为 1200×547。Hero 媒体容器按资源原始比例渲染，避免移动端因错误 4:3 / 16:10 契约产生横向裁切；保持现有 Logo、品牌色与页面正文由 HTML 控制。
 
 ## Responsive Layout Contract
 
@@ -75,7 +75,7 @@ Eco 使用明确的命名网格区域契约：
 - Mobile portrait：中心平台 + 单列伙伴
 - Mobile landscape：中心平台 + 两列伙伴
 
-禁止通过 `grid-template-areas:none` 取消核心布局后依赖子项自动排布。
+禁止通过 grid-template-areas:none 取消核心布局后依赖子项自动排布。
 
 ## Media Coverage Contract
 
@@ -96,7 +96,6 @@ Eco 使用明确的命名网格区域契约：
 - 医疗健康
 - 数据接口
 
-
 ## Asset Cache Versioning
 
-`ui-version` 表示官网发布版本；资源 URL 的 `?v=` 采用资产组缓存版本，两者不强制相同。404 页面与当前发布资源版本保持一致。
+ui-version 表示官网发布版本；资源 URL 的 ?v= 采用资产组缓存版本，两者不强制相同。404 页面与当前发布资源版本保持一致。
