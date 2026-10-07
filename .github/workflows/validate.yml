@@ -28,6 +28,28 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/pets-http.log 2>&1 & echo $! > /tmp/pets-http.pid
+      - name: Inspect Hero container structure
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends webp ffmpeg
+          file assets/images/hero/hero.webp
+          webpinfo assets/images/hero/hero.webp || true
+          ffprobe -hide_banner assets/images/hero/hero.webp || true
+          python3 - <<'PY'
+          from pathlib import Path
+          b=Path("assets/images/hero/hero.webp").read_bytes()
+          print("BYTES", len(b))
+          print("HEADER", b[:32].hex(" "))
+          print("RIFF_SIZE_FIELD", int.from_bytes(b[4:8],"little"))
+          print("RIFF_EXPECTED_SIZE_FIELD", len(b)-8)
+          print("WEBP_TYPE", b[8:12])
+          pos=12
+          while pos+8<=len(b) and pos<512:
+              tag=b[pos:pos+4]
+              size=int.from_bytes(b[pos+4:pos+8],"little")
+              print("CHUNK",pos,tag,size)
+              pos += 8 + size + (size & 1)
+          PY
       - name: Inspect Hero binary alpha and decoded image
         run: |
           python3 -m pip install --disable-pip-version-check --quiet pillow
