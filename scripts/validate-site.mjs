@@ -6,6 +6,8 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const newsIndex=read("news/index.html");
 const newsData=JSON.parse(read("content/news.json"));
+const brandData=JSON.parse(read("content/brand.json"));
+const siteData=JSON.parse(read("content/site.json"));
 const notFound=read("404.html");
 const readme=read("README.md");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
@@ -87,14 +89,18 @@ for(const contract of responsiveContracts){ok(contract.pattern.test(responsive),
 
 
 
-const requiredIds=["about","position","value","ability","eco","contact"];
-const navExpected=["about","position","value","ability","eco","contact"];
+const requiredIds=siteData.navigation.map(item=>item.sectionId);
+const navExpected=siteData.navigation.map(item=>item.id);
 const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.pattern).filter(Boolean);
+for(const key of ["companyName","brandName","platformName","platformEnglishName","tagline","identity","domain","wwwDomain"]) ok(typeof brandData[key]==="string"&&brandData[key].trim(),"brand source field missing: "+key);
+ok(siteData.uiVersion==="2026.10.08-r18.0-core-content-governance","wrong UI version source");
+ok(siteData.mediaLabel==="媒体报道"&&siteData.mediaPath==="/news/","media site configuration drift");
+const sourceNav=siteData.navigation.map(({id,label,menuLabel,targetId,sectionId})=>({id,label,menuLabel,targetId,sectionId}));
 
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.08-r17\.0-content-single-source"/.test(html),"wrong ui version");
+ok(html.includes('meta name="ui-version" content="'+siteData.uiVersion+'"'),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -123,15 +129,16 @@ ok(/sectionTargets = new Map/.test(js),"target/section navigation map missing");
 ok(/targetId:"about-anchor"/.test(nav)&&/sectionId:"about"/.test(nav),"navigation model target contract missing");
 ok(/tabindex="-1"/.test(html),"main focus recovery contract missing");
 
-const navItems=[...nav.matchAll(/\{id:"([^"]+)"[^}]*targetId:"([^"]+)"[^}]*sectionId:"([^"]+)"/g)].map(m=>({id:m[1],targetId:m[2],sectionId:m[3]}));
+const navItems=[...nav.matchAll(/\{id:"([^"]+)",label:"([^"]+)",menuLabel:"([^"]+)",targetId:"([^"]+)",sectionId:"([^"]+)"\}/g)].map(m=>({id:m[1],label:m[2],menuLabel:m[3],targetId:m[4],sectionId:m[5]}));
+ok(JSON.stringify(navItems)===JSON.stringify(sourceNav),"navigation model must match content/site.json");
 ok(navItems.map(x=>x.id).join(",")===navExpected.join(","),"navigation model order mismatch");
-ok(navItems.length===6,"navigation model cardinality mismatch");
+ok(navItems.length===siteData.navigation.length,"navigation model cardinality mismatch");
 for(const item of navItems) {
   ok(html.includes('id="'+item.targetId+'"'),"navigation target missing: "+item.targetId);
   ok(html.includes('id="'+item.sectionId+'"'),"navigation section missing: "+item.sectionId);
 }
 
-ok(domains.length===2 && domains.includes("montpets.com") && domains.includes("www.montpets.com"),"custom domains contract missing");
+ok(domains.length===2 && domains.includes(brandData.domain) && domains.includes(brandData.wwwDomain),"custom domains contract missing");
 ok(wrangler.name==="pets","wrangler name mismatch");
 ok(wrangler.compatibility_date==="2026-09-30","wrangler compatibility date mismatch");
 ok(wrangler.assets?.directory===".","workers assets directory mismatch");
@@ -168,11 +175,11 @@ ok((html.match(/<div class="service-grid">/g)||[]).length===1,"five-service grid
 ok((html.match(/class="eco-node\b/g)||[]).length===6,"expected 6 ecosystem nodes");
 ok((html.match(/class="coop-grid"/g)||[]).length===1,"cooperation modes missing");
 for(const label of ["繁育企业","销售服务企业","食品用品企业","保险、运输企业","医疗、美容、养护、服装等企业"]) ok(html.includes(label),"missing five-service copy: "+label);
-for(const exact of ["梦宠数智","辽宁梦宠数智科技有限公司","PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM","宠物全生命周期","大数据认证平台","数智赋能宠物全生态，数据陪伴爱宠一辈子","一宠一芯一档一码"]) ok(html.includes(exact),"exact brand copy missing: "+exact);
-ok(html.includes("一宠一芯一档一码"),"identity slogan missing");
+for(const key of ["companyName","brandName","platformName","platformEnglishName","tagline","identity","domain"]) ok(html.includes(brandData[key]),"brand source not rendered on homepage: "+key);
+ok(html.includes(brandData.brandName)&&notFound.includes(brandData.tagline)&&notFound.includes(brandData.companyName),"404 brand source rendering drift");
 ok(html.includes('href="https://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat HTTPS link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
-ok(html.includes('href="/news/">媒体报道</a>'),"footer media coverage link missing");
+ok(html.includes('href="'+siteData.mediaPath+'">'+siteData.mediaLabel+'</a>'),"footer media coverage link missing");
 ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link style missing");
 
 
@@ -227,7 +234,7 @@ ok(!fs.existsSync(path.join(root,"css/landing.css")),"landing.css must be remove
 ok(!html.includes("./css/landing.css"),"index must not reference removed landing.css");
 ok(!/@media/.test(read("css/sections.css")),"sections.css must not contain breakpoint rules");
 
-ok(readme.includes("2026.10.08-r17.0-content-single-source"),"README version is out of sync");
+ok(readme.includes(siteData.uiVersion),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
@@ -245,7 +252,7 @@ ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility 
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
 const newsDetailFiles=newsData.map(item=>"news/"+item.slug+"/index.html");
-const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","content/news.json","scripts/generate-news.mjs",...newsDetailFiles];
+const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","content/news.json","content/brand.json","content/site.json","scripts/generate-news.mjs","scripts/generate-site.mjs",...newsDetailFiles];
 for(const file of localFiles)ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
