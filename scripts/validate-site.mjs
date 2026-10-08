@@ -203,7 +203,7 @@ ok(!read("news/2026-09-15-mengchong/index.html").includes("/css/news.css"),"lega
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.08-r16.3-media-news-sync"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r16.4-media-anshanyun"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
