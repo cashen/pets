@@ -1,6 +1,6 @@
-# 梦宠数智官网 R15
+# 梦宠数智官网 R17
 
-当前版本：2026.10.08-r16.5-css-convergence
+当前版本：2026.10.08-r17.0-content-single-source
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -58,6 +58,15 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 
 正式样式按 tokens / base / layout / components / sections / responsive 分层；首页原 landing composition 层已收敛到 components/sections，首页所有 breakpoint 规则统一进入 `css/responsive.css`。媒体报道继续由 `css/media.css` 独立负责页面级样式与自身响应式规则；旧的 `news.css` 引用已清除。
 
+## Media Content Source
+
+媒体报道采用单源内容模型：
+
+- `content/news.json` 是唯一事实来源，只保存报道日期、来源、标题、摘要、作者/编辑与原文地址。
+- `scripts/generate-news.mjs` 在构建前将同一数据生成到首页、`/news/` 归档页与各报道详情页。
+- `node scripts/generate-news.mjs` 用于生成；`node scripts/generate-news.mjs --check` 只检查生成结果是否与内容源一致，不修改文件。
+- 报道按日期倒序输出；`slug` 是稳定的详情路由标识，不能随意变更。
+- 不在浏览器运行时 fetch JSON；Cloudflare 继续直接提供静态 HTML，保持 SEO、首屏和静态部署特性。
 ## Validation
 
 CI 分为静态结构/内容契约、Wrangler deployment dry-run 与真实 Chromium 浏览器 smoke matrix。浏览器矩阵覆盖 Desktop、Laptop、Tablet portrait、Tablet landscape、Mobile portrait、Mobile landscape、360px 与 412px 小屏。
