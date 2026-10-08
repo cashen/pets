@@ -1,6 +1,6 @@
 # 梦宠数智官网 R17
 
-当前版本：2026.10.08-r18.0-core-content-governance
+当前版本：`2026.10.08-r18.0-core-content-governance`
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
