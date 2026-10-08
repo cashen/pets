@@ -1,6 +1,6 @@
 # 梦宠数智官网 R15
 
-当前版本：2026.10.08-r16.4-media-anshanyun
+当前版本：2026.10.08-r16.5-css-convergence
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -56,7 +56,7 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 
 ## CSS Architecture
 
-正式样式按 tokens / base / layout / components / sections / responsive / landing composition 分层；历史 R10 文件名已移除。媒体报道使用统一的 `css/media.css`，首页、归档页与报道记录页共用同一套媒体样式；旧的 `news.css` 引用已清除。
+正式样式按 tokens / base / layout / components / sections / responsive 分层；首页原 landing composition 层已收敛到 components/sections，首页所有 breakpoint 规则统一进入 `css/responsive.css`。媒体报道继续由 `css/media.css` 独立负责页面级样式与自身响应式规则；旧的 `news.css` 引用已清除。
 
 ## Validation
 
@@ -99,4 +99,4 @@ Eco 使用明确的命名网格区域契约：
 
 ## Asset Cache Versioning
 
-`ui-version` 表示官网发布版本；资源 URL 的 `?v=` 采用资产组缓存版本，两者不强制相同。404 页面与当前发布资源版本保持一致。
+`ui-version` 表示官网发布版本；资源 URL 的 `?v=` 采用资产组缓存版本，两者不强制相同。CSS 收敛阶段统一更新首页核心样式资源缓存版本，避免旧 stylesheet 与新结构混用。404 页面与当前发布资源版本保持一致。
