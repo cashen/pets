@@ -165,6 +165,13 @@ ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 
 
 ok(html.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"homepage media source link missing");
+ok(html.includes('class="media-list" aria-label="媒体报道列表"'),"homepage media list wrapper missing");
+ok((html.match(/class="media-card"/g)||[]).length===2,"homepage media coverage should contain two reports");
+ok(html.includes('href="https://mp.weixin.qq.com/s/k1gTYDfzZRunI5d4Y9rrcA"'),"latest media source link missing");
+ok(html.includes("2026首届宠物产业源头博览会开幕，梦宠数智携宠物全生命周期大数据平台亮相"),"latest media title missing");
+ok(html.includes("报道关注2026首届宠物产业源头博览会开幕，以及梦宠数智携宠物全生命周期大数据平台亮相。"),"latest media summary missing");
+ok(html.indexOf("2026.10.07") < html.indexOf("2026.09.15"),"media coverage must remain reverse chronological");
+
 ok(newsIndex.includes('class="news-list"'),"brand news index missing list");
 ok(newsIndex.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"media index source link missing");
 

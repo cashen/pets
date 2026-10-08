@@ -13,6 +13,15 @@
   margin-bottom:30px;
 }
 
+.media-list{
+  display:grid;
+  gap:0;
+}
+
+.media-card + .media-card{
+  border-top:0;
+}
+
 .media-kicker{
   display:grid;
   gap:8px;
