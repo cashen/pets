@@ -58,8 +58,10 @@ ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
-ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r154" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
-ok(read("css/sections.css").includes(".hero-image-frame img{width:100%;aspect-ratio:1256/471;object-fit:cover}"),"hero image source-ratio contract missing");
+ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r160" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
+ok(read("css/sections.css").includes(".hero-image-frame{position:relative;overflow:hidden;border:0;padding:0;"),"hero frame must have no border or padding");
+ok(read("css/sections.css").includes(".hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial}"),"hero image must render at natural aspect ratio without crop");
+ok(!read("css/responsive.css").includes("hero-image-frame{border-width:7px"),"responsive hero border override remains");
 ok(read("css/landing.css").includes(".hero-image-frame{\n  width:100%;\n  grid-column:1 / -1;"),"hero frame full-track contract missing");
 ok(read("css/landing.css").includes(".hero-media .hero-orbit-c{grid-column:1}\n  .hero-media .hero-orbit-d{grid-column:2}"),"mobile Hero orbit grid mapping missing");
 ok(!/\.hero-image-frame img\{[^}]*aspect-ratio:(?:4\/3|16\/10)/.test(css),"legacy hero crop ratio remains in base CSS");
@@ -184,7 +186,7 @@ ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage"
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.08-r15.4-exact-user-hero"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r16.0-natural-hero"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
