@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: node scripts/generate-site.mjs --check
       - run: node scripts/generate-news.mjs --check
       - run: node scripts/validate-site.mjs
       - name: Validate Wrangler deployment
