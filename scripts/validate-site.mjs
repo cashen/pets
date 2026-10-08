@@ -8,7 +8,7 @@ const newsIndex=read("news/index.html");
 const notFound=read("404.html");
 const readme=read("README.md");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
-const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/landing.css","css/wechat-footer.css","css/media.css","css/error.css"];
+const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/wechat-footer.css","css/media.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
@@ -43,7 +43,7 @@ const scanCssStructure=(source)=>{
 };
 for(const file of cssFiles){const result=scanCssStructure(read(file));ok(result.ok,"CSS structure error in "+file+": "+(result.error||"unknown"));}
 
-const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"],"css/landing.css":[".hero{",".hero-media{",".hero-orbit{","#about>.wrap{","#ability .ability-stack{"]};
+const cssContracts={"css/sections.css":[".hero{",".about-story{",".feature-grid{",".value-grid{",".ability-stack{",".eco-board{",".eco-center{",".eco-node{",".contact{"],"css/components.css":[".site-header{",".nav-menu{",".nav-menu-list{"],"css/layout.css":[".wrap{",".section{",".section-head{",".lead{"]};
 for(const [file,selectors] of Object.entries(cssContracts)){const source=read(file);for(const selector of selectors)ok(source.includes(selector),"CSS selector contract missing in "+file+": "+selector);}
 const ecoResponsiveContract=[
   {name:"tablet",pattern:/@media\(max-width:1100px\)/,areas:'grid-template-areas:"center center" "brand food" "insurance hospital" "park salon"',center:"width:min(220px,100%);aspect-ratio:1;min-height:0;border-radius:50%"},
@@ -69,8 +69,8 @@ ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/image
 ok(read("css/sections.css").includes(".hero-image-frame{position:relative;overflow:hidden;border:0;padding:0;"),"hero frame must have no border or padding");
 ok(read("css/sections.css").includes(".hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial}"),"hero image must render at natural aspect ratio without crop");
 ok(!read("css/responsive.css").includes("hero-image-frame{border-width:7px"),"responsive hero border override remains");
-ok(read("css/landing.css").includes(".hero-image-frame{\n  width:100%;\n  grid-column:1 / -1;"),"hero frame full-track contract missing");
-ok(read("css/landing.css").includes(".hero-media .hero-orbit-c{grid-column:1}\n  .hero-media .hero-orbit-d{grid-column:2}"),"mobile Hero orbit grid mapping missing");
+ok(read("css/sections.css").includes(".hero-image-frame{\n  width:100%;\n  grid-column:1 / -1;"),"hero frame full-track contract missing");
+ok(read("css/responsive.css").includes(".hero-media .hero-orbit-c{grid-column:1}\n  .hero-media .hero-orbit-d{grid-column:2}"),"mobile Hero orbit grid mapping missing");
 ok(!/\.hero-image-frame img\{[^}]*aspect-ratio:(?:4\/3|16\/10)/.test(css),"legacy hero crop ratio remains in base CSS");
 ok(!responsive.includes(".hero-image-frame img{aspect-ratio:4/3}")&&!responsive.includes(".hero-image-frame img{aspect-ratio:16/10}"),"responsive hero crop override remains");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
@@ -93,7 +93,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.08-r16\.4-media-anshanyun"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.08-r16\.5-css-convergence"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -201,9 +201,12 @@ ok(!html.includes("有关梦宠数智的公开报道。"),"redundant media cover
 ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage");
 ok(!read("news/2026-09-15-mengchong/index.html").includes("/css/news.css"),"legacy missing news.css reference remains");
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
-ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
+ok(!fs.existsSync(path.join(root,"css/landing.css")),"landing.css must be removed after CSS convergence");
+ok(!html.includes("./css/landing.css"),"index must not reference removed landing.css");
+ok(!/@media/.test(read("css/sections.css")),"sections.css must not contain breakpoint rules");
+ok(!/@media/.test(read("css/components.css")),"components.css must not contain breakpoint rules");
 
-ok(readme.includes("2026.10.08-r16.4-media-anshanyun"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r16.5-css-convergence"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
@@ -244,7 +247,7 @@ ok(/.eco-center{[^}]*min-height:0/.test(css),"ecosystem center must not force un
 ok((css.match(/\.eco-node\.e[1-6]\{grid-area:/g)||[]).length===6,"ecosystem node area mapping must define all six partners");
 ok(/.nav-menu,.nav-menu-list{min-height:0}/.test(responsive),"menu flex children must allow internal scroll");
 ok(/orientation:landscape/.test(responsive),"landscape-specific responsive rule missing");
-ok(/orientation: landscape\) and \(min-width:761px\) and \(max-width:1100px\)/.test(read("css/landing.css")),"tablet landscape Hero contract missing");
+ok(/orientation: landscape\) and \(min-width:761px\) and \(max-width:1100px\)/.test(responsive),"tablet landscape Hero contract missing");
 ok(/--type-lead:14px;--type-body:14px;--type-card:14px;--type-ui:14px;--type-meta:12px/.test(responsive),"landscape mobile typography contract missing");
 for(const token of ["--type-hero","--type-section","--type-lead","--type-body","--type-card","--type-ui","--type-meta","--type-micro","--weight-display","--weight-heading","--weight-ui","--weight-body","--lh-display","--lh-heading","--lh-lead","--lh-body","--lh-card","--lh-meta","--lh-micro","--ls-display","--ls-heading"]) ok(css.includes(token),"typography token missing: "+token);
 ok(!/font-weight\s*:\s*(850|900)\b/.test(css),"legacy heavy weight 850/900 remains in CSS");
@@ -254,7 +257,7 @@ ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must no
 ok(!/--type-(lead|body|card|ui|meta):1[01]px/.test(responsive),"landscape mobile typography is undersized");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R15 architecture stabilization static contracts");
+console.log("VALIDATION PASSED: R16.5 CSS convergence static contracts");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
