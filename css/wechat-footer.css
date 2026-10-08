@@ -3,7 +3,7 @@
 */
 .footer-in{
   display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-columns:minmax(0,1fr) auto auto;
   align-items:center;
   gap:42px;
   width:min(var(--r10-max,1200px),calc(100% - (var(--pad) * 2)));
@@ -22,6 +22,28 @@
   line-height:var(--lh-meta);
 }
 .footer-copy b{color:#fff}
+.footer-media{
+  display:flex;
+  align-items:center;
+  min-width:0;
+}
+.footer-media a{
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  padding:9px 12px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;
+  color:#EBDDD3;
+  font-size:var(--type-ui);
+  font-weight:var(--weight-ui);
+}
+.footer-media a:hover,
+.footer-media a:focus-visible{
+  border-color:rgba(255,255,255,.34);
+  background:rgba(255,255,255,.06);
+  color:#fff;
+}
 .footer-wechat{
   display:grid;
   grid-template-columns:auto;

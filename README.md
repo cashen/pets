@@ -1,6 +1,6 @@
 # 梦宠数智官网 R15
 
-当前版本：2026.10.08-r16.2-direct-png
+当前版本：2026.10.08-r16.3-media-news-sync
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -56,7 +56,7 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 
 ## CSS Architecture
 
-正式样式按 tokens / base / layout / components / sections / responsive / landing composition 分层；历史 R10 文件名已移除。媒体报道使用独立的 `css/media.css`，避免继续沿用 Brand News 语义。
+正式样式按 tokens / base / layout / components / sections / responsive / landing composition 分层；历史 R10 文件名已移除。媒体报道使用统一的 `css/media.css`，首页、归档页与报道记录页共用同一套媒体样式；旧的 `news.css` 引用已清除。
 
 ## Validation
 
@@ -79,7 +79,7 @@ Eco 使用明确的命名网格区域契约：
 
 ## Media Coverage Contract
 
-媒体报道只保存来源、日期、标题、摘要与原文地址；当前报道仍可保留简洁的官网记录页，但不复制外部文章正文，不增加自我解释型导语。
+媒体报道只保存来源、日期、标题、摘要与原文地址；首页与 `/news/` 保持同一报道集合并按日期倒序，Footer 提供低频入口；官网记录页不复制外部文章正文，不增加自我解释型导语。
 
 ## Human Copy Contract
 
