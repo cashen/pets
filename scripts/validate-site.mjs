@@ -16,7 +16,7 @@ const brand=read("assets/brand/brand.svg");
 const mark=read("assets/brand/logo-mark.svg");
 const responsive=read("css/responsive.css");
 const failures=[];
-const heroBinary=readBytes("assets/images/hero/hero.webp");
+const heroBinary=fs.readFileSync(path.join(root,"assets/images/hero/hero.webp"));
 const heroRead32LE=i=>(heroBinary[i]|(heroBinary[i+1]<<8)|(heroBinary[i+2]<<16)|(heroBinary[i+3]<<24))>>>0;
 ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
 ok(heroRead32LE(4)===heroBinary.length-8,"Hero RIFF size field mismatch");
