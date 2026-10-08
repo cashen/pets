@@ -44,6 +44,7 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     expect(heroMediaContract.naturalHeight, device.name + " Hero natural height").toBe(471);
     expect(heroMediaContract.nonBlank, device.name + " Hero decoded pixels").toBeGreaterThan(heroMediaContract.total * 0.05);
     expect(heroMediaContract.alphaNonZero, device.name + " Hero opaque pixels").toBe(heroMediaContract.total);
+    expect(await page.locator(".hero-image-frame img").getAttribute("src"), device.name + " Hero PNG source").toContain("hero.png?v=20261008-r162");
     const heroMetrics = await page.locator(".hero-media").evaluate(media => {
       const frame = media.querySelector(".hero-image-frame");
       const img = media.querySelector(".hero-image-frame img");
