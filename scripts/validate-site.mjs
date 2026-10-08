@@ -227,7 +227,7 @@ ok(!fs.existsSync(path.join(root,"css/landing.css")),"landing.css must be remove
 ok(!html.includes("./css/landing.css"),"index must not reference removed landing.css");
 ok(!/@media/.test(read("css/sections.css")),"sections.css must not contain breakpoint rules");
 
-ok(readme.includes("2026.10.08-r16.5-css-convergence"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r17.0-content-single-source"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
@@ -244,7 +244,6 @@ ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wech
 ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility text");
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
-for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 const newsDetailFiles=newsData.map(item=>"news/"+item.slug+"/index.html");
 const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","content/news.json","scripts/generate-news.mjs",...newsDetailFiles];
 for(const file of localFiles)ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
