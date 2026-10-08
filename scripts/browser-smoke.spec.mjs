@@ -24,6 +24,26 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     await page.goto(BASE + "/", {waitUntil:"networkidle"});
     await expect(page.locator("main#top")).toBeVisible();
     await expect(page.locator("main#top > section")).toHaveCount(8);
+    const heroMediaContract = await page.locator(".hero-image-frame img").evaluate(async img => {
+      await img.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d", {willReadFrequently:true});
+      ctx.drawImage(img, 0, 0);
+      const rgba = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let nonBlank = 0, alphaNonZero = 0;
+      for (let i=0;i<rgba.length;i+=4) {
+        if (rgba[i] || rgba[i+1] || rgba[i+2]) nonBlank++;
+        if (rgba[i+3]) alphaNonZero++;
+      }
+      return {naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,complete:img.complete,nonBlank,alphaNonZero,total:canvas.width*canvas.height};
+    });
+    expect(heroMediaContract.complete, device.name + " Hero loaded").toBeTruthy();
+    expect(heroMediaContract.naturalWidth, device.name + " Hero natural width").toBe(1256);
+    expect(heroMediaContract.naturalHeight, device.name + " Hero natural height").toBe(471);
+    expect(heroMediaContract.nonBlank, device.name + " Hero decoded pixels").toBeGreaterThan(heroMediaContract.total * 0.05);
+    expect(heroMediaContract.alphaNonZero, device.name + " Hero opaque pixels").toBe(heroMediaContract.total);
     const heroMetrics = await page.locator(".hero-media").evaluate(media => {
       const frame = media.querySelector(".hero-image-frame");
       const img = media.querySelector(".hero-image-frame img");
