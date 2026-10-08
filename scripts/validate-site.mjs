@@ -93,7 +93,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.08-r16\.3-media-news-sync"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.08-r16\.4-media-anshanyun"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -177,16 +177,18 @@ ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link s
 
 ok(html.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"homepage media source link missing");
 ok(html.includes('class="media-list" aria-label="媒体报道列表"'),"homepage media list wrapper missing");
-ok((html.match(/class="media-card"/g)||[]).length===2,"homepage media coverage should contain two reports");
+ok((html.match(/class="media-card"/g)||[]).length===3,"homepage media coverage should contain two reports");
 ok(html.includes('href="https://mp.weixin.qq.com/s/k1gTYDfzZRunI5d4Y9rrcA"'),"latest media source link missing");
 ok(html.includes("2026首届宠物产业源头博览会开幕，梦宠数智携宠物全生命周期大数据平台亮相"),"latest media title missing");
 ok(html.includes("报道关注2026首届宠物产业源头博览会开幕，以及梦宠数智携宠物全生命周期大数据平台亮相。"),"latest media summary missing");
-ok(html.indexOf("2026.10.07") < html.indexOf("2026.09.15"),"media coverage must remain reverse chronological");
+ok(html.indexOf("2026.10.07") < html.indexOf("2026.10.03") && html.indexOf("2026.10.03") < html.indexOf("2026.09.15"),"media coverage must remain reverse chronological");
 
 ok(newsIndex.includes('class="news-list"'),"brand news index missing list");
-ok((newsIndex.match(/class="news-list-card"/g)||[]).length===2,"media coverage index should contain two reports");
-ok(newsIndex.indexOf("2026.10.07") < newsIndex.indexOf("2026.09.15"),"news index must remain reverse chronological");
+ok((newsIndex.match(/class="news-list-card"/g)||[]).length===3,"media coverage index should contain three reports");
+ok(newsIndex.indexOf("2026.10.07") < newsIndex.indexOf("2026.10.03") && newsIndex.indexOf("2026.10.03") < newsIndex.indexOf("2026.09.15"),"news index must remain reverse chronological");
 ok(newsIndex.includes('href="/news/2026-10-07-source-expo/"'),"latest media internal article link missing");
+ok(newsIndex.includes('href="/news/2026-10-03-anshanyun/"'),"Anshan media internal article link missing");
+ok(newsIndex.includes("鞍山萌宠进入数字时代！"),"Anshan media title missing");
 ok(newsIndex.includes('href="/news/2026-09-15-mengchong/"'),"existing media internal article link missing");
 ok(newsIndex.includes('href="/news/2026-10-07-source-expo/">'),"latest media detail destination missing");
 
@@ -201,13 +203,15 @@ ok(!read("news/2026-09-15-mengchong/index.html").includes("/css/news.css"),"lega
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.08-r16.3-media-news-sync"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r16.4-media-anshanyun"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
 ok(html.includes("欢迎在宠物身份、健康、溯源及数据服务等方向开展合作。"),"contact cooperation copy is not humanized");
 ok(newsIndex.includes("媒体报道"),"media coverage index label missing");
 ok(read("news/2026-10-07-source-expo/index.html").includes("k1gTYDfzZRunI5d4Y9rrcA"),"latest media article source link missing");
+ok(read("news/2026-10-03-anshanyun/index.html").includes("28630073_31203_asy.html"),"Anshan media article source link missing");
+ok(read("news/2026-10-03-anshanyun/index.html").includes("鞍山萌宠进入数字时代！"),"Anshan media article title missing");
 ok(read("news/2026-10-07-source-expo/index.html").includes("2026首届宠物产业源头博览会开幕，梦宠数智携宠物全生命周期大数据平台亮相"),"latest media article title missing");
 ok(read("news/2026-09-15-mengchong/index.html").includes("/css/media.css?v=20261006-r150"),"existing media article stylesheet reference missing");
 
@@ -221,7 +225,7 @@ ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wech
 ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility text");
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
-const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","news/2026-09-15-mengchong/index.html","news/2026-10-07-source-expo/index.html"];
+const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","news/2026-09-15-mengchong/index.html","news/2026-10-07-source-expo/index.html","news/2026-10-03-anshanyun/index.html"];
 for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
