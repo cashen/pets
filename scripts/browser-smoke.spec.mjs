@@ -24,7 +24,27 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     await page.goto(BASE + "/", {waitUntil:"networkidle"});
     await expect(page.locator("main#top")).toBeVisible();
     await expect(page.locator("main#top > section")).toHaveCount(8);
-    const heroMetrics = await page.locator(".hero-media").evaluate(media => {
+        const heroPixelStats = await page.locator(".hero-image-frame img").evaluate(async img => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d", {willReadFrequently:true});
+      ctx.drawImage(img, 0, 0);
+      const rgba = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const digest = await crypto.subtle.digest("SHA-256", rgba);
+      const sha = [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, "0")).join("");
+      let nonBlank = 0, alphaNonZero = 0;
+      for (let i=0;i<rgba.length;i+=4) {
+        if (rgba[i] || rgba[i+1] || rgba[i+2]) nonBlank++;
+        if (rgba[i+3]) alphaNonZero++;
+      }
+      return {sha, nonBlank, alphaNonZero, total: canvas.width * canvas.height};
+    });
+    expect(heroPixelStats.nonBlank, device.name + " Hero decoded pixels").toBeGreaterThan(heroPixelStats.total * 0.05);
+    expect(heroPixelStats.alphaNonZero, device.name + " Hero alpha pixels").toBe(heroPixelStats.total);
+    expect(heroPixelStats.sha, device.name + " Hero pixel identity").toBe("3ae5c6dd959d5175be31a4ab84c6dc78a6e8d809da9f033d0829b08b47b83305");
+
+const heroMetrics = await page.locator(".hero-media").evaluate(media => {
       const frame = media.querySelector(".hero-image-frame");
       const img = media.querySelector(".hero-image-frame img");
       const mediaRect = media.getBoundingClientRect();

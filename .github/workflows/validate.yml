@@ -28,5 +28,71 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Start local static server
         run: python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/pets-http.log 2>&1 & echo $! > /tmp/pets-http.pid
+      - name: Compare historical Hero assets to supplied source
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          git fetch --unshallow || true
+          for commit in c5f05f431c6b9a2e844dd7cde034c9e7679fb920 18640a5f0ecc12048a51816c9a9f564197506f2c c48d8ffe6b02582a88b46afd1b38e70da5bb9c2d 10815b20e4f6127674ce11f084b602e07f307524 2585b6677a0c59617480bcabaec1571033300a73 9a1c1d4867a4a92eaeec9d03d6ea830107cfbf32; do
+            git show "$commit:assets/images/hero/hero.webp" > /tmp/hero-$commit.webp || continue
+            echo "COMMIT $commit BYTES $(wc -c < /tmp/hero-$commit.webp)"
+            ffmpeg -loglevel error -y -i /tmp/hero-$commit.webp -f rawvideo -pix_fmt rgba - | sha256sum | awk '{print "PIXEL_SHA256", $1}' || true
+          done
+      - name: Inspect Hero container structure
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends webp ffmpeg
+          file assets/images/hero/hero.webp
+          webpinfo assets/images/hero/hero.webp || true
+          ffprobe -hide_banner assets/images/hero/hero.webp || true
+          python3 - <<'PY'
+          from pathlib import Path
+          b=Path("assets/images/hero/hero.webp").read_bytes()
+          print("BYTES", len(b))
+          print("HEADER", b[:32].hex(" "))
+          print("RIFF_SIZE_FIELD", int.from_bytes(b[4:8],"little"))
+          print("RIFF_EXPECTED_SIZE_FIELD", len(b)-8)
+          print("WEBP_TYPE", b[8:12])
+          pos=12
+          while pos+8<=len(b) and pos<512:
+              tag=b[pos:pos+4]
+              size=int.from_bytes(b[pos+4:pos+8],"little")
+              print("CHUNK",pos,tag,size)
+              pos += 8 + size + (size & 1)
+          PY
+      - name: Test WebP RIFF and VP8 length repair
+        run: |
+          cp assets/images/hero/hero.webp /tmp/hero-repaired.webp
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("/tmp/hero-repaired.webp")
+          b=bytearray(p.read_bytes())
+          riff=len(b)-8
+          vp8=len(b)-20
+          b[4:8]=riff.to_bytes(4,"little")
+          b[16:20]=vp8.to_bytes(4,"little")
+          p.write_bytes(b)
+          print("REPAIRED_RIFF_SIZE", riff)
+          print("REPAIRED_VP8_SIZE", vp8)
+          PY
+          dwebp /tmp/hero-repaired.webp -o /tmp/hero-repaired.png
+          repaired_sha=$(ffmpeg -loglevel error -i /tmp/hero-repaired.webp -f rawvideo -pix_fmt rgba - | sha256sum | cut -d' ' -f1)
+          echo "REPAIRED_RGBA_SHA256 $repaired_sha"
+          test "$repaired_sha" = "3ae5c6dd959d5175be31a4ab84c6dc78a6e8d809da9f033d0829b08b47b83305"
+      - name: Inspect Hero binary alpha and decoded image
+        run: |
+          python3 -m pip install --disable-pip-version-check --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image
+          im = Image.open("assets/images/hero/hero.webp").convert("RGBA")
+          print("HERO_FORMAT", Image.open("assets/images/hero/hero.webp").format)
+          print("HERO_SIZE", im.size)
+          print("HERO_MODE", im.mode)
+          print("HERO_RGB_EXTREMA", im.getchannel("R").getextrema(), im.getchannel("G").getextrema(), im.getchannel("B").getextrema())
+          print("HERO_ALPHA_EXTREMA", im.getchannel("A").getextrema())
+          print("HERO_ALPHA_UNIQUE", len(im.getchannel("A").getcolors(maxcolors=im.width*im.height+1) or []))
+          bbox = im.getchannel("RGB").getbbox()
+          print("HERO_RGB_BBOX", bbox)
+          PY
       - name: Run browser smoke matrix
         run: npx playwright test scripts/browser-smoke.spec.mjs --workers=1 --reporter=line
