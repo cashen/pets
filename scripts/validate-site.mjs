@@ -17,14 +17,13 @@ const mark=read("assets/brand/logo-mark.svg");
 const responsive=read("css/responsive.css");
 const failures=[];
 const ok=(condition,message)=>{if(!condition)failures.push(message)};
-const heroBinary=fs.readFileSync(path.join(root,"assets/images/hero/hero.webp"));
-const heroRead32LE=i=>(heroBinary[i]|(heroBinary[i+1]<<8)|(heroBinary[i+2]<<16)|(heroBinary[i+3]<<24))>>>0;
-ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
-ok(heroRead32LE(4)===heroBinary.length-8,"Hero RIFF size field mismatch");
-ok(heroBinary.subarray(12,16).toString("ascii")==="VP8 ","Hero must use VP8 chunk");
-ok(heroRead32LE(16)===heroBinary.length-20,"Hero VP8 chunk size field mismatch");
-ok(heroBinary[23]===0x9d&&heroBinary[24]===0x01&&heroBinary[25]===0x2a,"Hero VP8 frame signature missing");
-ok((heroBinary[26]|(heroBinary[27]<<8))===1256 && (heroBinary[28]|(heroBinary[29]<<8))===471,"Hero intrinsic frame dimensions mismatch");
+const heroBinary=fs.readFileSync(path.join(root,"assets/images/hero/hero.png"));
+ok(heroBinary.subarray(0,8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])),"Hero binary must be a valid PNG");
+const heroWidth=heroBinary.readUInt32BE(16);
+const heroHeight=heroBinary.readUInt32BE(20);
+ok(heroWidth===1256 && heroHeight===471,"Hero intrinsic PNG dimensions mismatch");
+ok(heroBinary[24]===8,"Hero PNG bit depth must be 8");
+ok(heroBinary[25]===2,"Hero PNG must be truecolor RGB");
 
 const scanCssStructure=(source)=>{
   let brace=0,paren=0,bracket=0,string=null,escaped=false,comment=false,error="";
@@ -66,7 +65,7 @@ ok((read("css/tokens.css").match(/--safe-bottom:env\(safe-area-inset-bottom,0px\
 ok((read("css/tokens.css").match(/--safe-left:env\(safe-area-inset-left,0px\)/g)||[]).length===1,"safe-area left token duplicated");
 ok((read("css/base.css").match(/html\.menu-open,body\.menu-open\{overflow:hidden;overscroll-behavior:none\}/g)||[]).length===1,"menu scroll-lock rule duplicated");
 ok(html.includes('company-facade.webp?v=20261006-r100" alt="产业园建筑外观" width="400" height="206"'),"company image dimensions contract missing");
-ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.webp\?v=20261008-r161" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
+ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/images\/hero\/hero\.png\?v=20261008-r162" width="1256" height="471"[^>]*>/.test(html),"hero image intrinsic dimensions contract missing");
 ok(read("css/sections.css").includes(".hero-image-frame{position:relative;overflow:hidden;border:0;padding:0;"),"hero frame must have no border or padding");
 ok(read("css/sections.css").includes(".hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial}"),"hero image must render at natural aspect ratio without crop");
 ok(!read("css/responsive.css").includes("hero-image-frame{border-width:7px"),"responsive hero border override remains");
@@ -94,7 +93,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.08-r16\.1-webp-header-repair"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.08-r16\.2-direct-png"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -194,7 +193,7 @@ ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage"
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/r10-landing.css")),"legacy R10 landing stylesheet remains");
 
-ok(readme.includes("2026.10.08-r16.1-webp-header-repair"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r16.2-direct-png"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
