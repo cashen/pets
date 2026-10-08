@@ -16,6 +16,7 @@ const brand=read("assets/brand/brand.svg");
 const mark=read("assets/brand/logo-mark.svg");
 const responsive=read("css/responsive.css");
 const failures=[];
+const ok=(condition,message)=>{if(!condition)failures.push(message)};
 const heroBinary=fs.readFileSync(path.join(root,"assets/images/hero/hero.webp"));
 const heroRead32LE=i=>(heroBinary[i]|(heroBinary[i+1]<<8)|(heroBinary[i+2]<<16)|(heroBinary[i+3]<<24))>>>0;
 ok(heroBinary.subarray(0,4).toString("ascii")==="RIFF"&&heroBinary.subarray(8,12).toString("ascii")==="WEBP","Hero binary must be a valid WebP");
@@ -24,7 +25,6 @@ ok(heroBinary.subarray(12,16).toString("ascii")==="VP8 ","Hero must use VP8 chun
 ok(heroRead32LE(16)===heroBinary.length-20,"Hero VP8 chunk size field mismatch");
 ok(heroBinary[23]===0x9d&&heroBinary[24]===0x01&&heroBinary[25]===0x2a,"Hero VP8 frame signature missing");
 ok((heroBinary[26]|(heroBinary[27]<<8))===1256 && (heroBinary[28]|(heroBinary[29]<<8))===471,"Hero intrinsic frame dimensions mismatch");
-const ok=(condition,message)=>{if(!condition)failures.push(message)};
 
 const scanCssStructure=(source)=>{
   let brace=0,paren=0,bracket=0,string=null,escaped=false,comment=false,error="";
