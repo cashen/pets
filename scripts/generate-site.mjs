@@ -119,7 +119,7 @@ function notFoundHeadBlock(){
 function notFoundFooterBlock(){return "<footer class=\"error-footer\"><span><b>"+esc(brand.brandName)+"</b> · "+esc(brand.tagline)+"</span><span>© "+site.copyrightYear+" "+esc(brand.companyName)+"</span></footer>";}
 function navigationJs(){
   const items=site.navigation.map((item,i)=>"    {id:\""+item.id+"\",label:\""+item.label+"\",menuLabel:\""+item.menuLabel+"\",targetId:\""+item.targetId+"\",sectionId:\""+item.sectionId+"\"}"+(i===site.navigation.length-1?"":","));
-  return ["(() => {",'  "use strict";',"","  const items = [","<!-- NAVIGATION:GENERATED:START -->",items.join("\n"),"<!-- NAVIGATION:GENERATED:END -->","  ];","","  window.PetsNavigation = Object.freeze({","    items: items.map(item => Object.freeze({...item}))","  });","})();"].join("\n");
+  return ["(() => {",'  "use strict";',"","  const items = [","<!-- NAVIGATION:GENERATED:START -->",items.join("\n"),"<!-- NAVIGATION:GENERATED:END -->","  ];","","  window.PetsNavigation = Object.freeze({","    items: items.map(item => Object.freeze({...item}))","  });","})();",""].join("\n");
 }
 validateSource();
 
