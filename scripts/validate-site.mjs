@@ -5,6 +5,7 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const html=read("index.html");
 const newsIndex=read("news/index.html");
+const newsData=JSON.parse(read("content/news.json"));
 const notFound=read("404.html");
 const readme=read("README.md");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
@@ -93,7 +94,7 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
-ok(/meta name="ui-version" content="2026\.10\.08-r16\.5-css-convergence"/.test(html),"wrong ui version");
+ok(/meta name="ui-version" content="2026\.10\.08-r17\.0-content-single-source"/.test(html),"wrong ui version");
 ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
@@ -175,22 +176,44 @@ ok(html.includes('href="/news/">媒体报道</a>'),"footer media coverage link m
 ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link style missing");
 
 
-ok(html.includes('href="https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"'),"homepage media source link missing");
-ok(html.includes('class="media-list" aria-label="媒体报道列表"'),"homepage media list wrapper missing");
-ok((html.match(/class="media-card"/g)||[]).length===3,"homepage media coverage should contain two reports");
-ok(html.includes('href="https://mp.weixin.qq.com/s/k1gTYDfzZRunI5d4Y9rrcA"'),"latest media source link missing");
-ok(html.includes("2026首届宠物产业源头博览会开幕，梦宠数智携宠物全生命周期大数据平台亮相"),"latest media title missing");
-ok(html.includes("报道关注2026首届宠物产业源头博览会开幕，以及梦宠数智携宠物全生命周期大数据平台亮相。"),"latest media summary missing");
-ok(html.indexOf("2026.10.07") < html.indexOf("2026.10.03") && html.indexOf("2026.10.03") < html.indexOf("2026.09.15"),"media coverage must remain reverse chronological");
 
-ok(newsIndex.includes('class="news-list"'),"brand news index missing list");
-ok((newsIndex.match(/class="news-list-card"/g)||[]).length===3,"media coverage index should contain three reports");
-ok(newsIndex.indexOf("2026.10.07") < newsIndex.indexOf("2026.10.03") && newsIndex.indexOf("2026.10.03") < newsIndex.indexOf("2026.09.15"),"news index must remain reverse chronological");
-ok(newsIndex.includes('href="/news/2026-10-07-source-expo/"'),"latest media internal article link missing");
-ok(newsIndex.includes('href="/news/2026-10-03-anshanyun/"'),"Anshan media internal article link missing");
-ok(newsIndex.includes("鞍山萌宠进入数字时代！"),"Anshan media title missing");
-ok(newsIndex.includes('href="/news/2026-09-15-mengchong/"'),"existing media internal article link missing");
-ok(newsIndex.includes('href="/news/2026-10-07-source-expo/">'),"latest media detail destination missing");
+const newsSorted=[...newsData].sort((a,b)=>b.date.localeCompare(a.date)||a.slug.localeCompare(b.slug));
+const htmlEscape=value=>String(value).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+ok(Array.isArray(newsData)&&newsData.length>0,"news source must contain at least one record");
+ok(JSON.stringify(newsData)===JSON.stringify(newsSorted),"news source must be reverse chronological");
+const newsSlugs=new Set(),newsUrls=new Set();
+for(const item of newsData){
+  for(const field of ["slug","date","source","category","title","summary","sourceUrl"])ok(typeof item[field]==="string"&&item[field].trim(),"news source field missing: "+field+" / "+(item.slug||"unknown"));
+  ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug),"invalid news slug: "+item.slug);
+  ok(/^\d{4}-\d{2}-\d{2}$/.test(item.date),"invalid news date: "+item.slug);
+  ok(/^https?:\/\//.test(item.sourceUrl),"news source URL must be http(s): "+item.slug);
+  ok(!newsSlugs.has(item.slug),"duplicate news slug: "+item.slug);
+  ok(!newsUrls.has(item.sourceUrl),"duplicate news source URL: "+item.sourceUrl);
+  newsSlugs.add(item.slug);newsUrls.add(item.sourceUrl);
+}
+ok((html.match(/class="media-card"/g)||[]).length===newsData.length,"homepage media card count must equal news source");
+ok((newsIndex.match(/class="news-list-card"/g)||[]).length===newsData.length,"news archive card count must equal news source");
+let homeOrder=-1,archiveOrder=-1;
+for(const item of newsData){
+  const homeTitle=html.indexOf(item.title),archiveTitle=newsIndex.indexOf(item.title);
+  ok(homeTitle>homeOrder,"homepage media order/content mismatch: "+item.slug);
+  ok(archiveTitle>archiveOrder,"news archive order/content mismatch: "+item.slug);
+  homeOrder=homeTitle;archiveOrder=archiveTitle;
+  const sourceHref=htmlEscape(item.sourceUrl);
+  ok(html.includes('href="'+sourceHref+'"'),"homepage media source link missing: "+item.slug);
+  ok(newsIndex.includes('href="/news/'+item.slug+'/"'),"news archive detail link missing: "+item.slug);
+  const articlePath="news/"+item.slug+"/index.html";
+  ok(fs.existsSync(path.join(root,articlePath)),"news detail missing: "+item.slug);
+  const article=read(articlePath);
+  ok(article.includes(item.title),"news detail title missing: "+item.slug);
+  ok(article.includes('href="'+sourceHref+'"'),"news detail source link missing: "+item.slug);
+  ok(article.includes(item.summary),"news detail summary missing: "+item.slug);
+  if(item.author)ok(article.includes(item.author),"news detail author missing: "+item.slug);
+  if(item.editor)ok(article.includes(item.editor),"news detail editor missing: "+item.slug);
+}
+const newsDirs=fs.readdirSync(path.join(root,"news"),{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name).sort();
+ok(JSON.stringify(newsDirs)===JSON.stringify(newsData.map(x=>x.slug).sort()),"news detail directories must match news source");
+
 
 
 
@@ -199,23 +222,17 @@ for(const phrase of ["目前收录一篇","不改变现有官网信息架构","�
 ok(html.includes("媒体报道"),"homepage media coverage label missing");
 ok(!html.includes("有关梦宠数智的公开报道。"),"redundant media coverage intro remains");
 ok(!html.includes("brand-news"),"legacy brand-news semantics remain in homepage");
-ok(!read("news/2026-09-15-mengchong/index.html").includes("/css/news.css"),"legacy missing news.css reference remains");
 ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/landing.css")),"landing.css must be removed after CSS convergence");
 ok(!html.includes("./css/landing.css"),"index must not reference removed landing.css");
 ok(!/@media/.test(read("css/sections.css")),"sections.css must not contain breakpoint rules");
 
-ok(readme.includes("2026.10.08-r16.5-css-convergence"),"README version is out of sync");
+ok(readme.includes("2026.10.08-r17.0-content-single-source"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
 ok(html.includes("欢迎在宠物身份、健康、溯源及数据服务等方向开展合作。"),"contact cooperation copy is not humanized");
 ok(newsIndex.includes("媒体报道"),"media coverage index label missing");
-ok(read("news/2026-10-07-source-expo/index.html").includes("k1gTYDfzZRunI5d4Y9rrcA"),"latest media article source link missing");
-ok(read("news/2026-10-03-anshanyun/index.html").includes("28630073_31203_asy.html"),"Anshan media article source link missing");
-ok(read("news/2026-10-03-anshanyun/index.html").includes("鞍山萌宠进入数字时代！"),"Anshan media article title missing");
-ok(read("news/2026-10-07-source-expo/index.html").includes("2026首届宠物产业源头博览会开幕，梦宠数智携宠物全生命周期大数据平台亮相"),"latest media article title missing");
-ok(read("news/2026-09-15-mengchong/index.html").includes("/css/media.css?v=20261006-r150"),"existing media article stylesheet reference missing");
 
 
 
@@ -227,8 +244,9 @@ ok(html.includes('class="footer-wechat-qr-logo" src="./assets/images/social/wech
 ok(!html.includes('class="sr-only"'),"footer QR has stray visible accessibility text");
 ok(!read("assets/images/social/wechat-official.svg").includes("<image"),"QR SVG must not depend on nested image resources");
 
-const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","news/2026-09-15-mengchong/index.html","news/2026-10-07-source-expo/index.html","news/2026-10-03-anshanyun/index.html"];
-for(const file of localFiles) ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
+const newsDetailFiles=newsData.map(item=>"news/"+item.slug+"/index.html");
+const localFiles=[...cssFiles,"js/navigation.js","js/main.js","scripts/browser-smoke.spec.mjs","assets/brand/brand.svg","assets/brand/logo-mark.svg","assets/images/company/company-facade.webp","assets/images/social/wechat-official.svg","assets/images/social/wechat-logo.jpg","news/index.html","content/news.json","scripts/generate-news.mjs",...newsDetailFiles];
+for(const file of localFiles)ok(fs.existsSync(path.join(root,file)),"missing local file: "+file);
 for(const ref of [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>m[1])) {
   if(/^[a-z]+:/i.test(ref)||ref.startsWith("#")) continue;
   ok(fs.existsSync(path.join(root,ref.split("?")[0])),"missing local resource: "+ref);
@@ -256,7 +274,7 @@ ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must no
 ok(!/--type-(lead|body|card|ui|meta):1[01]px/.test(responsive),"landscape mobile typography is undersized");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R16.5 CSS convergence static contracts");
+console.log("VALIDATION PASSED: R17.0 content single-source + CSS architecture static contracts");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));
