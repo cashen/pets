@@ -1,6 +1,6 @@
 # 梦宠数智官网 R15
 
-当前版本：2026.10.08-r16.0-natural-hero
+当前版本：2026.10.08-r16.1-webp-header-repair
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -64,7 +64,7 @@ CI 分为静态结构/内容契约、Wrangler deployment dry-run 与真实 Chrom
 
 ## Hero Media Contract
 
-`hero.webp` 使用本次提供的 1256×471 Hero 源图并以 lossless WebP 保存。Hero 容器透明、无边框、无内边距；图片按 100% 宽度与自身自然高度显示，不裁切、不填充。现有 Logo、品牌色与核心文案保持不变。
+`hero.webp` 使用本次提供的 1256×471 Hero 源图并以 lossless WebP 保存。Hero 使用已校正 RIFF/VP8 chunk 长度的 1256×471 WebP 源图；容器透明、无边框、无内边距；图片按 100% 宽度与自身自然高度显示，不裁切、不填充。现有 Logo、品牌色与核心文案保持不变。
 
 ## Responsive Layout Contract
 
