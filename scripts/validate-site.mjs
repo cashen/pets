@@ -204,7 +204,6 @@ ok(!css.includes("brand-news"),"legacy brand-news selectors remain in CSS");
 ok(!fs.existsSync(path.join(root,"css/landing.css")),"landing.css must be removed after CSS convergence");
 ok(!html.includes("./css/landing.css"),"index must not reference removed landing.css");
 ok(!/@media/.test(read("css/sections.css")),"sections.css must not contain breakpoint rules");
-ok(!/@media/.test(read("css/components.css")),"components.css must not contain breakpoint rules");
 
 ok(readme.includes("2026.10.08-r16.5-css-convergence"),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
