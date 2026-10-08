@@ -1,6 +1,6 @@
 # 梦宠数智官网 R17
 
-当前版本：2026.10.08-r17.0-content-single-source
+当前版本：2026.10.08-r18.0-core-content-governance
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -57,6 +57,16 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 ## CSS Architecture
 
 正式样式按 tokens / base / layout / components / sections / responsive 分层；首页原 landing composition 层已收敛到 components/sections，首页所有 breakpoint 规则统一进入 `css/responsive.css`。媒体报道继续由 `css/media.css` 独立负责页面级样式与自身响应式规则；旧的 `news.css` 引用已清除。
+
+## Core Content Source
+
+企业核心品牌事实与网站级配置采用单源模型：
+
+- `content/brand.json` 是企业名称、品牌名、平台名称、英文平台名称、品牌 Tagline、身份标识与域名的唯一事实来源。
+- `content/site.json` 是网站版本、导航模型、媒体入口与版权年份等站点配置的唯一事实来源。
+- `scripts/generate-site.mjs` 将来源静态生成到首页、404、导航模型及 README 版本行；浏览器不在运行时读取 JSON。
+- `node scripts/generate-site.mjs --check` 只检查生成结果与内容源是否一致，不修改文件。
+- 导航的 `id / targetId / sectionId` 与桌面、移动菜单共享同一数据源，避免导航文本、精准锚点和行为模型发生漂移。
 
 ## Media Content Source
 
