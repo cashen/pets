@@ -130,3 +130,27 @@ test("404 is styled and accessible", async ({page}) => {
   await expect(page.locator("h1")).toHaveText("这条路还没有内容");
   await expect(page.locator(".error-logo img")).toHaveAttribute("src", "/assets/brand/brand.svg?v=20261006-r150");
 });
+
+
+test("media homepage limit and archive pagination", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(BASE + "/", {waitUntil:"networkidle"});
+  await expect(page.locator(".media-card")).toHaveCount(5);
+  const allMedia = page.locator(".media-more-link");
+  await expect(allMedia).toBeVisible();
+  await expect(allMedia).toHaveAttribute("href","/news/");
+
+  await page.goto(BASE + "/news/", {waitUntil:"networkidle"});
+  await expect(page.locator(".news-list-card")).toHaveCount(5);
+  await expect(page.locator(".news-pagination [aria-current='page']")).toHaveText("1");
+  const next = page.locator(".news-pagination a[rel='next']");
+  await expect(next).toHaveAttribute("href","/news/page/2/");
+  await next.click();
+  await expect(page).toHaveURL(BASE + "/news/page/2/");
+  await expect(page.locator(".news-list-card")).toHaveCount(5);
+  await expect(page.locator(".news-pagination [aria-current='page']")).toHaveText("2");
+  await expect(page.locator(".news-pagination a[rel='prev']")).toHaveAttribute("href","/news/");
+  await expect(page.locator("h2").first()).toContainText("网购修狗变");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(overflow,"mobile archive pagination horizontal overflow").toBeLessThanOrEqual(1);
+});

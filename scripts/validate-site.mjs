@@ -184,32 +184,63 @@ ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link s
 
 
 
+const NEWS_PAGE_SIZE=5;
 const newsHasDate=item=>typeof item.date==="string"&&item.date.trim()!=="";
 const newsSorted=[...newsData].sort((a,b)=>{const ad=newsHasDate(a),bd=newsHasDate(b);if(ad!==bd)return ad?1:-1;if(!ad&&!bd)return 0;return b.date.localeCompare(a.date)||a.slug.localeCompare(b.slug);});
-const htmlEscape=value=>String(value).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const htmlEscape=value=>String(value).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const newsPageHref=page=>page===1?"/news/":"/news/page/"+page+"/";
 ok(Array.isArray(newsData)&&newsData.length>0,"news source must contain at least one record");
-ok(JSON.stringify(newsData)===JSON.stringify(newsSorted),"news source must be reverse chronological");
+ok(JSON.stringify(newsData)===JSON.stringify(newsSorted),"news source must be in stable reverse chronological order");
 const newsSlugs=new Set(),newsUrls=new Set();
 for(const item of newsData){
   for(const field of ["slug","source","category","title","summary","sourceUrl"])ok(typeof item[field]==="string"&&item[field].trim(),"news source field missing: "+field+" / "+(item.slug||"unknown"));
   if(item.date!=null&&item.date!=="")ok(typeof item.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(item.date),"invalid optional news date: "+item.slug);
-  ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug),"invalid news slug: "+item.slug);
+  ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug)&&item.slug!=="page","invalid or reserved news slug: "+item.slug);
   ok(/^https?:\/\//.test(item.sourceUrl),"news source URL must be http(s): "+item.slug);
   ok(!newsSlugs.has(item.slug),"duplicate news slug: "+item.slug);
-  ok(!newsUrls.has(item.sourceUrl),"duplicate news source URL: "+item.sourceUrl);
+  ok(!newsUrls.has(item.sourceUrl),"duplicate news source URL: "+item.slug);
   newsSlugs.add(item.slug);newsUrls.add(item.sourceUrl);
 }
-ok((html.match(/class="media-card"/g)||[]).length===newsData.length,"homepage media card count must equal news source");
-ok((newsIndex.match(/class="news-list-card"/g)||[]).length===newsData.length,"news archive card count must equal news source");
-let homeOrder=-1,archiveOrder=-1;
+const newsPageCount=Math.ceil(newsData.length/NEWS_PAGE_SIZE);
+const homeNews=newsData.slice(0,NEWS_PAGE_SIZE);
+ok((html.match(/class="media-card"/g)||[]).length===homeNews.length,"homepage must show at most five media cards");
+ok(html.includes('class="media-more-link" href="/news/"'),"homepage all-media link missing");
+let homeOrder=-1;
+for(const item of homeNews){
+  const titleAt=html.indexOf(item.title);
+  ok(titleAt>homeOrder,"homepage media order/content mismatch: "+item.slug);
+  homeOrder=titleAt;
+  ok(html.includes('href="'+htmlEscape(item.sourceUrl)+'"'),"homepage media source link missing: "+item.slug);
+}
+const archivePages=[];
+for(let page=1;page<=newsPageCount;page++){
+  const archivePath=page===1?"news/index.html":"news/page/"+page+"/index.html";
+  ok(fs.existsSync(path.join(root,archivePath)),"news archive page missing: "+archivePath);
+  const archive=read(archivePath);
+  archivePages.push(archive);
+  const pageItems=newsData.slice((page-1)*NEWS_PAGE_SIZE,page*NEWS_PAGE_SIZE);
+  ok((archive.match(/class="news-list-card"/g)||[]).length===pageItems.length,"archive page card count mismatch: "+page);
+  ok(archive.includes('rel="canonical" href="https://montpets.com'+newsPageHref(page)+'"'),"archive canonical URL mismatch: "+page);
+  let previousTitle=-1;
+  for(const item of pageItems){
+    const titleAt=archive.indexOf(item.title);
+    ok(titleAt>previousTitle,"archive page order/content mismatch: "+item.slug);
+    previousTitle=titleAt;
+    ok(archive.includes('href="/news/'+item.slug+'/"'),"archive detail link missing: "+item.slug);
+  }
+  if(newsPageCount>1){
+    ok(archive.includes('class="news-pagination"'),"archive pagination missing: "+page);
+    if(page>1)ok(archive.includes('href="'+newsPageHref(page-1)+'" rel="prev"'),"archive previous-page link missing: "+page);
+    if(page<newsPageCount)ok(archive.includes('href="'+newsPageHref(page+1)+'" rel="next"'),"archive next-page link missing: "+page);
+    ok(archive.includes('aria-current="page">'+page+'</span>'),"archive current-page marker missing: "+page);
+  }else{
+    ok(!archive.includes('class="news-pagination"'),"single-page archive should not show pagination");
+  }
+}
+const combinedArchiveTitles=archivePages.map(page=>newsData.filter(item=>page.includes(item.title)).map(item=>item.slug)).flat();
+ok(JSON.stringify(combinedArchiveTitles)===JSON.stringify(newsData.map(item=>item.slug)),"archive pagination must contain every record exactly once and in order");
 for(const item of newsData){
-  const homeTitle=html.indexOf(item.title),archiveTitle=newsIndex.indexOf(item.title);
-  ok(homeTitle>homeOrder,"homepage media order/content mismatch: "+item.slug);
-  ok(archiveTitle>archiveOrder,"news archive order/content mismatch: "+item.slug);
-  homeOrder=homeTitle;archiveOrder=archiveTitle;
   const sourceHref=htmlEscape(item.sourceUrl);
-  ok(html.includes('href="'+sourceHref+'"'),"homepage media source link missing: "+item.slug);
-  ok(newsIndex.includes('href="/news/'+item.slug+'/"'),"news archive detail link missing: "+item.slug);
   const articlePath="news/"+item.slug+"/index.html";
   ok(fs.existsSync(path.join(root,articlePath)),"news detail missing: "+item.slug);
   const article=read(articlePath);
@@ -219,11 +250,9 @@ for(const item of newsData){
   if(item.author)ok(article.includes(item.author),"news detail author missing: "+item.slug);
   if(item.editor)ok(article.includes(item.editor),"news detail editor missing: "+item.slug);
 }
+const expectedNewsDirs=[...newsData.map(item=>item.slug),...(newsPageCount>1?["page"]:[])].sort();
 const newsDirs=fs.readdirSync(path.join(root,"news"),{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name).sort();
-ok(JSON.stringify(newsDirs)===JSON.stringify(newsData.map(x=>x.slug).sort()),"news detail directories must match news source");
-
-
-
+ok(JSON.stringify(newsDirs)===JSON.stringify(expectedNewsDirs),"news directories must match article records and pagination");
 
 const publicPages=[html,newsIndex,notFound].join("\n");
 for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值：","共生共荣的产业生态","本文作为官网媒体报道记录"]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
