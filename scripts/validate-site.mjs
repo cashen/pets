@@ -192,9 +192,8 @@ ok(JSON.stringify(newsData)===JSON.stringify(newsSorted),"news source must be re
 const newsSlugs=new Set(),newsUrls=new Set();
 for(const item of newsData){
   for(const field of ["slug","source","category","title","summary","sourceUrl"])ok(typeof item[field]==="string"&&item[field].trim(),"news source field missing: "+field+" / "+(item.slug||"unknown"));
-  if(item.date!=null&&item.date!=="")ok(typeof item.date==="string"&&/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date),"invalid optional news date: "+item.slug);
+  if(item.date!=null&&item.date!=="")ok(typeof item.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(item.date),"invalid optional news date: "+item.slug);
   ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug),"invalid news slug: "+item.slug);
-  ok(/^\d{4}-\d{2}-\d{2}$/.test(item.date),"invalid news date: "+item.slug);
   ok(/^https?:\/\//.test(item.sourceUrl),"news source URL must be http(s): "+item.slug);
   ok(!newsSlugs.has(item.slug),"duplicate news slug: "+item.slug);
   ok(!newsUrls.has(item.sourceUrl),"duplicate news source URL: "+item.sourceUrl);
