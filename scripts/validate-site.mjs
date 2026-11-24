@@ -223,7 +223,7 @@ for(let page=1;page<=newsPageCount;page++){
   ok(archive.includes('rel="canonical" href="https://montpets.com'+newsPageHref(page)+'"'),"archive canonical URL mismatch: "+page);
   let previousTitle=-1;
   for(const item of pageItems){
-    const titleAt=archive.indexOf(item.title);
+    const titleAt=archive.indexOf(htmlEscape(item.title));
     ok(titleAt>previousTitle,"archive page order/content mismatch: "+item.slug);
     previousTitle=titleAt;
     ok(archive.includes('href="/news/'+item.slug+'/"'),"archive detail link missing: "+item.slug);
@@ -237,14 +237,14 @@ for(let page=1;page<=newsPageCount;page++){
     ok(!archive.includes('class="news-pagination"'),"single-page archive should not show pagination");
   }
 }
-const combinedArchiveTitles=archivePages.map(page=>newsData.filter(item=>page.includes(item.title)).map(item=>item.slug)).flat();
+const combinedArchiveTitles=archivePages.map(page=>newsData.filter(item=>page.includes(htmlEscape(item.title))).map(item=>item.slug)).flat();
 ok(JSON.stringify(combinedArchiveTitles)===JSON.stringify(newsData.map(item=>item.slug)),"archive pagination must contain every record exactly once and in order");
 for(const item of newsData){
   const sourceHref=htmlEscape(item.sourceUrl);
   const articlePath="news/"+item.slug+"/index.html";
   ok(fs.existsSync(path.join(root,articlePath)),"news detail missing: "+item.slug);
   const article=read(articlePath);
-  ok(article.includes(item.title),"news detail title missing: "+item.slug);
+  ok(article.includes(htmlEscape(item.title)),"news detail title missing: "+item.slug);
   ok(article.includes('href="'+sourceHref+'"'),"news detail source link missing: "+item.slug);
   ok(article.includes(item.summary),"news detail summary missing: "+item.slug);
   if(item.author)ok(article.includes(item.author),"news detail author missing: "+item.slug);
