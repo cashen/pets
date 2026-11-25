@@ -227,3 +227,63 @@ test("audience choices lead to the matching service details", async ({page}) => 
   await expect(page.locator(".hero-actions .btn-secondary")).toHaveText("查看平台能力");
   await expect(page.locator(".hero-actions .btn-secondary")).toHaveAttribute("href","#ability");
 });
+
+
+test("editorial homepage hierarchy across desktop, tablet and mobile", async ({browser}) => {
+  const viewports = [
+    {name:"desktop",width:1440,height:900,columns:2},
+    {name:"tablet",width:820,height:1180,columns:2},
+    {name:"mobile",width:390,height:844,columns:1}
+  ];
+  for (const viewport of viewports) {
+    const context = await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.goto(BASE + "/", {waitUntil:"networkidle"});
+    await expect(page.locator('link[href*="editorial-refinement.css"]')).toHaveCount(1);
+    await expect(page.locator(".feature-card")).toHaveCount(6);
+    await expect(page.locator(".value-card")).toHaveCount(6);
+    await expect(page.locator(".ability-card")).toHaveCount(4);
+    await expect(page.locator(".media-card")).toHaveCount(6);
+    const metrics = await page.evaluate(() => {
+      const columns = selector => getComputedStyle(document.querySelector(selector)).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length;
+      const style = selector => {
+        const el = document.querySelector(selector);
+        const css = getComputedStyle(el);
+        return {
+          radius:css.borderRadius,
+          shadow:css.boxShadow,
+          background:css.backgroundColor,
+          borderTop:css.borderTopWidth,
+          borderBottom:css.borderBottomWidth
+        };
+      };
+      return {
+        featureColumns:columns(".feature-grid"),
+        valueColumns:columns(".value-grid"),
+        abilityColumns:columns("#ability .ability-stack"),
+        feature:style(".feature-card"),
+        value:style(".value-card"),
+        ability:style(".ability-card"),
+        media:style(".media-card"),
+        heroOrbit:style(".hero-orbit")
+      };
+    });
+    expect(metrics.featureColumns, viewport.name + " feature columns").toBe(viewport.columns);
+    expect(metrics.valueColumns, viewport.name + " value columns").toBe(viewport.columns);
+    expect(metrics.abilityColumns, viewport.name + " capability columns").toBe(viewport.columns);
+    for (const selector of ["feature","value","ability","media"]) {
+      expect(metrics[selector].radius, viewport.name + " " + selector + " card radius").toBe("0px");
+      expect(metrics[selector].shadow, viewport.name + " " + selector + " card shadow").toBe("none");
+    }
+    expect(metrics.feature.borderTop, viewport.name + " feature top border").toBe("0px");
+    expect(metrics.feature.borderBottom, viewport.name + " feature editorial rule").toBe("1px");
+    expect(metrics.value.borderTop, viewport.name + " value top border").toBe("0px");
+    expect(metrics.value.borderBottom, viewport.name + " value editorial rule").toBe("1px");
+    await expect(page.locator(".media-title").first()).toHaveText("宠物险悄悄涨价，谁在收割养宠人？");
+    await expect(page.locator("#contact")).toContainText("共建宠物数字化服务生态网络");
+    expect(errors, viewport.name + " page errors").toEqual([]);
+    await context.close();
+  }
+});
