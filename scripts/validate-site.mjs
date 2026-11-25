@@ -219,7 +219,7 @@ ok((html.match(/class="media-card"/g)||[]).length===homeNews.length,"homepage mu
 ok(html.includes('class="media-more-link" href="/news/"'),"homepage all-media link missing");
 let homeOrder=-1;
 for(const item of homeNews){
-  const titleAt=html.indexOf(item.title);
+  const titleAt=html.indexOf(htmlEscape(item.title));
   ok(titleAt>homeOrder,"homepage media order/content mismatch: "+item.slug);
   homeOrder=titleAt;
   ok(html.includes('href="'+htmlEscape(item.sourceUrl)+'"'),"homepage media source link missing: "+item.slug);
