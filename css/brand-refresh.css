@@ -1,6 +1,6 @@
 /* MONT PETS brand refinement: existing logo, colors, copy and factual content are preserved. */
 :root{--mp-orange:#F36B12;--mp-orange-deep:#E85E0A;--mp-warm:#FFF8F0;--mp-line:#E9DED2;--mp-ink:#171513;--mp-muted:#6B625A;--mp-shadow:0 16px 42px rgba(72,42,18,.07)}
-html{scroll-behavior:smooth}
+html{scroll-behavior:auto}
 .wrap{width:min(1200px,calc(100% - 60px))}
 .site-header{background:rgba(255,255,255,.97);border-bottom:1px solid rgba(233,222,210,.85);box-shadow:0 4px 22px rgba(54,34,18,.035)}
 .nav-in{max-width:1200px}.nav-links{gap:3px}.nav-links a{min-height:42px;padding:9px 12px;border-radius:12px;transition:background-color .18s ease,color .18s ease}
