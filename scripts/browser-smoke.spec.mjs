@@ -176,7 +176,7 @@ test("media homepage limit and archive pagination", async ({page}) => {
   await expect(page.locator(".news-list-card")).toHaveCount(4);
   await expect(page.locator(".news-pagination [aria-current='page']")).toHaveText("2");
   await expect(page.locator(".news-pagination a[rel='prev']")).toHaveAttribute("href","/news/");
-  await expect(page.locator("h2").first()).toContainText("宠物全生命周期");
+  await expect(page.locator("h2").first()).toContainText("一只宠物凭什么要有");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow,"mobile archive pagination horizontal overflow").toBeLessThanOrEqual(1);
 });
