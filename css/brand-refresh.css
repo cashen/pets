@@ -282,3 +282,59 @@ html{scroll-behavior:auto}
   .life-dot,.life-progress span,.eco-connectors path{animation:none;transform:none}
   .platform-flow-node,.eco-node,.feature-card .feature-no,.feature-card .feature-icon,.value-card .value-icon{transition:none}
 }
+
+
+/* Human-centered refinement: continuous warm section, clearer audience choice and direct destinations. */
+.audience-entry{
+  padding:58px 0 64px;
+  color:#49372A;
+  background:linear-gradient(180deg,#FFF1E3 0%,#FFF7EF 100%);
+  border-block:1px solid #F1E0D0;
+}
+.audience-head{align-items:flex-end;margin-bottom:26px}
+.audience-head h2{color:#33241B}
+.audience-head p{max-width:650px;color:#735F4F;font-size:14px;line-height:1.85}
+.audience-kicker{color:#B65C1F}
+.audience-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.audience-grid a{
+  min-height:112px;padding:16px 17px;
+  border:1px solid #EAD8C7;border-radius:16px;
+  background:rgba(255,255,255,.88);color:#49372A;
+  box-shadow:0 5px 18px rgba(87,55,28,.035);
+  transition:transform .18s ease,border-color .18s ease,background-color .18s ease,box-shadow .18s ease;
+}
+.audience-grid span{color:#B78D6D}
+.audience-grid strong{font-size:14px;line-height:1.55;color:#49372A}
+.audience-grid i{color:var(--mp-orange-deep)}
+.audience-grid a:hover{
+  transform:translateY(-2px);border-color:#E9B88F;
+  background:#fff;box-shadow:0 10px 24px rgba(87,55,28,.075);
+}
+.audience-grid a:focus-visible{outline:3px solid rgba(243,107,18,.32);outline-offset:3px}
+#service-breeding,#service-sales,#service-food,#service-insurance,#service-medical,
+#service-regulatory,#service-pet-owners{scroll-margin-top:calc(var(--header-h) + 20px)}
+.service-grid article:target{
+  border-color:#E9A977;
+  box-shadow:0 0 0 3px rgba(243,107,18,.13),0 8px 22px rgba(72,42,18,.05);
+}
+.service-foot>span{display:inline-block;scroll-margin-top:calc(var(--header-h) + 20px)}
+.service-foot>span:target{
+  padding:4px 8px;border-radius:8px;background:#FFF0DF;color:#9E470D;
+}
+@media(max-width:760px){
+  .audience-entry{padding:40px 0 46px}
+  .audience-head{gap:9px;margin-bottom:18px}
+  .audience-head p{font-size:13px;line-height:1.75}
+  .audience-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .audience-grid a{min-height:96px;padding:13px 12px}
+  .audience-grid a:nth-child(5){grid-column:1 / -1}
+  .audience-grid strong{font-size:13px}
+}
+@media(max-width:380px){
+  .audience-grid a{min-height:92px;padding:12px 10px}
+  .audience-grid strong{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .audience-grid a{transition:none}
+  .audience-grid a:hover{transform:none}
+}
