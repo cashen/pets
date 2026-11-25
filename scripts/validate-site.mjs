@@ -189,7 +189,7 @@ ok(html.includes('class="footer-brand-logo"')&&html.includes('class="footer-bott
 
 
 
-const NEWS_PAGE_SIZE=5;
+const NEWS_PAGE_SIZE=6;
 const newsHasDate=item=>typeof item.date==="string"&&item.date.trim()!=="";
 const newsSorted=[...newsData].sort((a,b)=>{const ad=newsHasDate(a),bd=newsHasDate(b);if(ad!==bd)return ad?-1:1;if(!ad&&!bd)return 0;return b.date.localeCompare(a.date)||a.slug.localeCompare(b.slug);});
 const htmlEscape=value=>String(value).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -214,8 +214,8 @@ for(const item of newsData){
 }
 for(const oldSlug of legacyNewsSlugs)ok(!newsSlugs.has(oldSlug),"legacy slug collides with active news slug: "+oldSlug);
 const newsPageCount=Math.ceil(newsData.length/NEWS_PAGE_SIZE);
-const homeNews=newsData.slice(0,NEWS_PAGE_SIZE);
-ok((html.match(/class="media-card"/g)||[]).length===homeNews.length,"homepage must show at most five media cards");
+const homeNews=newsData.slice(0,6);
+ok((html.match(/class="media-card"/g)||[]).length===homeNews.length,"homepage must show the six latest media cards");
 ok(html.includes('class="media-more-link" href="/news/"'),"homepage all-media link missing");
 let homeOrder=-1;
 for(const item of homeNews){
@@ -255,7 +255,7 @@ for(const item of newsData){
   const sourceHref=htmlEscape(item.sourceUrl);
   const articlePath="news/"+item.slug+"/index.html";
   ok(fs.existsSync(path.join(root,articlePath)),"news detail missing: "+item.slug);
-  const article=read(articlePath);
+  const article=read(articlePath);\n  ok(article.includes("class=\\\"news-primary-nav\\\"")&&article.includes("class=\\\"news-mobile-nav\\\""),"article primary navigation missing: "+item.slug);
   ok(article.includes(htmlEscape(item.title)),"news detail title missing: "+item.slug);
   ok(article.includes('href="'+sourceHref+'"'),"news detail source link missing: "+item.slug);
   ok(article.includes('<link rel="canonical" href="https://'+brandData.domain+'/news/'+item.slug+'/">'),"news detail canonical missing: "+item.slug);
