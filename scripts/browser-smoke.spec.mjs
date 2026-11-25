@@ -189,11 +189,13 @@ test("audience choices lead to the matching service details", async ({page}) => 
   await expect(audience).toBeVisible();
   const style = await audience.evaluate(el => {
     const computed = getComputedStyle(el);
-    return {color:computed.color,backgroundColor:computed.backgroundColor,backgroundImage:computed.backgroundImage};
+    return {color:computed.color,backgroundColor:computed.backgroundColor,backgroundImage:computed.backgroundImage,kickerColor:getComputedStyle(el.querySelector(".audience-kicker")).color,numberColor:getComputedStyle(el.querySelector(".audience-grid span")).color};
   });
   expect(style.color).toBe("rgb(73, 55, 42)");
   expect(style.backgroundImage).toContain("linear-gradient");
   expect(style.backgroundColor).not.toBe("rgb(32, 26, 22)");
+  expect(style.kickerColor).toBe("rgb(161, 78, 29)");
+  expect(style.numberColor).toBe("rgb(128, 96, 71)");
 
   const destinations = [
     ["繁育企业","#service-breeding"],
