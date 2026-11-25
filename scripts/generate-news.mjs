@@ -3,7 +3,7 @@ import path from "node:path";
 
 const root=process.cwd();
 const checkOnly=process.argv.includes("--check");
-const PAGE_SIZE=5;
+const PAGE_SIZE=6;
 const sourcePath=path.join(root,"content","news.json");
 const brandPath=path.join(root,"content","brand.json");
 const sitePath=path.join(root,"content","site.json");
@@ -115,8 +115,16 @@ function paginationBody(page,total){
   else parts.push('<span class="news-page-link is-disabled" aria-disabled="true">下一页</span>');
   return '<nav class="news-pagination" aria-label="媒体报道分页">'+parts.join("")+'</nav>';
 }
+function newsHeader(){
+  const links=site.navigation.map(item=>'<a href="/#'+esc(item.sectionId)+'">'+esc(item.label)+'</a>').join("");
+  return '<header class="news-header"><div class="news-header-in">'+
+    '<a class="brand" href="/" aria-label="返回'+esc(brand.brandName)+'首页"><img class="brand-wordmark" src="/assets/brand/brand.svg?v=20261006-r100" alt="'+esc(brand.brandName)+'" width="176" height="40"></a>'+
+    '<nav class="news-primary-nav" aria-label="主导航">'+links+'<a class="is-current" href="/news/" aria-current="page">'+esc(site.mediaLabel)+'</a></nav>'+
+    '<details class="news-mobile-nav"><summary aria-label="打开网站导航">导航</summary><nav aria-label="移动端主导航">'+links+'<a class="is-current" href="/news/" aria-current="page">'+esc(site.mediaLabel)+'</a></nav></details>'+
+    '</div></header>';
+}
 function archiveDocument(template,items,page,total){
-  let document=replaceGeneratedBlock(template,startMarker,endMarker,archiveBody(items),"news archive page "+page);
+  let document=replaceGeneratedBlock(template,startMarker,endMarker,archiveBody(items),"news archive page "+page);\n  document=replaceGeneratedBlock(document,"<!-- NEWS:HEADER:GENERATED:START -->","<!-- NEWS:HEADER:GENERATED:END -->",newsHeader(),"news header page "+page);
   document=replaceGeneratedBlock(document,paginationStart,paginationEnd,paginationBody(page,total),"news pagination "+page);
   const title=page===1?"媒体报道｜梦宠数智":"媒体报道｜第 "+page+" 页｜梦宠数智";
   const description=page===1?"辽宁梦宠数智科技有限公司相关公开媒体报道。":"辽宁梦宠数智科技有限公司媒体报道归档，第 "+page+" 页。";
@@ -137,7 +145,7 @@ function archiveDocument(template,items,page,total){
   return replaceGeneratedBlock(document,seoStart,seoEnd,seo.join("\n"),"news SEO "+page);
 }
 function detailPage(item){const people=(item.author||item.editor)?'<div class="news-article-summary"><strong>作者：</strong>'+esc(item.author||"—")+'　<strong>编辑：</strong>'+esc(item.editor||"—")+'</div>':"";return ['<!doctype html>','<html lang="zh-CN">','<head>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">','<title>媒体报道｜'+esc(item.title)+'｜'+esc(brand.brandName)+'</title>','<meta name="description" content="'+esc("媒体报道："+(hasDate(item)?dateLabel(item.date)+" ":"")+item.source+"："+item.title)+'">','<link rel="canonical" href="https://'+brand.domain+'/news/'+esc(item.slug)+'/">','<meta property="og:type" content="article">','<meta property="og:site_name" content="'+esc(brand.brandName)+'">','<meta property="og:title" content="'+esc(item.title)+'">','<meta property="og:description" content="'+esc(item.summary)+'">','<meta property="og:url" content="https://'+brand.domain+'/news/'+esc(item.slug)+'/">','<meta name="twitter:card" content="summary">','<meta name="theme-color" content="#f36b12">','<link rel="stylesheet" href="/css/tokens.css?v=20261008-r165">','<link rel="stylesheet" href="/css/base.css?v=20261006-r100">','<link rel="stylesheet" href="/css/media.css?v=20261006-r150">',
-'<link rel="stylesheet" href="/css/brand-refresh.css?v=20261125-r1">','</head>','<body class="news-page">','<a class="skip-link" href="#news-article">跳过导航，直接进入主要内容</a>','<header class="news-header"><div class="news-header-in">','<a class="brand" href="/" aria-label="返回'+esc(brand.brandName)+'首页"><img class="brand-wordmark" src="/assets/brand/brand.svg?v=20261006-r100" alt="'+esc(brand.brandName)+'" width="176" height="40"></a>','<a class="news-back" href="/news/"><span aria-hidden="true">←</span><span>'+esc(site.mediaLabel)+'</span></a>','</div></header>','<main id="news-article" class="news-main" tabindex="-1"><article class="news-article">','<div class="eyebrow">MEDIA COVERAGE</div>','<h1>'+esc(item.title)+'</h1>','<div class="news-article-meta">'+(hasDate(item)?'<span>'+esc(dateLabel(item.date))+'</span><span>·</span>':'')+'<span>'+esc(item.source)+'</span><span>·</span><span>'+esc(item.category)+'</span></div>','<div class="news-article-summary">'+esc(item.summary)+'</div>',people,'<div class="news-source"><span>来源：'+esc(item.source)+'</span><a href="'+esc(item.sourceUrl)+'" target="_blank" rel="noopener noreferrer">查看原文 ↗</a></div>','</article></main>','<footer class="news-footer"><span>© '+site.copyrightYear+' '+esc(brand.companyName)+' · '+esc(brand.domain)+'</span></footer>','</body>','</html>',''].join("\n");}
+'<link rel="stylesheet" href="/css/brand-refresh.css?v=20261125-r1">','</head>','<body class="news-page">','<a class="skip-link" href="#news-article">跳过导航，直接进入主要内容</a>',newsHeader(),'<main id="news-article" class="news-main" tabindex="-1"><article class="news-article">','<div class="eyebrow">MEDIA COVERAGE</div>','<h1>'+esc(item.title)+'</h1>','<div class="news-article-meta">'+(hasDate(item)?'<span>'+esc(dateLabel(item.date))+'</span><span>·</span>':'')+'<span>'+esc(item.source)+'</span><span>·</span><span>'+esc(item.category)+'</span></div>','<div class="news-article-summary">'+esc(item.summary)+'</div>',people,'<div class="news-source"><span>来源：'+esc(item.source)+'</span><a href="'+esc(item.sourceUrl)+'" target="_blank" rel="noopener noreferrer">查看原文 ↗</a></div>','</article></main>','<footer class="news-footer"><span>© '+site.copyrightYear+' '+esc(brand.companyName)+' · '+esc(brand.domain)+'</span></footer>','</body>','</html>',''].join("\n");}
 const brand=JSON.parse(read(brandPath)),site=JSON.parse(read(sitePath));
 if(typeof brand.companyName!=="string"||typeof brand.brandName!=="string"||typeof brand.domain!=="string")fail("content/brand.json missing news identity fields");
 if(!Number.isInteger(site.copyrightYear))fail("content/site.json copyrightYear must be an integer");
@@ -145,7 +153,7 @@ const items=stableSort(JSON.parse(read(sourcePath)));
 validateSource(items);
 const currentHome=read(homePath),archiveTemplate=read(archivePath);
 const pageCount=Math.ceil(items.length/PAGE_SIZE);
-const expectedHome=replaceGeneratedBlock(currentHome,startMarker,endMarker,homepageBody(items.slice(0,PAGE_SIZE)),"index.html");
+const expectedHome=replaceGeneratedBlock(currentHome,startMarker,endMarker,homepageBody(items.slice(0,6)),"index.html");
 const expectedArchives=new Map();
 for(let page=1;page<=pageCount;page++){
   const pageItems=items.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
