@@ -134,26 +134,26 @@ function identityValueFeatureBlock(){return "<p>平台以宠物身份为基础�
 function identityAbilityBlock(){return "<p class=\"lead\">围绕“"+esc(brand.identity)+"”，统一身份、采集、流转和溯源记录，让宠物信息在不同服务环节中保持连续。</p>";}
 function contactBlock(){return "<div class=\"contact-card\"><span>"+esc(brand.companyName)+"</span><strong>"+esc(brand.platformName)+"</strong><a class=\"contact-action\" href=\""+esc(site.officialAccountUrl)+"\" target=\"_blank\" rel=\"noopener noreferrer\">关注微信公众号<span aria-hidden=\"true\">↗</span></a><small>了解平台动态与合作方向</small></div>";}
 function footerBlock(){
-  const footerLinks=site.navigation.map(item=>"<a href=\\"#"+esc(item.sectionId)+"\\">"+esc(item.menuLabel)+"</a>");
-  footerLinks.push("<a href=\\""+esc(site.mediaPath)+"\\">"+esc(site.mediaLabel)+"</a>");
+  const footerLinks=site.navigation.map(item=>'<a href="#'+esc(item.sectionId)+'">'+esc(item.menuLabel)+'</a>');
+  footerLinks.push('<a href="'+esc(site.mediaPath)+'">'+esc(site.mediaLabel)+'</a>');
   return [
-    "<section class=\\"footer-brand\\" aria-label=\\"品牌信息\\">",
-    "<a href=\\"#top\\" aria-label=\\"返回首页\\"><img class=\\"footer-brand-logo\\" src=\\"./assets/brand/brand.svg?v=20261006-r100\\" alt=\\""+esc(brand.brandName)+"\\" width=\\"184\\" height=\\"42\\" loading=\\"lazy\\"></a>",
-    "<strong class=\\"footer-brand-name\\">"+esc(brand.companyName)+"</strong>",
-    "<span class=\\"footer-brand-platform\\">"+esc(brand.platformName)+"</span>",
-    "<p class=\\"footer-brand-tagline\\">"+esc(brand.tagline)+"</p>",
-    "</section>",
-    "<nav class=\\"footer-nav\\" aria-label=\\"页脚导航\\"><strong class=\\"footer-heading\\">快速导航</strong><div class=\\"footer-nav-links\\">"+footerLinks.join("")+"</div></nav>",
-    "<section class=\\"footer-wechat\\" aria-label=\\"微信公众号\\">",
-    "<a class=\\"footer-wechat-link\\" href=\\""+esc(site.officialAccountUrl)+"\\" target=\\"_blank\\" rel=\\"noopener noreferrer\\" aria-label=\\"打开"+esc(brand.brandName)+"微信公众号入口\\">",
-    "<span class=\\"footer-wechat-qr\\" aria-hidden=\\"true\\">",
-    "<img class=\\"footer-wechat-qr-image\\" src=\\"./assets/images/social/wechat-official.svg?v=20261006-r104\\" alt=\\"\\" width=\\"132\\" height=\\"132\\" loading=\\"lazy\\" decoding=\\"async\\">",
-    "<img class=\\"footer-wechat-qr-logo\\" src=\\"./assets/images/social/wechat-logo.jpg?v=20261006-r104\\" alt=\\"\\" width=\\"38\\" height=\\"38\\" loading=\\"lazy\\" decoding=\\"async\\">",
-    "</span></a>",
-    "<div class=\\"footer-wechat-copy\\"><strong>微信公众号</strong><span>扫码关注"+esc(brand.brandName)+"</span></div>",
-    "</section>",
-    "<div class=\\"footer-bottom\\"><span>© "+site.copyrightYear+" <b>"+esc(brand.companyName)+"</b> · "+esc(brand.identity)+"</span><span>"+esc(brand.domain)+"</span></div>"
-  ].join("\\n");
+    '<section class="footer-brand" aria-label="品牌信息">',
+    '<a href="#top" aria-label="返回首页"><img class="footer-brand-logo" src="./assets/brand/brand.svg?v=20261006-r100" alt="'+esc(brand.brandName)+'" width="184" height="42" loading="lazy"></a>',
+    '<strong class="footer-brand-name">'+esc(brand.companyName)+'</strong>',
+    '<span class="footer-brand-platform">'+esc(brand.platformName)+'</span>',
+    '<p class="footer-brand-tagline">'+esc(brand.tagline)+'</p>',
+    '</section>',
+    '<nav class="footer-nav" aria-label="页脚导航"><strong class="footer-heading">快速导航</strong><div class="footer-nav-links">'+footerLinks.join("")+'</div></nav>',
+    '<section class="footer-wechat" aria-label="微信公众号">',
+    '<a class="footer-wechat-link" href="'+esc(site.officialAccountUrl)+'" target="_blank" rel="noopener noreferrer" aria-label="打开'+esc(brand.brandName)+'微信公众号入口">',
+    '<span class="footer-wechat-qr" aria-hidden="true">',
+    '<img class="footer-wechat-qr-image" src="./assets/images/social/wechat-official.svg?v=20261006-r104" alt="" width="132" height="132" loading="lazy" decoding="async">',
+    '<img class="footer-wechat-qr-logo" src="./assets/images/social/wechat-logo.jpg?v=20261006-r104" alt="" width="38" height="38" loading="lazy" decoding="async">',
+    '</span></a>',
+    '<div class="footer-wechat-copy"><strong>微信公众号</strong><span>扫码关注'+esc(brand.brandName)+'</span></div>',
+    '</section>',
+    '<div class="footer-bottom"><span>© '+site.copyrightYear+' <b>'+esc(brand.companyName)+'</b> · '+esc(brand.identity)+'</span><span>'+esc(brand.domain)+'</span></div>'
+  ].join("\n");
 }
 function notFoundHeadBlock(){
   return [
