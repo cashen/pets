@@ -294,7 +294,7 @@ html{scroll-behavior:auto}
 .audience-head{align-items:flex-end;margin-bottom:26px}
 .audience-head h2{color:#33241B}
 .audience-head p{max-width:650px;color:#735F4F;font-size:14px;line-height:1.85}
-.audience-kicker{color:#B65C1F}
+.audience-kicker{color:#A14E1D}
 .audience-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .audience-grid a{
   min-height:112px;padding:16px 17px;
@@ -303,7 +303,7 @@ html{scroll-behavior:auto}
   box-shadow:0 5px 18px rgba(87,55,28,.035);
   transition:transform .18s ease,border-color .18s ease,background-color .18s ease,box-shadow .18s ease;
 }
-.audience-grid span{color:#B78D6D}
+.audience-grid span{color:#806047}
 .audience-grid strong{font-size:14px;line-height:1.55;color:#49372A}
 .audience-grid i{color:var(--mp-orange-deep)}
 .audience-grid a:hover{
