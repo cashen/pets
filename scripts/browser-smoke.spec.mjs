@@ -185,6 +185,9 @@ test("media homepage limit and archive pagination", async ({page}) => {
 test("audience choices lead to the matching service details", async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto(BASE + "/", {waitUntil:"networkidle"});
+  await expect(page.locator('.nav-links [data-nav-id="about"]')).toHaveText("企业简介");
+  await expect(page.locator('.nav-menu [data-nav-id="about"] b')).toHaveText("企业简介");
+  await expect(page.locator('.footer-nav a[href="#about"]')).toHaveText("企业简介");
   const audience = page.locator(".audience-entry");
   await expect(audience).toBeVisible();
   const style = await audience.evaluate(el => {
