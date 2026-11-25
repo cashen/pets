@@ -12,8 +12,7 @@ const notFound=read("404.html");
 const readme=read("README.md");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
 const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/wechat-footer.css","css/media.css","css/brand-refresh.css","css/error.css"];
-const css=cssFiles.map(read).join("
-");
+const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
 const brand=read("assets/brand/brand.svg");
@@ -73,11 +72,8 @@ ok(/<img alt="宠物全生命周期数字化服务视觉" src="\.\/assets\/image
 ok(read("css/sections.css").includes(".hero-image-frame{position:relative;overflow:hidden;border:0;padding:0;"),"hero frame must have no border or padding");
 ok(read("css/sections.css").includes(".hero-image-frame img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:initial}"),"hero image must render at natural aspect ratio without crop");
 ok(!read("css/responsive.css").includes("hero-image-frame{border-width:7px"),"responsive hero border override remains");
-ok(read("css/sections.css").includes(".hero-image-frame{
-  width:100%;
-  grid-column:1 / -1;"),"hero frame full-track contract missing");
-ok(read("css/responsive.css").includes(".hero-media .hero-orbit-c{grid-column:1}
-  .hero-media .hero-orbit-d{grid-column:2}"),"mobile Hero orbit grid mapping missing");
+ok(read("css/sections.css").includes(".hero-image-frame{\n  width:100%;\n  grid-column:1 / -1;"),"hero frame full-track contract missing");
+ok(read("css/responsive.css").includes(".hero-media .hero-orbit-c{grid-column:1}\n  .hero-media .hero-orbit-d{grid-column:2}"),"mobile Hero orbit grid mapping missing");
 ok(!/\.hero-image-frame img\{[^}]*aspect-ratio:(?:4\/3|16\/10)/.test(css),"legacy hero crop ratio remains in base CSS");
 ok(!responsive.includes(".hero-image-frame img{aspect-ratio:4/3}")&&!responsive.includes(".hero-image-frame img{aspect-ratio:16/10}"),"responsive hero crop override remains");
 ok(html.includes(uiSystemContract.skipLink),"skip link contract missing");
@@ -189,7 +185,7 @@ ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('href="'+siteData.mediaPath+'">'+siteData.mediaLabel+'</a>'),"footer media coverage link missing");
 ok(read("css/wechat-footer.css").includes(".footer-nav-links{"),"footer navigation styles missing");
 ok(read("css/wechat-footer.css").includes("width:min(var(--wrap)"),"footer content width must use the shared site wrap");
-ok(html.includes("class=\\\"footer-brand-logo\\\"")&&html.includes("class=\\\"footer-bottom\\\""),"footer brand identity or legal row missing");
+ok(html.includes('class="footer-brand-logo"')&&html.includes('class="footer-bottom"'),"footer brand identity or legal row missing");
 
 
 
@@ -291,8 +287,7 @@ ok(html.includes("面向五类产业主体"),"service audience heading missing")
 ok(html.includes("一宠一芯一档一码"),"brand identity phrase missing");
 ok(!html.includes("一宠一档一芯一码"),"incorrect identity phrase remains");
 ok(!html.includes("唯一官方授权")&&!html.includes("国家级数字基础设施"),"unsupported authority claims remain");
-const publicPages=[html,newsIndex,notFound].join("
-");
+const publicPages=[html,newsIndex,notFound].join("\n");
 for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值：","共生共荣的产业生态","本文作为官网媒体报道记录"]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
 ok(html.includes("媒体报道"),"homepage media coverage label missing");
 ok(!html.includes("有关梦宠数智的公开报道。"),"redundant media coverage intro remains");
@@ -304,8 +299,7 @@ ok(!/@media/.test(read("css/sections.css")),"sections.css must not contain break
 
 ok(readme.includes(siteData.uiVersion),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
-ok(!readme.includes("\
-"),"README contains literal newline escape text");
+ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
 ok(html.includes("欢迎企业、科研机构及相关机构围绕宠物身份、健康、溯源与数据服务开展交流合作。"),"contact cooperation copy is not humanized");
 ok(newsIndex.includes("媒体报道"),"media coverage index label missing");
