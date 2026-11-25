@@ -158,7 +158,7 @@ test("404 is styled and accessible", async ({page}) => {
 test("media homepage limit and archive pagination", async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto(BASE + "/", {waitUntil:"networkidle"});
-  await expect(page.locator(".media-card")).toHaveCount(5);
+  await expect(page.locator(".media-card")).toHaveCount(6);
   const allMedia = page.locator(".media-more-link");
   await expect(allMedia).toBeVisible();
   await expect(allMedia).toHaveAttribute("href","/news/");
@@ -166,17 +166,17 @@ test("media homepage limit and archive pagination", async ({page}) => {
   await page.goto(BASE + "/news/", {waitUntil:"networkidle"});
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://montpets.com/news/");
   await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content","website");
-  await expect(page.locator(".news-list-card")).toHaveCount(5);
-  await expect(page.locator(".news-list-card h2").first()).toContainText("2026首届宠物产业源头博览会开幕");
+  await expect(page.locator(".news-list-card")).toHaveCount(6);
+  await expect(page.locator(".news-list-card h2").first()).toContainText("宠物险悄悄涨价，谁在收割养宠人？");
   await expect(page.locator(".news-pagination [aria-current='page']")).toHaveText("1");
   const next = page.locator(".news-pagination a[rel='next']");
   await expect(next).toHaveAttribute("href","/news/page/2/");
   await next.click();
   await expect(page).toHaveURL(BASE + "/news/page/2/");
-  await expect(page.locator(".news-list-card")).toHaveCount(5);
+  await expect(page.locator(".news-list-card")).toHaveCount(4);
   await expect(page.locator(".news-pagination [aria-current='page']")).toHaveText("2");
   await expect(page.locator(".news-pagination a[rel='prev']")).toHaveAttribute("href","/news/");
-  await expect(page.locator("h2").first()).toContainText("商家说它是纯种就一定是吗？");
+  await expect(page.locator("h2").first()).toContainText("一只宠物凭什么要有");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow,"mobile archive pagination horizontal overflow").toBeLessThanOrEqual(1);
 });

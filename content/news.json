@@ -1,5 +1,97 @@
 [
   {
+    "slug": "wechat-pet-insurance",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "宠物险悄悄涨价，谁在收割养宠人？",
+    "summary": "从宠物保险价格变化切入，关注保费调整背后的定价逻辑、保障内容与养宠人的实际支出，帮助读者更理性地看待宠物保险选择。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/XdtfZ1EgAMmpDW21CrCaCA",
+    "date": "2026-11-19"
+  },
+  {
+    "slug": "wechat-pet-purchase",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "买宠只看颜值？你漏掉了最重要的步骤！",
+    "summary": "买宠物不应只看外形。文章从购买决策中的关键环节展开，提醒消费者在心动之前，先把需要核实的信息了解清楚。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/fKy-fsQpqeCPuN-lQfZVQQ",
+    "date": "2026-11-12"
+  },
+  {
+    "slug": "wechat-purebred-verification",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "商家说它是纯种就一定是吗？品种宠物认定的合规边界，一文看懂！",
+    "summary": "围绕品种宠物的认定问题，梳理“纯种”说法背后的合规边界，帮助消费者理解品种信息应如何审慎核验。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/8MuSQXsRInFq8250oBIWwg",
+    "legacySlugs": [
+      "wechat-pet-electronic-id"
+    ],
+    "date": "2026-11-06"
+  },
+  {
+    "slug": "wechat-vaccine-history-continuity",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "别找了，你的“记忆面包”在这儿！专治毛孩子疫苗断档",
+    "summary": "围绕宠物疫苗记录与接种提醒，关注如何减少记录断档，让重要健康信息能够持续留存、方便查阅。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/FSOrKFM-KQ5ZaHz113_QKQ",
+    "legacySlugs": [
+      "wechat-purebred-compliance"
+    ],
+    "date": "2026-10-26"
+  },
+  {
+    "slug": "wechat-online-pet-purchase-check",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "网购修狗变“盲盒”？老师，怎么我家子涵发过来不一样啊！",
+    "summary": "从网购宠物与实际到手情况不一致的现象切入，关注线上购宠中的信息透明、消费判断与权益保障。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/QDjKLK1Sup5nRpyFstni_Q",
+    "legacySlugs": [
+      "wechat-vaccine-record"
+    ],
+    "date": "2026-10-20"
+  },
+  {
+    "slug": "wechat-dog-health-observation",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "狗狗身上那颗\"米粒\"，到底是什么？",
+    "summary": "以狗狗身上出现的“米粒”状小颗粒为切入点，提醒宠主留意身体异常变化，避免仅凭外观自行判断，必要时寻求专业检查。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/1pWEtPB9Zbw1WKBR7S8GKA",
+    "legacySlugs": [
+      "wechat-online-pet-purchase"
+    ],
+    "date": "2026-10-15"
+  },
+  {
+    "slug": "wechat-pet-digital-identity",
+    "source": "梦宠数智微信公众号",
+    "category": "公众号文章",
+    "title": "一只宠物凭什么要有\"电子身份证\"？",
+    "summary": "以宠物电子身份证为切入点，介绍为宠物建立可识别、可持续记录的数字身份的意义，呼应“一宠一芯一档一码”的全生命周期管理理念。",
+    "author": "",
+    "editor": "",
+    "sourceUrl": "https://mp.weixin.qq.com/s/3LvgzMAQ2WlsLnnGeSXz-Q",
+    "legacySlugs": [
+      "wechat-dog-skin-observation"
+    ],
+    "date": "2026-10-10"
+  },
+  {
     "slug": "2026-10-07-source-expo",
     "date": "2026-10-07",
     "source": "公开报道",
@@ -31,90 +123,5 @@
     "author": "",
     "editor": "",
     "sourceUrl": "https://mp.weixin.qq.com/s/KrJfrUKuYlHrpTPAbohLFQ"
-  },
-  {
-    "slug": "wechat-pet-insurance",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "宠物险悄悄涨价，谁在收割养宠人？",
-    "summary": "从宠物保险价格变化切入，关注保费调整背后的定价逻辑、保障内容与养宠人的实际支出，帮助读者更理性地看待宠物保险选择。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/XdtfZ1EgAMmpDW21CrCaCA"
-  },
-  {
-    "slug": "wechat-pet-purchase",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "买宠只看颜值？你漏掉了最重要的步骤！",
-    "summary": "买宠物不应只看外形。文章从购买决策中的关键环节展开，提醒消费者在心动之前，先把需要核实的信息了解清楚。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/fKy-fsQpqeCPuN-lQfZVQQ"
-  },
-  {
-    "slug": "wechat-purebred-verification",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "商家说它是纯种就一定是吗？品种宠物认定的合规边界，一文看懂！",
-    "summary": "围绕品种宠物的认定问题，梳理“纯种”说法背后的合规边界，帮助消费者理解品种信息应如何审慎核验。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/8MuSQXsRInFq8250oBIWwg",
-    "legacySlugs": [
-      "wechat-pet-electronic-id"
-    ]
-  },
-  {
-    "slug": "wechat-vaccine-history-continuity",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "别找了，你的“记忆面包”在这儿！专治毛孩子疫苗断档",
-    "summary": "围绕宠物疫苗记录与接种提醒，关注如何减少记录断档，让重要健康信息能够持续留存、方便查阅。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/FSOrKFM-KQ5ZaHz113_QKQ",
-    "legacySlugs": [
-      "wechat-purebred-compliance"
-    ]
-  },
-  {
-    "slug": "wechat-online-pet-purchase-check",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "网购修狗变“盲盒”？老师，怎么我家子涵发过来不一样啊！",
-    "summary": "从网购宠物与实际到手情况不一致的现象切入，关注线上购宠中的信息透明、消费判断与权益保障。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/QDjKLK1Sup5nRpyFstni_Q",
-    "legacySlugs": [
-      "wechat-vaccine-record"
-    ]
-  },
-  {
-    "slug": "wechat-dog-health-observation",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "狗狗身上那颗\"米粒\"，到底是什么？",
-    "summary": "以狗狗身上出现的“米粒”状小颗粒为切入点，提醒宠主留意身体异常变化，避免仅凭外观自行判断，必要时寻求专业检查。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/1pWEtPB9Zbw1WKBR7S8GKA",
-    "legacySlugs": [
-      "wechat-online-pet-purchase"
-    ]
-  },
-  {
-    "slug": "wechat-pet-digital-identity",
-    "source": "梦宠数智微信公众号",
-    "category": "公众号文章",
-    "title": "一只宠物凭什么要有\"电子身份证\"？",
-    "summary": "以宠物电子身份证为切入点，介绍为宠物建立可识别、可持续记录的数字身份的意义，呼应“一宠一芯一档一码”的全生命周期管理理念。",
-    "author": "",
-    "editor": "",
-    "sourceUrl": "https://mp.weixin.qq.com/s/3LvgzMAQ2WlsLnnGeSXz-Q",
-    "legacySlugs": [
-      "wechat-dog-skin-observation"
-    ]
   }
 ]
