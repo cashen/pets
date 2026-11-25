@@ -83,12 +83,12 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     }
 
     const mediaLink = device.menu ? page.locator('.nav-menu .menu-media-link') : page.locator('.nav-links .nav-media-link');
-    await expect(mediaLink, device.name + " media navigation visibility").toBeVisible();
-    await expect(mediaLink, device.name + " media navigation destination").toHaveAttribute("href", "/news/");
     if (device.menu) {
       await page.locator(".nav-menu-toggle").click();
       await expect(page.locator("#site-menu")).toHaveClass(/is-open/);
     }
+    await expect(mediaLink, device.name + " media navigation visibility").toBeVisible();
+    await expect(mediaLink, device.name + " media navigation destination").toHaveAttribute("href", "/news/");
     await mediaLink.click();
     await expect(page).toHaveURL(BASE + "/news/");
     await expect(page.locator("h1")).toHaveText("媒体报道");
