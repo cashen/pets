@@ -26,6 +26,7 @@ function validateSource(){
   if(!Number.isInteger(site.copyrightYear)||site.copyrightYear<2000) fail("invalid copyrightYear");
   for(const key of ["navigationOverline","navigationTitle","mediaLabel","mediaPath"]) if(typeof site[key]!=="string"||!site[key].trim()) fail("site field missing: "+key);
   if(site.mediaPath!=="/news/") fail("site.mediaPath must remain /news/");
+  if(!site.mediaNavigation||site.mediaNavigation.label!==site.mediaLabel||site.mediaNavigation.href!==site.mediaPath) fail("site.mediaNavigation must match mediaLabel/mediaPath");
   if(!Array.isArray(site.navigation)||site.navigation.length===0) fail("site.navigation must contain items");
   const ids=new Set(),targets=new Set(),sections=new Set();
   for(const item of site.navigation){
@@ -53,10 +54,19 @@ function platformTitleParts(){
   return {lead:brand.platformName.slice(0,-suffix.length),strong:suffix};
 }
 function navDesktop(){
-  return site.navigation.map(item=>"<a"+(item.id==="contact"?' class="nav-cta"':"")+" data-nav-id=\""+esc(item.id)+"\" href=\"#"+esc(item.sectionId)+"\">"+esc(item.label)+"</a>").join("");
+  const links=site.navigation.map(item=>"<a"+(item.id==="contact"?' class="nav-cta"':"")+" data-nav-id=\""+esc(item.id)+"\" href=\"#"+esc(item.sectionId)+"\">"+esc(item.label)+"</a>");
+  const media=site.mediaNavigation;
+  links.splice(Math.max(0,links.length-1),0,"<a class=\"nav-media-link\" href=\""+esc(media.href)+"\">"+esc(media.label)+"</a>");
+  return links.join("");
 }
 function navMobile(){
-  return site.navigation.map((item,i)=>"<a"+(item.id==="contact"?' class="menu-contact"':"")+" data-nav-id=\""+esc(item.id)+"\" href=\"#"+esc(item.sectionId)+"\"><span>"+String(i+1).padStart(2,"0")+"</span><b>"+esc(item.menuLabel)+"</b><em>→</em></a>").join("");
+  const links=site.navigation.map((item,i)=>"<a"+(item.id==="contact"?' class="menu-contact"':"")+" data-nav-id=\""+esc(item.id)+"\" href=\"#"+esc(item.sectionId)+"\"><span>"+String(i+1).padStart(2,"0")+"</span><b>"+esc(item.menuLabel)+"</b><em>→</em></a>");
+  const media=site.mediaNavigation;
+  const mediaLink="<a class=\"menu-media-link\" href=\""+esc(media.href)+"\"><span>"+String(site.navigation.length).padStart(2,"0")+"</span><b>"+esc(media.label)+"</b><em>→</em></a>";
+  links.splice(Math.max(0,links.length-1),0,mediaLink);
+  const contact=links.pop();
+  links.push(contact.replace("<span>"+String(site.navigation.length).padStart(2,"0")+"</span>","<span>"+String(site.navigation.length+1).padStart(2,"0")+"</span>"));
+  return links.join("");
 }
 function headerBlock(){
   return [

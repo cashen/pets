@@ -48,5 +48,9 @@
       "targetId": "contact-anchor",
       "sectionId": "contact"
     }
-  ]
+  ],
+  "mediaNavigation": {
+    "label": "媒体报道",
+    "href": "/news/"
+  }
 }
