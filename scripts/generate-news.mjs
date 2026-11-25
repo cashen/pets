@@ -124,7 +124,8 @@ function newsHeader(){
     '</div></header>';
 }
 function archiveDocument(template,items,page,total){
-  let document=replaceGeneratedBlock(template,startMarker,endMarker,archiveBody(items),"news archive page "+page);\n  document=replaceGeneratedBlock(document,"<!-- NEWS:HEADER:GENERATED:START -->","<!-- NEWS:HEADER:GENERATED:END -->",newsHeader(),"news header page "+page);
+  let document=replaceGeneratedBlock(template,startMarker,endMarker,archiveBody(items),"news archive page "+page);
+  document=replaceGeneratedBlock(document,"<!-- NEWS:HEADER:GENERATED:START -->","<!-- NEWS:HEADER:GENERATED:END -->",newsHeader(),"news header page "+page);
   document=replaceGeneratedBlock(document,paginationStart,paginationEnd,paginationBody(page,total),"news pagination "+page);
   const title=page===1?"媒体报道｜梦宠数智":"媒体报道｜第 "+page+" 页｜梦宠数智";
   const description=page===1?"辽宁梦宠数智科技有限公司相关公开媒体报道。":"辽宁梦宠数智科技有限公司媒体报道归档，第 "+page+" 页。";
