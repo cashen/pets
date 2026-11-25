@@ -95,6 +95,9 @@ const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.
 for(const key of ["companyName","brandName","platformName","platformEnglishName","tagline","identity","domain","wwwDomain"]) ok(typeof brandData[key]==="string"&&brandData[key].trim(),"brand source field missing: "+key);
 ok(siteData.uiVersion==="2026.10.08-r18.0-core-content-governance","wrong UI version source");
 ok(siteData.mediaLabel==="媒体报道"&&siteData.mediaPath==="/news/","media site configuration drift");
+ok(siteData.mediaNavigation?.label===siteData.mediaLabel&&siteData.mediaNavigation?.href===siteData.mediaPath,"media navigation configuration drift");
+ok(html.includes('<a class="nav-media-link" href="/news/">媒体报道</a>'),"desktop media navigation link missing");
+ok(html.includes('<a class="menu-media-link" href="/news/">'),"responsive menu media navigation link missing");
 const sourceNav=siteData.navigation.map(({id,label,menuLabel,targetId,sectionId})=>({id,label,menuLabel,targetId,sectionId}));
 
 ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
