@@ -158,7 +158,7 @@ test("404 is styled and accessible", async ({page}) => {
 test("media homepage limit and archive pagination", async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto(BASE + "/", {waitUntil:"networkidle"});
-  await expect(page.locator(".media-card")).toHaveCount(5);
+  await expect(page.locator(".media-card")).toHaveCount(6);
   const allMedia = page.locator(".media-more-link");
   await expect(allMedia).toBeVisible();
   await expect(allMedia).toHaveAttribute("href","/news/");
