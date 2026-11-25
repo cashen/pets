@@ -183,7 +183,7 @@ ok(html.includes(brandData.brandName)&&notFound.includes(brandData.tagline)&&not
 ok(html.includes('href="'+siteData.officialAccountUrl+'"'),"official WeChat HTTPS link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('href="'+siteData.mediaPath+'">'+siteData.mediaLabel+'</a>'),"footer media coverage link missing");
-ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link style missing");
+ok(read("css/wechat-footer.css").includes(".footer-nav-links{"),"footer navigation styles missing");\nok(read("css/wechat-footer.css").includes("width:min(var(--wrap)"),"footer content width must use the shared site wrap");\nok(html.includes("class=\\\"footer-brand-logo\\\"")&&html.includes("class=\\\"footer-bottom\\\""),"footer brand identity or legal row missing");
 
 
 
