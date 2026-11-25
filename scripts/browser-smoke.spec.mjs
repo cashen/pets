@@ -267,13 +267,14 @@ test("editorial homepage hierarchy across desktop, tablet and mobile", async ({b
         value:style(".value-card"),
         ability:style(".ability-card"),
         media:style(".media-card"),
+        audience:style(".audience-grid a"),
         heroOrbit:style(".hero-orbit")
       };
     });
     expect(metrics.featureColumns, viewport.name + " feature columns").toBe(viewport.columns);
     expect(metrics.valueColumns, viewport.name + " value columns").toBe(viewport.columns);
     expect(metrics.abilityColumns, viewport.name + " capability columns").toBe(viewport.columns);
-    for (const selector of ["feature","value","ability","media"]) {
+    for (const selector of ["feature","value","ability","media","audience"]) {
       expect(metrics[selector].radius, viewport.name + " " + selector + " card radius").toBe("0px");
       expect(metrics[selector].shadow, viewport.name + " " + selector + " card shadow").toBe("none");
     }
