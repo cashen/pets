@@ -1,6 +1,6 @@
-# 梦宠数智官网 R17
+# 梦宠数智官网 R19
 
-当前版本：`2026.10.08-r18.0-core-content-governance`
+当前版本：`2026.11.25-r19.0-trust-seo-content`
 
 本版本在 R14 基础上收敛官网前端架构与多终端行为。保留现有 Logo、品牌色、核心业务事实、PR27/R10 视觉方向及 Cloudflare Workers Static Assets 架构。
 
@@ -75,7 +75,9 @@ assets/brand/brand.svg 与 assets/brand/logo-mark.svg 均为当前采用的路�
 - `content/news.json` 是唯一事实来源，只保存报道日期、来源、标题、摘要、作者/编辑与原文地址。
 - `scripts/generate-news.mjs` 在构建前将同一数据生成到首页、`/news/` 归档页与各报道详情页。
 - `node scripts/generate-news.mjs` 用于生成；`node scripts/generate-news.mjs --check` 只检查生成结果是否与内容源一致，不修改文件。
-- 报道按日期倒序输出；`slug` 是稳定的详情路由标识，不能随意变更。
+- 已知发布日期优先按日期倒序展示；日期尚未核实的记录排在已知日期之后，页面不猜测或补造日期。
+- `slug` 是详情路由标识。历史 slug 通过根目录 `_redirects` 做 301 兼容，不直接丢弃旧链接。
+- `scripts/generate-news.mjs` 同步生成 `_redirects`、`sitemap.xml` 与 `robots.txt`，并在 --check 模式验证生成结果。
 - 不在浏览器运行时 fetch JSON；Cloudflare 继续直接提供静态 HTML，保持 SEO、首屏和静态部署特性。
 ## Validation
 
@@ -119,3 +121,12 @@ Eco 使用明确的命名网格区域契约：
 ## Asset Cache Versioning
 
 `ui-version` 表示官网发布版本；资源 URL 的 `?v=` 采用资产组缓存版本，两者不强制相同。CSS 收敛阶段统一更新首页核心样式资源缓存版本，避免旧 stylesheet 与新结构混用。404 页面与当前发布资源版本保持一致。
+
+
+## Trust, Contact and Search Metadata
+
+- 官方授权、国家级资质等强事实主张仅在有公开、可核验依据时展示；没有在本仓库中提供的证明文件，不以绝对化措辞替代。
+- 合作入口使用现有微信公众号入口，不臆造电话、邮箱或联系人。
+- 首页由 `content/brand.json` 与 `content/site.json` 生成 canonical、Open Graph、Twitter Card 与 Organization JSON-LD。
+- 新闻归档与详情页生成 canonical 和社交分享元数据；`sitemap.xml` 只收录规范 URL，`robots.txt` 指向站点地图。
+- 媒体发布日期以来源页为准。无法核实的日期继续留空，不将抓取日期或录入日期冒充发布日期。

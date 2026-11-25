@@ -11,7 +11,7 @@ const siteData=JSON.parse(read("content/site.json"));
 const notFound=read("404.html");
 const readme=read("README.md");
 const wrangler=JSON.parse(read("wrangler.jsonc"));
-const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/wechat-footer.css","css/media.css","css/error.css"];
+const cssFiles=["css/tokens.css","css/base.css","css/layout.css","css/components.css","css/sections.css","css/responsive.css","css/wechat-footer.css","css/media.css","css/brand-refresh.css","css/error.css"];
 const css=cssFiles.map(read).join("\n");
 const js=read("js/main.js");
 const nav=read("js/navigation.js");
@@ -93,7 +93,7 @@ const requiredIds=siteData.navigation.map(item=>item.sectionId);
 const navExpected=siteData.navigation.map(item=>item.id);
 const domains=(wrangler.routes||[]).filter(r=>r?.custom_domain===true).map(r=>r.pattern).filter(Boolean);
 for(const key of ["companyName","brandName","platformName","platformEnglishName","tagline","identity","domain","wwwDomain"]) ok(typeof brandData[key]==="string"&&brandData[key].trim(),"brand source field missing: "+key);
-ok(siteData.uiVersion==="2026.10.08-r18.0-core-content-governance","wrong UI version source");
+ok(siteData.uiVersion==="2026.11.25-r19.0-trust-seo-content","wrong UI version source");
 ok(siteData.mediaLabel==="媒体报道"&&siteData.mediaPath==="/news/","media site configuration drift");
 ok(siteData.mediaNavigation?.label===siteData.mediaLabel&&siteData.mediaNavigation?.href===siteData.mediaPath,"media navigation configuration drift");
 ok(html.includes('<a class="nav-media-link" href="/news/">媒体报道</a>'),"desktop media navigation link missing");
@@ -180,7 +180,7 @@ ok((html.match(/class="coop-grid"/g)||[]).length===1,"cooperation modes missing"
 for(const label of ["繁育企业","销售服务企业","食品用品企业","保险、运输企业","医疗、美容、养护、服装等企业"]) ok(html.includes(label),"missing five-service copy: "+label);
 for(const key of ["companyName","brandName","platformName","platformEnglishName","tagline","identity","domain"]) ok(html.includes(brandData[key]),"brand source not rendered on homepage: "+key);
 ok(html.includes(brandData.brandName)&&notFound.includes(brandData.tagline)&&notFound.includes(brandData.companyName),"404 brand source rendering drift");
-ok(html.includes('href="https://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"'),"official WeChat HTTPS link missing");
+ok(html.includes('href="'+siteData.officialAccountUrl+'"'),"official WeChat HTTPS link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('href="'+siteData.mediaPath+'">'+siteData.mediaLabel+'</a>'),"footer media coverage link missing");
 ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link style missing");
@@ -189,12 +189,12 @@ ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link s
 
 const NEWS_PAGE_SIZE=5;
 const newsHasDate=item=>typeof item.date==="string"&&item.date.trim()!=="";
-const newsSorted=[...newsData].sort((a,b)=>{const ad=newsHasDate(a),bd=newsHasDate(b);if(ad!==bd)return ad?1:-1;if(!ad&&!bd)return 0;return b.date.localeCompare(a.date)||a.slug.localeCompare(b.slug);});
+const newsSorted=[...newsData].sort((a,b)=>{const ad=newsHasDate(a),bd=newsHasDate(b);if(ad!==bd)return ad?-1:1;if(!ad&&!bd)return 0;return b.date.localeCompare(a.date)||a.slug.localeCompare(b.slug);});
 const htmlEscape=value=>String(value).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const newsPageHref=page=>page===1?"/news/":"/news/page/"+page+"/";
 ok(Array.isArray(newsData)&&newsData.length>0,"news source must contain at least one record");
 ok(JSON.stringify(newsData)===JSON.stringify(newsSorted),"news source must be in stable reverse chronological order");
-const newsSlugs=new Set(),newsUrls=new Set();
+const newsSlugs=new Set(),newsUrls=new Set(),legacyNewsSlugs=new Set();
 for(const item of newsData){
   for(const field of ["slug","source","category","title","summary","sourceUrl"])ok(typeof item[field]==="string"&&item[field].trim(),"news source field missing: "+field+" / "+(item.slug||"unknown"));
   if(item.date!=null&&item.date!=="")ok(typeof item.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(item.date),"invalid optional news date: "+item.slug);
@@ -202,8 +202,15 @@ for(const item of newsData){
   ok(/^https?:\/\//.test(item.sourceUrl),"news source URL must be http(s): "+item.slug);
   ok(!newsSlugs.has(item.slug),"duplicate news slug: "+item.slug);
   ok(!newsUrls.has(item.sourceUrl),"duplicate news source URL: "+item.slug);
+  if(item.legacySlugs!=null)ok(Array.isArray(item.legacySlugs),"legacySlugs must be an array: "+item.slug);
+  for(const oldSlug of item.legacySlugs||[]){
+    ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(oldSlug),"invalid legacy slug: "+oldSlug);
+    ok(!legacyNewsSlugs.has(oldSlug),"duplicate legacy slug: "+oldSlug);
+    legacyNewsSlugs.add(oldSlug);
+  }
   newsSlugs.add(item.slug);newsUrls.add(item.sourceUrl);
 }
+for(const oldSlug of legacyNewsSlugs)ok(!newsSlugs.has(oldSlug),"legacy slug collides with active news slug: "+oldSlug);
 const newsPageCount=Math.ceil(newsData.length/NEWS_PAGE_SIZE);
 const homeNews=newsData.slice(0,NEWS_PAGE_SIZE);
 ok((html.match(/class="media-card"/g)||[]).length===homeNews.length,"homepage must show at most five media cards");
@@ -249,6 +256,8 @@ for(const item of newsData){
   const article=read(articlePath);
   ok(article.includes(htmlEscape(item.title)),"news detail title missing: "+item.slug);
   ok(article.includes('href="'+sourceHref+'"'),"news detail source link missing: "+item.slug);
+  ok(article.includes('<link rel="canonical" href="https://'+brandData.domain+'/news/'+item.slug+'/">'),"news detail canonical missing: "+item.slug);
+  ok(article.includes('property="og:title"'),"news detail social metadata missing: "+item.slug);
   ok(article.includes(item.summary),"news detail summary missing: "+item.slug);
   if(item.author)ok(article.includes(item.author),"news detail author missing: "+item.slug);
   if(item.editor)ok(article.includes(item.editor),"news detail editor missing: "+item.slug);
@@ -257,6 +266,25 @@ const expectedNewsDirs=[...newsData.map(item=>item.slug),...(newsPageCount>1?["p
 const newsDirs=fs.readdirSync(path.join(root,"news"),{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name).sort();
 ok(JSON.stringify(newsDirs)===JSON.stringify(expectedNewsDirs),"news directories must match article records and pagination");
 
+const redirects=read("_redirects"),sitemap=read("sitemap.xml"),robots=read("robots.txt");
+ok(redirects.length>0,"legacy redirect file missing");
+for(const item of newsData)for(const oldSlug of item.legacySlugs||[]){
+  ok(redirects.includes("/news/"+oldSlug+" /news/"+item.slug+"/ 301"),"legacy no-slash redirect missing: "+oldSlug);
+  ok(redirects.includes("/news/"+oldSlug+"/ /news/"+item.slug+"/ 301"),"legacy slash redirect missing: "+oldSlug);
+}
+ok(sitemap.includes("https://"+brandData.domain+"/"),"sitemap homepage URL missing");
+ok(sitemap.includes("https://"+brandData.domain+"/news/"),"sitemap archive URL missing");
+for(const item of newsData)ok(sitemap.includes("https://"+brandData.domain+"/news/"+item.slug+"/"),"sitemap article URL missing: "+item.slug);
+ok(robots.includes("Sitemap: https://"+brandData.domain+"/sitemap.xml"),"robots sitemap reference missing");
+ok(html.includes('<link rel="canonical" href="https://'+brandData.domain+'/">'),"homepage canonical missing");
+ok(html.includes('property="og:title"')&&html.includes('property="og:image"'),"homepage social metadata missing");
+ok(html.includes('name="twitter:card" content="summary_large_image"'),"homepage Twitter card missing");
+ok(html.includes('type="application/ld+json"')&&html.includes('"@type":"Organization"'),"Organization JSON-LD missing");
+ok(html.includes('class="contact-action"')&&html.includes('href="'+siteData.officialAccountUrl+'"'),"contact CTA missing");
+ok(html.includes("面向五类产业主体"),"service audience heading missing");
+ok(html.includes("一宠一芯一档一码"),"brand identity phrase missing");
+ok(!html.includes("一宠一档一芯一码"),"incorrect identity phrase remains");
+ok(!html.includes("唯一官方授权")&&!html.includes("国家级数字基础设施"),"unsupported authority claims remain");
 const publicPages=[html,newsIndex,notFound].join("\n");
 for(const phrase of ["目前收录一篇","不改变现有官网信息架构","记录品牌与企业发展的重要节点，保持克制、持续更新","本页保留原始信息来源","价值：","共生共荣的产业生态","本文作为官网媒体报道记录"]) ok(!publicPages.includes(phrase),"developer/AI-like public copy remains: "+phrase);
 ok(html.includes("媒体报道"),"homepage media coverage label missing");
@@ -271,7 +299,7 @@ ok(readme.includes(siteData.uiVersion),"README version is out of sync");
 ok(!readme.includes("2026.10.06-r10.4-wechat-footer-cleanup"),"stale R10.4 README version remains");
 ok(!readme.includes("\\n"),"README contains literal newline escape text");
 ok(html.includes("身份 · 健康 · 服务"),"eco center service labels missing");
-ok(html.includes("欢迎在宠物身份、健康、溯源及数据服务等方向开展合作。"),"contact cooperation copy is not humanized");
+ok(html.includes("欢迎企业、科研机构及相关机构围绕宠物身份、健康、溯源与数据服务开展交流合作。"),"contact cooperation copy is not humanized");
 ok(newsIndex.includes("媒体报道"),"media coverage index label missing");
 
 
@@ -314,7 +342,9 @@ ok(!/\.hero-lead\{font-size:1?1px/.test(responsive),"landscape Hero lead must no
 ok(!/--type-(lead|body|card|ui|meta):1[01]px/.test(responsive),"landscape mobile typography is undersized");
 if((css.match(/font-weight\s*:\s*(850|900)\b/g)||[]).length>0) failures.push("legacy heavy font weight remains");
 if(failures.length){console.error("VALIDATION FAILED");failures.forEach(x=>console.error(" - "+x));process.exit(1)}
-console.log("VALIDATION PASSED: R17.0 content single-source + CSS architecture static contracts");
+const undatedCount=newsData.filter(item=>!newsHasDate(item)).length;
+console.log("MEDIA METADATA: "+undatedCount+" of "+newsData.length+" records have no verified publication date; dates remain intentionally unpublished.");
+console.log("VALIDATION PASSED: R19.0 trust, SEO, media route and responsive contracts");
 console.log("sections:",(html.match(/<section\b/g)||[]).length);
 console.log("navigation:",navExpected.join(" → "));
 console.log("precise anchors:",navItems.map(x=>x.targetId).join(", "));

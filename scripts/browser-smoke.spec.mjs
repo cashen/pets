@@ -24,6 +24,17 @@ test("homepage responsive and navigation smoke matrix", async ({browser}) => {
     await page.goto(BASE + "/", {waitUntil:"networkidle"});
     await expect(page.locator("main#top")).toBeVisible();
     await expect(page.locator("main#top > section")).toHaveCount(8);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://montpets.com/");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content","梦宠数智｜宠物全生命周期大数据认证平台");
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content","summary_large_image");
+    const organization = await page.locator('script[type="application/ld+json"]').evaluate(el => JSON.parse(el.textContent));
+    expect(organization["@type"]).toBe("Organization");
+    expect(organization.name).toBe("辽宁梦宠数智科技有限公司");
+    await expect(page.locator(".contact-action")).toHaveAttribute("href","https://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub");
+    await expect(page.locator("body")).not.toContainText("唯一官方授权");
+    await expect(page.locator("body")).not.toContainText("国家级数字基础设施");
+    await expect(page.locator("#about")).toContainText("一宠一芯一档一码");
+    await expect(page.locator("#ability")).toContainText("一宠一芯一档一码");
     const heroMediaContract = await page.locator(".hero-image-frame img").evaluate(async img => {
       await img.decode();
       const canvas = document.createElement("canvas");
@@ -153,7 +164,10 @@ test("media homepage limit and archive pagination", async ({page}) => {
   await expect(allMedia).toHaveAttribute("href","/news/");
 
   await page.goto(BASE + "/news/", {waitUntil:"networkidle"});
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://montpets.com/news/");
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content","website");
   await expect(page.locator(".news-list-card")).toHaveCount(5);
+  await expect(page.locator(".news-list-card h2").first()).toContainText("2026首届宠物产业源头博览会开幕");
   await expect(page.locator(".news-pagination [aria-current='page']")).toHaveText("1");
   const next = page.locator(".news-pagination a[rel='next']");
   await expect(next).toHaveAttribute("href","/news/page/2/");

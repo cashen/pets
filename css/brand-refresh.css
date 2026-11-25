@@ -88,3 +88,17 @@ html{scroll-behavior:auto}
   .hero-tag{font-size:17px}
   .hero-lead{font-size:14px;line-height:1.7}
 }
+
+
+/* Contact conversion: reuse the existing official-account route. */
+.contact-card .contact-action{
+  display:inline-flex;align-items:center;justify-content:space-between;gap:16px;
+  width:max-content;max-width:100%;min-height:46px;margin-top:18px;padding:11px 15px;
+  border:1px solid rgba(255,255,255,.28);border-radius:12px;color:#fff;
+  font-size:14px;font-weight:700;text-decoration:none;transition:background .16s ease,border-color .16s ease;
+}
+.contact-card .contact-action span{color:#FFC99E}
+.contact-card .contact-action:hover,.contact-card .contact-action:focus-visible{
+  border-color:#FFC99E;background:rgba(255,255,255,.1);outline-offset:3px;
+}
+@media(max-width:760px){.contact-card .contact-action{width:100%;justify-content:center}}
