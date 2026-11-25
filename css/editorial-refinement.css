@@ -94,6 +94,26 @@
 }
 .life-dot{border-radius:50%;box-shadow:none}
 
+/* Audience directory: keep the seven clear destinations, remove the seven mini-panels. */
+.audience-grid{gap:0 24px}
+.audience-grid a,
+.audience-grid a:hover{
+  min-height:88px;
+  padding:16px 8px 15px 0;
+  border:0;
+  border-top:1px solid rgba(128,96,71,.28);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+}
+.audience-grid a strong{font-size:14px;line-height:1.55}
+.audience-grid a i{font-style:normal}
+@media(max-width:760px){
+  .audience-grid{gap:0 18px}
+  .audience-grid a,.audience-grid a:hover{min-height:82px;padding:13px 6px 13px 0}
+}
+
 /* Positioning flow: preserve the business sequence, remove the enclosing dashboard panel. */
 .platform-flow{
   overflow:visible;
