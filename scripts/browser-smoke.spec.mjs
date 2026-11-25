@@ -180,3 +180,50 @@ test("media homepage limit and archive pagination", async ({page}) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow,"mobile archive pagination horizontal overflow").toBeLessThanOrEqual(1);
 });
+
+
+test("audience choices lead to the matching service details", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(BASE + "/", {waitUntil:"networkidle"});
+  await expect(page.locator('.nav-links [data-nav-id="about"]')).toHaveText("企业简介");
+  await expect(page.locator('.nav-menu [data-nav-id="about"] b')).toHaveText("企业简介");
+  await expect(page.locator('.footer-nav a[href="#about"]')).toHaveText("企业简介");
+  const audience = page.locator(".audience-entry");
+  await expect(audience).toBeVisible();
+  const style = await audience.evaluate(el => {
+    const computed = getComputedStyle(el);
+    return {color:computed.color,backgroundColor:computed.backgroundColor,backgroundImage:computed.backgroundImage,kickerColor:getComputedStyle(el.querySelector(".audience-kicker")).color,numberColor:getComputedStyle(el.querySelector(".audience-grid span")).color};
+  });
+  expect(style.color).toBe("rgb(73, 55, 42)");
+  expect(style.backgroundImage).toContain("linear-gradient");
+  expect(style.backgroundColor).not.toBe("rgb(32, 26, 22)");
+  expect(style.kickerColor).toBe("rgb(161, 78, 29)");
+  expect(style.numberColor).toBe("rgb(128, 96, 71)");
+
+  const destinations = [
+    ["繁育企业","#service-breeding"],
+    ["销售服务企业","#service-sales"],
+    ["食品用品企业","#service-food"],
+    ["保险、运输企业","#service-insurance"],
+    ["医疗、美容、养护、服装等企业","#service-medical"],
+    ["面向监管机构","#service-regulatory"],
+    ["面向养宠人","#service-pet-owners"]
+  ];
+  await expect(page.locator(".audience-grid a")).toHaveCount(destinations.length);
+  for (let index=0;index<destinations.length;index++) {
+    const [label,target] = destinations[index];
+    const link = page.locator(".audience-grid a").nth(index);
+    await expect(link).toContainText(label);
+    await expect(link).toHaveAttribute("href",target);
+    await expect(page.locator(target)).toHaveCount(1);
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(target.replace("#","\\#")+"$"));
+    await expect(page.locator(target)).toBeVisible();
+  }
+
+  await page.goto(BASE + "/", {waitUntil:"networkidle"});
+  await expect(page.locator(".hero-actions .btn-primary")).toHaveText("合作咨询");
+  await expect(page.locator(".hero-actions .btn-primary")).toHaveAttribute("href","#contact");
+  await expect(page.locator(".hero-actions .btn-secondary")).toHaveText("查看平台能力");
+  await expect(page.locator(".hero-actions .btn-secondary")).toHaveAttribute("href","#ability");
+});

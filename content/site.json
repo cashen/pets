@@ -8,7 +8,7 @@
   "navigation": [
     {
       "id": "about",
-      "label": "公司简介",
+      "label": "企业简介",
       "menuLabel": "企业简介",
       "targetId": "about-anchor",
       "sectionId": "about"
