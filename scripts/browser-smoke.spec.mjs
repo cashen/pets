@@ -247,7 +247,7 @@ test("editorial homepage hierarchy across desktop, tablet and mobile", async ({b
     await expect(page.locator(".ability-card")).toHaveCount(4);
     await expect(page.locator(".media-card")).toHaveCount(6);
     const metrics = await page.evaluate(() => {
-      const columns = selector => getComputedStyle(document.querySelector(selector)).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length;
+      const columns = selector => getComputedStyle(document.querySelector(selector)).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length;
       const style = selector => {
         const el = document.querySelector(selector);
         const css = getComputedStyle(el);
