@@ -230,6 +230,7 @@ for(let page=1;page<=newsPageCount;page++){
   ok(fs.existsSync(path.join(root,archivePath)),"news archive page missing: "+archivePath);
   const archive=read(archivePath);
   archivePages.push(archive);
+  ok(archive.includes('class="news-primary-nav"')&&archive.includes('class="news-mobile-nav"'),"archive primary navigation missing: "+page);
   const pageItems=newsData.slice((page-1)*NEWS_PAGE_SIZE,page*NEWS_PAGE_SIZE);
   ok((archive.match(/class="news-list-card"/g)||[]).length===pageItems.length,"archive page card count mismatch: "+page);
   ok(archive.includes('rel="canonical" href="https://montpets.com'+newsPageHref(page)+'"'),"archive canonical URL mismatch: "+page);
