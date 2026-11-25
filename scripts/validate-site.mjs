@@ -104,7 +104,7 @@ ok(/^<!doctype html>/i.test(html.trim()),"missing doctype");
 ok(/^<!doctype html>/i.test(notFound.trim()),"404 missing doctype");
 ok(/meta name="viewport"/i.test(html),"missing viewport");
 ok(html.includes('meta name="ui-version" content="'+siteData.uiVersion+'"'),"wrong ui version");
-ok((html.match(/<section\b/g)||[]).length===8,"expected 8 sections: hero + 01-05 + brand news + contact");
+ok((html.match(/<section\b/g)||[]).length===10,"expected 10 sections including footer brand and WeChat blocks");
 for(const id of requiredIds) {
   ok(html.includes('id="'+id+'"'),"missing #"+id);
   ok(html.includes('id="'+id+'-anchor"'),"missing precise anchor #"+id+"-anchor");
@@ -183,7 +183,9 @@ ok(html.includes(brandData.brandName)&&notFound.includes(brandData.tagline)&&not
 ok(html.includes('href="'+siteData.officialAccountUrl+'"'),"official WeChat HTTPS link missing");
 ok(html.includes('class="footer-wechat"'),"footer WeChat block missing");
 ok(html.includes('href="'+siteData.mediaPath+'">'+siteData.mediaLabel+'</a>'),"footer media coverage link missing");
-ok(read("css/wechat-footer.css").includes(".footer-media{"),"footer media link style missing");
+ok(read("css/wechat-footer.css").includes(".footer-nav-links{"),"footer navigation styles missing");
+ok(read("css/wechat-footer.css").includes("width:min(var(--wrap)"),"footer content width must use the shared site wrap");
+ok(html.includes('class="footer-brand-logo"')&&html.includes('class="footer-bottom"'),"footer brand identity or legal row missing");
 
 
 
