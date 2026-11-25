@@ -20,6 +20,7 @@ function validateSource(){
   const requiredBrand=["companyName","brandName","platformName","platformEnglishName","tagline","identity","domain","wwwDomain"];
   for(const key of requiredBrand) if(typeof brand[key]!=="string"||!brand[key].trim()) fail("brand field missing: "+key);
   if(!brand.platformName.endsWith("大数据认证平台")) fail("brand platformName must end with 大数据认证平台");
+  if(typeof site.officialAccountUrl!=="string"||!/^https:\/\//.test(site.officialAccountUrl)) fail("site.officialAccountUrl must be an HTTPS URL");
   if(!/^PET FULL-LIFECYCLE BIG DATA CERTIFICATION PLATFORM$/.test(brand.platformEnglishName)) fail("brand platformEnglishName contract mismatch");
   if(brand.domain!=="montpets.com"||brand.wwwDomain!=="www.montpets.com") fail("brand domain contract mismatch");
   if(!/^\d{4}\.\d{2}\.\d{2}-r\d+\.\d+-[a-z0-9-]+$/.test(site.uiVersion)) fail("invalid uiVersion: "+site.uiVersion);
@@ -86,10 +87,37 @@ function headerBlock(){
   ].join("\n");
 }
 function headBlock(){
+  const title=brand.brandName+"｜"+brand.platformName;
+  const description="以宠物身份数据为核心，连接身份、健康、流转与服务记录，面向宠物产业链提供数字化数据服务。";
+  const url="https://"+brand.domain+"/";
+  const image=url+"assets/images/hero/hero.png";
+  const organization={
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "@id":url+"#organization",
+    "name":brand.companyName,
+    "alternateName":brand.brandName,
+    "url":url,
+    "logo":url+"assets/brand/brand.svg",
+    "description":brand.companyName+"｜"+brand.platformName
+  };
   return [
-    "<title>"+esc(brand.brandName)+"｜"+esc(brand.platformName)+"</title>",
-    "<meta name=\"description\" content=\""+esc(brand.companyName+"｜"+brand.platformName)+"\">",
-    "<meta name=\"ui-version\" content=\""+esc(site.uiVersion)+"\">"
+    "<title>"+esc(title)+"</title>",
+    "<meta name=\"description\" content=\""+esc(description)+"\">",
+    "<meta name=\"ui-version\" content=\""+esc(site.uiVersion)+"\">",
+    "<link rel=\"canonical\" href=\""+esc(url)+"\">",
+    "<meta property=\"og:type\" content=\"website\">",
+    "<meta property=\"og:site_name\" content=\""+esc(brand.brandName)+"\">",
+    "<meta property=\"og:title\" content=\""+esc(title)+"\">",
+    "<meta property=\"og:description\" content=\""+esc(description)+"\">",
+    "<meta property=\"og:url\" content=\""+esc(url)+"\">",
+    "<meta property=\"og:image\" content=\""+esc(image)+"\">",
+    "<meta property=\"og:locale\" content=\"zh_CN\">",
+    "<meta name=\"twitter:card\" content=\"summary_large_image\">",
+    "<meta name=\"twitter:title\" content=\""+esc(title)+"\">",
+    "<meta name=\"twitter:description\" content=\""+esc(description)+"\">",
+    "<meta name=\"twitter:image\" content=\""+esc(image)+"\">",
+    "<script type=\"application/ld+json\">"+JSON.stringify(organization).replace(/</g,"\\u003c")+"</script>"
   ].join("\n");
 }
 function heroBlock(){
@@ -101,16 +129,16 @@ function heroBlock(){
 }
 function lifecycleBlock(){return "<div class=\"lifecycle-head\"><span>一个平台贯穿宠物全生命周期</span><b>"+esc(brand.identity)+"</b></div>";}
 function identityFeatureBlock(){return "<h3>“"+esc(brand.identity)+"”身份标识</h3>";}
-function identityValueIntroBlock(){return "<p class=\"lead\">平台围绕“"+esc(brand.identity)+"”，连接宠物身份、健康、流转和服务记录，面向宠物企业、宠主与宠物达人提供金融保险、交易溯源、社区交流、无害化处置等服务。</p>";}
-function identityValueFeatureBlock(){return "<p>平台围绕“"+esc(brand.identity)+"”，把身份、健康、流转和服务记录连接起来，覆盖金融保险、交易溯源、社区交流、无害化处置等实际场景。</p>";}
+function identityValueIntroBlock(){return "<p class=\"lead\">平台围绕“"+esc(brand.identity)+"”，连接宠物身份、健康、流转和服务记录，面向宠物企业、宠主与宠物达人探索金融保险、交易溯源、社区交流、无害化处置等服务场景。</p>";}
+function identityValueFeatureBlock(){return "<p>平台以宠物身份为基础，围绕金融保险、交易溯源、社区交流和无害化处置等场景，推动身份与服务信息在不同主体间衔接。</p>";}
 function identityAbilityBlock(){return "<p class=\"lead\">围绕“"+esc(brand.identity)+"”，统一身份、采集、流转和溯源记录，让宠物信息在不同服务环节中保持连续。</p>";}
-function contactBlock(){return "<div class=\"contact-card\"><span>"+esc(brand.companyName)+"</span><strong>"+esc(brand.platformName)+"</strong><small>"+esc(brand.domain)+"</small></div>";}
+function contactBlock(){return "<div class=\"contact-card\"><span>"+esc(brand.companyName)+"</span><strong>"+esc(brand.platformName)+"</strong><a class=\"contact-action\" href=\""+esc(site.officialAccountUrl)+"\" target=\"_blank\" rel=\"noopener noreferrer\">关注微信公众号<span aria-hidden=\"true\">↗</span></a><small>了解平台动态与合作方向</small></div>";}
 function footerBlock(){
   return [
     "<div class=\"footer-copy\"><span><b>"+esc(brand.brandName)+"</b> · "+esc(brand.tagline)+"</span><span>© "+site.copyrightYear+" "+esc(brand.companyName)+"</span></div>",
     "<div class=\"footer-media\"><a href=\""+esc(site.mediaPath)+"\">"+esc(site.mediaLabel)+"</a></div>",
     "<div class=\"footer-wechat\">",
-    "<a class=\"footer-wechat-link\" href=\"https://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"打开"+esc(brand.brandName)+"微信公众号入口\">",
+    "<a class=\"footer-wechat-link\" href=\""+esc(site.officialAccountUrl)+"\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"打开"+esc(brand.brandName)+"微信公众号入口\">",
     "<span class=\"footer-wechat-qr\" aria-hidden=\"true\">",
     "<img class=\"footer-wechat-qr-image\" src=\"./assets/images/social/wechat-official.svg?v=20261006-r104\" alt=\"\" width=\"136\" height=\"136\" decoding=\"async\">",
     "<img class=\"footer-wechat-qr-logo\" src=\"./assets/images/social/wechat-logo.jpg?v=20261006-r104\" alt=\"\" width=\"40\" height=\"40\" decoding=\"async\">",

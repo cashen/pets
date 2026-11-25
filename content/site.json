@@ -1,5 +1,5 @@
 {
-  "uiVersion": "2026.10.08-r18.0-core-content-governance",
+  "uiVersion": "2026.11.25-r19.0-trust-seo-content",
   "copyrightYear": 2026,
   "navigationOverline": "MONT PETS DIGITAL",
   "navigationTitle": "页面导航",
@@ -52,5 +52,6 @@
   "mediaNavigation": {
     "label": "媒体报道",
     "href": "/news/"
-  }
+  },
+  "officialAccountUrl": "https://weixin.qq.com/r/mp/CSDF3RDEkE3vrVS_93Ub"
 }
